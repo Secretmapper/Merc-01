@@ -35,6 +35,12 @@ class Bullet(Sprite):
 		self.x += self.dir_x * self.speed
 		self.y += self.dir_y * self.speed
 
+class EnemyShip(Sprite):
+
+	def __init__(self, img, x, y):
+		super(Ship, self).__init__(img=img, x=x, y=y)
+		self.hit = True
+
 class Ship(Sprite):
 
 	def __init__(self, img, x, y):

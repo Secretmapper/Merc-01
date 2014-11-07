@@ -1,6 +1,7 @@
 import pyglet, math, resources as res
 from pyglet.window import key
 from game.objects import Ship, Bullet, Sprite
+import utils
 
 class Game_Window(pyglet.window.Window):
 
@@ -11,7 +12,7 @@ class Game_Window(pyglet.window.Window):
 
 		self.enemies = []
 		for i in range(25):
-			self.enemies.append(Sprite(img=res.player, x=i*50))
+			self.enemies.append(Sprite(img=res.player, x=i*50, y=i*50))
 		
 		pyglet.clock.schedule_interval(self.on_update, 1/60.0)
 		self.push_handlers(self.ship)
@@ -30,6 +31,10 @@ class Game_Window(pyglet.window.Window):
 
 		for bullet in self.bullets:
 			bullet.update(dt)
+
+		#removes enemies that collides with bullets
+		#list comprehension to modify list in iteration (faster)
+		self.enemies[:] = [enemy for enemy in self.enemies if not utils.collides(enemy, self.bullets)]
 
 	def on_draw(self, ):
 		self.clear()
