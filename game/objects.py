@@ -9,7 +9,8 @@ class Sprite(pyglet.sprite.Sprite):
 		self.on_bounds_kill = on_bounds_kill
 
 	def update(self, dt):
-		self.check_bounds()
+		if self.on_bounds_kill:
+			self.check_bounds()
 
 	def check_bounds(self):
 		min_x = -self.image.width/2
@@ -17,9 +18,8 @@ class Sprite(pyglet.sprite.Sprite):
 		#todo -hardcoded windows
 		max_x = 800 + self.image.width/2
 		max_y = 600 + self.image.height/2
-		if self.on_bounds_kill:
-			if self.x < min_x or self.x > max_x or self.x < min_y or self.y > max_y:
-				self.dead = True
+		if self.x < min_x or self.x > max_x or self.x < min_y or self.y > max_y:
+			self.dead = True
 
 class Bullet(Sprite):
 
