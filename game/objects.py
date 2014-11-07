@@ -1,5 +1,9 @@
 import pyglet, math, resources as res
 from pyglet.window import key
+from random import randint
+
+win_width = 800
+win_height = 600
 
 class Sprite(pyglet.sprite.Sprite):
 
@@ -8,17 +12,18 @@ class Sprite(pyglet.sprite.Sprite):
 		self.dead = False
 		self.on_bounds_kill = on_bounds_kill
 
+		self.min_x = -img.width/2
+		self.min_y = -img.height/2
+		#todo -hardcoded windows
+		self.max_x = win_width + img.width/2
+		self.max_y = win_height + img.height/2
+
 	def update(self, dt):
 		if self.on_bounds_kill:
 			self.check_bounds()
 
 	def check_bounds(self):
-		min_x = -self.image.width/2
-		min_y = -self.image.height/2
-		#todo -hardcoded windows
-		max_x = 800 + self.image.width/2
-		max_y = 600 + self.image.height/2
-		if self.x < min_x or self.x > max_x or self.x < min_y or self.y > max_y:
+		if self.x < self.min_x or self.x > self.max_x or self.x < self.min_y or self.y > self.max_y:
 			self.dead = True
 
 class Bullet(Sprite):
@@ -38,8 +43,29 @@ class Bullet(Sprite):
 class EnemyShip(Sprite):
 
 	def __init__(self, img, x, y):
-		super(Ship, self).__init__(img=img, x=x, y=y)
+		super(EnemyShip, self).__init__(img=img, x=x, y=y)
 		self.hit = True
+		r = randint(0, 360)
+		r *= -math.pi/180
+		self.dir_x = math.cos(r)
+		self.dir_y = math.sin(r)
+		self.speed = 10
+
+		self.min_x = img.width/2
+		self.min_y = img.height/2
+		#todo -hardcoded windows
+		self.max_x = win_width - img.width/2
+		self.max_y = win_height - img.height/2
+
+	def update(self, dt):
+		Sprite.update(self, dt)
+		self.x += self.dir_x * self.speed
+		self.y += self.dir_y * self.speed
+
+		if self.y <= self.min_y or self.y >= self.max_y:
+			self.dir_y = -self.dir_y
+		elif self.x <= self.min_x or self.x >= self.max_x:
+			self.dir_x = -self.dir_x
 
 class Ship(Sprite):
 
