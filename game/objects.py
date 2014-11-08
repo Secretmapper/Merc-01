@@ -8,7 +8,6 @@ win_height = 600
 class Sprite(pyglet.sprite.Sprite):
 
 	def __init__(self, on_bounds_kill=False, *args, **kwargs):
-		print(args, kwargs)
 		super(Sprite, self).__init__(**kwargs)
 		self.dead = False
 		self.on_bounds_kill = on_bounds_kill
@@ -55,7 +54,7 @@ class EnemyShip(Sprite):
 		self.min_x = self.image.width/2
 		self.min_y = self.image.height/2
 		#todo -hardcoded windows
-		self.max_x = win_width - self.image.width/2
+		self.max_x = win_width-200 - self.image.width/2
 		self.max_y = win_height - self.image.height/2
 
 	def update(self, dt):
