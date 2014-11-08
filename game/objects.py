@@ -7,16 +7,17 @@ win_height = 600
 
 class Sprite(pyglet.sprite.Sprite):
 
-	def __init__(self, img, x=0, y=0, on_bounds_kill=False):
-		super(Sprite, self).__init__(img=img, x=x, y=y)
+	def __init__(self, on_bounds_kill=False, *args, **kwargs):
+		print(args, kwargs)
+		super(Sprite, self).__init__(**kwargs)
 		self.dead = False
 		self.on_bounds_kill = on_bounds_kill
 
-		self.min_x = -img.width/2
-		self.min_y = -img.height/2
+		self.min_x = -self.image.width/2
+		self.min_y = -self.image.height/2
 		#todo -hardcoded windows
-		self.max_x = win_width + img.width/2
-		self.max_y = win_height + img.height/2
+		self.max_x = win_width + self.image.width/2
+		self.max_y = win_height + self.image.height/2
 
 	def update(self, dt):
 		if self.on_bounds_kill:
@@ -28,8 +29,8 @@ class Sprite(pyglet.sprite.Sprite):
 
 class Bullet(Sprite):
 
-	def __init__(self, img, x, y, r, on_bounds_kill=False):
-		super(Bullet, self).__init__(img=img, x=x, y=y, on_bounds_kill=on_bounds_kill)
+	def __init__(self, r, *args, **kwargs):
+		super(Bullet, self).__init__(**kwargs)
 		r *= -math.pi/180
 		self.dir_x = math.cos(r)
 		self.dir_y = math.sin(r)
@@ -42,8 +43,8 @@ class Bullet(Sprite):
 
 class EnemyShip(Sprite):
 
-	def __init__(self, img, x, y):
-		super(EnemyShip, self).__init__(img=img, x=x, y=y)
+	def __init__(self, *args, **kwargs):
+		super(EnemyShip, self).__init__(**kwargs)
 		self.hit = True
 		r = randint(0, 360)
 		r *= -math.pi/180
@@ -51,11 +52,11 @@ class EnemyShip(Sprite):
 		self.dir_y = math.sin(r)
 		self.speed = 10
 
-		self.min_x = img.width/2
-		self.min_y = img.height/2
+		self.min_x = self.image.width/2
+		self.min_y = self.image.height/2
 		#todo -hardcoded windows
-		self.max_x = win_width - img.width/2
-		self.max_y = win_height - img.height/2
+		self.max_x = win_width - self.image.width/2
+		self.max_y = win_height - self.image.height/2
 
 	def update(self, dt):
 		Sprite.update(self, dt)
@@ -69,8 +70,8 @@ class EnemyShip(Sprite):
 
 class Ship(Sprite):
 
-	def __init__(self, img, x, y):
-		super(Ship, self).__init__(img=img, x=x, y=y)
+	def __init__(self, *args, **kwargs):
+		super(Ship, self).__init__(**kwargs)
 		self.mouse_pos = (0, 0)
 		self.keys = dict(spacebar=False)
 		self.shoot = False

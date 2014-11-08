@@ -4,18 +4,23 @@ from game.objects import Ship, EnemyShip, Bullet, Sprite
 from random import randint
 import utils
 
+fps_display = pyglet.clock.ClockDisplay()
+
 class Game_Window(pyglet.window.Window):
 
 	def __init__(self, width, height):
 		super(Game_Window, self).__init__(width, height)
+		self.main_batch = pyglet.graphics.Batch()
 		self.ship = Ship(img=res.player, x=400, y=300)
 		self.bullets = []
 
 		self.enemies = []
-		for i in range(100):
-			self.enemies.append(EnemyShip(img=res.player, x=randint(50,self.width-50), y=randint(50,self.height-50)))
+		for i in range(700):
+			self.enemies.append(EnemyShip(img=res.player, x=randint(50,self.width-50), y=randint(50,self.height-50), batch=self.main_batch))
 		
-		pyglet.clock.schedule_interval(self.on_update, 1/60.0)
+		pyglet.clock.set_fps_limit(60)
+		pyglet.clock.schedule(self.on_update)
+		
 		self.push_handlers(self.ship)
 
 	def on_mouse_motion(self, x, y, dx, dy):
@@ -23,7 +28,7 @@ class Game_Window(pyglet.window.Window):
 
 	def on_update(self, dt):
 		if self.ship.shoot:
-			bullet = Bullet(img=res.bullet, x=self.ship.x, y=self.ship.y, r=self.ship.rotation, on_bounds_kill=True)
+			bullet = Bullet(on_bounds_kill=True, img=res.bullet, x=self.ship.x, y=self.ship.y, r=self.ship.rotation, batch=self.main_batch)
 			self.bullets.append(bullet)
 		self.ship.update(dt)
 
@@ -43,11 +48,9 @@ class Game_Window(pyglet.window.Window):
 	def on_draw(self, ):
 		self.clear()
 
-		for bullet in self.bullets:
-			bullet.draw()
+ 		fps_display.draw()
 
-		for enemies in self.enemies:
-			enemies.draw()
+		self.main_batch.draw()
 
 		self.ship.draw()
 
