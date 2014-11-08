@@ -46,15 +46,19 @@ class Game_Window(pyglet.window.Window):
 		hit_squares = [[[[],[]] for b in range(int(win_width/cell_size))] for a in range(int(win_height/cell_size))]
 
 		for bullet in self.bullets:
-			col, cell = int(bullet.y/cell_size), int(bullet.x/cell_size)
-			if col < 30 and cell < 40 and col >= 0 and cell >= 0:
-				hit_squares[col][cell][1].append(bullet)
+			col, cell, col_e, cell_e = map(lambda x: int(x/cell_size), bullet.pos_vertices())
+			for a in range(col, col_e+1):
+				for b in range(cell, cell_e+1):
+					if a < 30 and b < 40 and a >= 0 and b >= 0:
+						hit_squares[a][b][1].append(bullet)
 			bullet.update(dt)
 
 		for enemy in self.enemies:
-			col, cell = int(enemy.y/cell_size), int(enemy.x/cell_size)
-			if col < 30 and cell < 40 and col >= 0 and cell >= 0:
-				hit_squares[col][cell][0].append(enemy)
+			col, cell, col_e, cell_e = map(lambda x: int(x/cell_size), enemy.pos_vertices())
+			for a in range(col, col_e+1):
+				for b in range(cell, cell_e+1):
+					if a < 30 and b < 40 and a >= 0 and b >= 0:
+						hit_squares[a][b][0].append(enemy)
 			enemy.update(dt)
 
 		for col in hit_squares:

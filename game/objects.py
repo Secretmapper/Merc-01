@@ -18,6 +18,9 @@ class Sprite(pyglet.sprite.Sprite):
 		self.max_x = win_width + self.image.width/2
 		self.max_y = win_height + self.image.height/2
 
+	def pos_vertices(self):
+		return [self.y-self.height/2, self.x-self.width/2, self.y+self.height/2, self.x+self.width/2]
+
 	def update(self, dt):
 		if self.on_bounds_kill:
 			self.check_bounds()
