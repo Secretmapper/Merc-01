@@ -3,6 +3,7 @@ import utils
 import pyglet, math, resources as res
 from pyglet.window import key
 from pyglet.graphics import glMatrixMode, GL_PROJECTION, glLoadIdentity, gluOrtho2D, glClear, GL_COLOR_BUFFER_BIT, GL_MODELVIEW, glTranslatef
+import game.graphics
 from game.objects import Ship, EnemyShip, Bullet, Sprite
 from random import randint
 
@@ -43,7 +44,7 @@ class Game_Window(pyglet.window.Window):
 	def __init__(self, width, height):
 		super(Game_Window, self).__init__(width, height)
 		self.camera = Camera(self, zoom=500.0)
-		self.main_batch = pyglet.graphics.Batch()
+		self.main_batch = game.graphics.Layer()
 		self.ship = Ship(img=res.player, x=400, y=300, batch=self.main_batch)
 		self.bullets = []
 
@@ -61,10 +62,12 @@ class Game_Window(pyglet.window.Window):
 
 	def on_update(self, dt):
 		if self.ship.shoot:
-			bullet = Bullet(on_bounds_kill=True, img=res.bullet, x=self.ship.x, y=self.ship.y, r=self.ship.rotation, batch=self.main_batch)
+			bullet = Bullet(on_bounds_kill=False, img=res.bullet, x=self.ship.x, y=self.ship.y, r=self.ship.rotation, batch=self.main_batch)
 			self.bullets.append(bullet)
 		self.ship.update(dt)
 
+		self.main_batch.x = (win_width/2 - self.ship.x)
+		self.main_batch.y = (win_height/2 - self.ship.y)
 		self.camera.x = (win_width/2 - self.ship.x)/float(win_width/2)
 		self.camera.y = (win_height/2 - self.ship.y)/float(win_height/2)
 

@@ -8,6 +8,8 @@ win_height = 600
 class Sprite(pyglet.sprite.Sprite):
 
 	def __init__(self, on_bounds_kill=False, *args, **kwargs):
+		if 'batch' in kwargs:
+			self.layer = kwargs['batch']
 		super(Sprite, self).__init__(**kwargs)
 		self.dead = False
 		self.on_bounds_kill = on_bounds_kill
@@ -36,7 +38,7 @@ class Bullet(Sprite):
 		r *= -math.pi/180
 		self.dir_x = math.cos(r)
 		self.dir_y = math.sin(r)
-		self.speed = 5
+		self.speed = 10
 
 	def update(self, dt):
 		Sprite.update(self, dt)
@@ -84,7 +86,7 @@ class Ship(Sprite):
 		self.speed = 0.5
 
 	def on_mouse_motion(self, x, y, dx, dy):
-		self.rotation = -math.atan2(y-self.y, x-self.x) * 180/math.pi
+		self.rotation = -math.atan2(y-(self.y+self.layer.y), x-(self.x+self.layer.x)) * 180/math.pi
 
 	def update(self, dt):
 		Sprite.update(self, dt)
@@ -93,7 +95,7 @@ class Ship(Sprite):
 		if self.i_shoot < 0:
 			self.shoot = True
 			self.i_shoot = self.shoot_timer
-
+		
 		if self.keys['W']:
 			self.speed_y += self.speed * 1
 		if self.keys['S']:
