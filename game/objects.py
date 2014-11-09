@@ -80,10 +80,11 @@ class Ship(Sprite):
 		self.shoot = False
 		self.shoot_timer = 10
 		self.i_shoot = self.shoot_timer
+		self.speed_x, self.speed_y = 0, 0
+		self.speed = 0.5
 
 	def on_mouse_motion(self, x, y, dx, dy):
 		self.rotation = -math.atan2(y-self.y, x-self.x) * 180/math.pi
-		#self.mouse_pos = (x, y)
 
 	def update(self, dt):
 		Sprite.update(self, dt)
@@ -92,14 +93,19 @@ class Ship(Sprite):
 		if self.i_shoot < 0:
 			self.shoot = True
 			self.i_shoot = self.shoot_timer
+
 		if self.keys['W']:
-			self.y += 2
+			self.speed_y += self.speed * 1
 		if self.keys['S']:
-			self.y -= 2
+			self.speed_y -= self.speed * 1
 		if self.keys['A']:
-			self.x -= 2
+			self.speed_x -= self.speed * 1
 		if self.keys['D']:
-			self.x += 2
+			self.speed_x += self.speed * 1
+		self.speed_x *= 0.95
+		self.speed_y *= 0.95
+		self.x += self.speed_x
+		self.y += self.speed_y
 
 	def on_key_press(self, symbol, modifiers):
 		if symbol == key.SPACE:
