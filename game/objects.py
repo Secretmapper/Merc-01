@@ -36,7 +36,7 @@ class Bullet(Sprite):
 		r *= -math.pi/180
 		self.dir_x = math.cos(r)
 		self.dir_y = math.sin(r)
-		self.speed = 10
+		self.speed = 5
 
 	def update(self, dt):
 		Sprite.update(self, dt)
@@ -62,6 +62,7 @@ class EnemyShip(Sprite):
 
 	def update(self, dt):
 		Sprite.update(self, dt)
+		#return
 		self.x += self.dir_x * self.speed
 		self.y += self.dir_y * self.speed
 
@@ -75,28 +76,51 @@ class Ship(Sprite):
 	def __init__(self, *args, **kwargs):
 		super(Ship, self).__init__(**kwargs)
 		self.mouse_pos = (0, 0)
-		self.keys = dict(spacebar=False)
+		self.keys = dict(spacebar=False, W=False, A=False, S=False, D=False)
 		self.shoot = False
+		self.shoot_timer = 10
+		self.i_shoot = self.shoot_timer
 
 	def on_mouse_motion(self, x, y, dx, dy):
 		self.rotation = -math.atan2(y-self.y, x-self.x) * 180/math.pi
-		self.mouse_pos = (x, y)
-
-	def on_mouse_press(self, x, y, button, modifiers):
-		self.shoot = True
+		#self.mouse_pos = (x, y)
 
 	def update(self, dt):
 		Sprite.update(self, dt)
 		self.shoot = False
-		if not self.keys['spacebar']:
-			end_x, end_y = self.mouse_pos
-			self.x += (end_x - self.x) / 5
-			self.y += (end_y - self.y) / 5
+		self.i_shoot -= 1
+		if self.i_shoot < 0:
+			self.shoot = True
+			self.i_shoot = self.shoot_timer
+		if self.keys['W']:
+			self.y += 2
+		if self.keys['S']:
+			self.y -= 2
+		if self.keys['A']:
+			self.x -= 2
+		if self.keys['D']:
+			self.x += 2
 
 	def on_key_press(self, symbol, modifiers):
 		if symbol == key.SPACE:
 			self.keys['spacebar'] = True
+		if symbol == key.W:
+			self.keys['W'] = True
+		if symbol == key.A:
+			self.keys['A'] = True
+		if symbol == key.S:
+			self.keys['S'] = True
+		if symbol == key.D:
+			self.keys['D'] = True
 
 	def on_key_release(self, symbol, modifiers):
 		if symbol == key.SPACE:
 			self.keys['spacebar'] = False
+		if symbol == key.W:
+			self.keys['W'] = False
+		if symbol == key.A:
+			self.keys['A'] = False
+		if symbol == key.S:
+			self.keys['S'] = False
+		if symbol == key.D:
+			self.keys['D'] = False

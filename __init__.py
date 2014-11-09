@@ -1,22 +1,43 @@
+from itertools import repeat
+import utils
 import pyglet, math, resources as res
 from pyglet.window import key
+from pyglet.graphics import glMatrixMode, GL_PROJECTION, glLoadIdentity, gluOrtho2D, glClear, GL_COLOR_BUFFER_BIT, GL_MODELVIEW, glTranslatef
 from game.objects import Ship, EnemyShip, Bullet, Sprite
 from random import randint
-import utils
-from itertools import repeat
+
+win_width = 800
+win_height = 600
+cell_size = 20.0
 
 fps_display = pyglet.clock.ClockDisplay()
+
+class Camera(object):
+
+    def __init__(self, win, x=0, y=0, z=0, zoom=1.0):
+        self.win = win
+        self.zoom = zoom
+        self.x, self.y, self.z = x, y, z
+
+    def game_projection(self):
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        glTranslatef(self.x, self.y, self.z)
+        gluOrtho2D( 
+        	0,self.win.width,
+            0,self.win.height)
 
 class Game_Window(pyglet.window.Window):
 
 	def __init__(self, width, height):
 		super(Game_Window, self).__init__(width, height)
+		self.camera = Camera(self, zoom=500.0)
 		self.main_batch = pyglet.graphics.Batch()
-		self.ship = Ship(img=res.player, x=400, y=300)
+		self.ship = Ship(img=res.player, x=400, y=300, batch=self.main_batch)
 		self.bullets = []
 
 		self.enemies = []
-		for i in range(700):
+		for i in range(500):
 			self.enemies.append(EnemyShip(img=res.player, x=randint(50,self.width-50), y=randint(50,self.height-50), batch=self.main_batch))
 		
 		pyglet.clock.set_fps_limit(60)
@@ -33,15 +54,15 @@ class Game_Window(pyglet.window.Window):
 			self.bullets.append(bullet)
 		self.ship.update(dt)
 
+		self.camera.x = (win_width/2 - self.ship.x)/float(win_width/2)
+		self.camera.y = (win_height/2 - self.ship.y)/float(win_height/2)
+		#self.camera.y = win_height/2 - self.ship.y
+
 		for bullet in [b for b in self.bullets if b.dead]:
 			self.bullets.remove(bullet)
 
 		for enemy in [b for b in self.enemies if b.dead]:
 			self.enemies.remove(enemy)
-
-		win_width = 800
-		win_height = 600
-		cell_size = 20.0
 		
 		hit_squares = [[[[],[]] for b in range(int(win_width/cell_size))] for a in range(int(win_height/cell_size))]
 
@@ -72,14 +93,15 @@ class Game_Window(pyglet.window.Window):
 							b.dead = True
 
 	def on_draw(self, ):
-		self.clear()
+		#self.clear()
+		glClear(GL_COLOR_BUFFER_BIT)
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
 
  		fps_display.draw()
 
+		self.camera.game_projection()
 		self.main_batch.draw()
-
-		self.ship.draw()
-
 
 game_window = Game_Window(800, 600) 
 
