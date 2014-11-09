@@ -6,6 +6,7 @@ from pyglet.graphics import glMatrixMode, GL_PROJECTION, glLoadIdentity, gluOrth
 import game.graphics
 from game.objects import Ship, EnemyShip, Bullet, Sprite
 from random import randint
+import math
 
 win_width = 800
 win_height = 600
@@ -21,6 +22,29 @@ class Camera(object):
 		self.win = win
 		self.zoom = zoom
 		self.x, self.y, self.z = x, y, z
+		
+		self._offset = [0, 0]
+		self._track = type('obj', (object,), {'x':0, 'y':0})
+		self._radius = 0
+		self._shake_dec = 0 #how much the shake dies down every update
+
+	def update(self, dt):
+		if self._radius > 0:
+			self._radius *= self._shake_dec
+			self._angle += 180 if randint(0, 1) == 0 else 60 
+			self._offset = [math.sin(self._angle) * self._radius , math.cos(self._angle) * self._radius]
+			if math.floor(self._radius) == 0.0: self._radius = 0
+		self.x = ( self._track.x + self._offset[1] )/float(win_width/2)
+		self.y = ( self._track.y + self._offset[0] )/float(win_height/2)
+
+	def track(self, track):
+		self._track = track
+
+	def shake(self, r, dec= 0.9):
+		self._radius = r
+		self._shake_dec = dec
+		self._angle = randint(0, 360) 
+		self._offset = [ math.sin(self._angle) * self._radius , math.cos(self._angle) * self._radius]
 
 	def game_projection(self):
 		glMatrixMode(GL_PROJECTION)
@@ -43,19 +67,22 @@ class Game_Window(pyglet.window.Window):
 
 	def __init__(self, width, height):
 		super(Game_Window, self).__init__(width, height)
-		self.camera = Camera(self, zoom=500.0)
 		self.main_batch = game.graphics.Layer()
 		self.ship = Ship(img=res.player, x=400, y=300, batch=self.main_batch)
 		self.bullets = []
 
 		self.enemies = []
-		for i in range(700):
+		for i in range(300):
 			self.enemies.append(EnemyShip(img=res.player, x=randint(50,self.width-50), y=randint(50,self.height-50), batch=self.main_batch))
 		
 		pyglet.clock.set_fps_limit(60)
 		pyglet.clock.schedule(self.on_update)
 		
 		self.push_handlers(self.ship)
+
+		self.camera = Camera(self, zoom=500.0)
+		self.camera.track(self.main_batch)
+		self.camera.shake(50)
 
 	def on_mouse_motion(self, x, y, dx, dy):
 		self.last_mouse_pos = (x, y)
@@ -68,8 +95,8 @@ class Game_Window(pyglet.window.Window):
 
 		self.main_batch.x = (win_width/2 - self.ship.x)
 		self.main_batch.y = (win_height/2 - self.ship.y)
-		self.camera.x = (win_width/2 - self.ship.x)/float(win_width/2)
-		self.camera.y = (win_height/2 - self.ship.y)/float(win_height/2)
+
+		self.camera.update(dt)
 
 		for bullet in [b for b in self.bullets if b.dead]:
 			self.bullets.remove(bullet)
