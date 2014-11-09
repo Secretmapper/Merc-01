@@ -8,24 +8,35 @@ from random import randint
 
 win_width = 800
 win_height = 600
-cell_size = 20.0
+cell_size = 40.0
+max_cell_w = win_width/cell_size
+max_cell_h = win_height/cell_size
 
 fps_display = pyglet.clock.ClockDisplay()
 
 class Camera(object):
 
-    def __init__(self, win, x=0, y=0, z=0, zoom=1.0):
-        self.win = win
-        self.zoom = zoom
-        self.x, self.y, self.z = x, y, z
+	def __init__(self, win, x=0, y=0, z=0, zoom=1.0):
+		self.win = win
+		self.zoom = zoom
+		self.x, self.y, self.z = x, y, z
 
-    def game_projection(self):
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-        glTranslatef(self.x, self.y, self.z)
-        gluOrtho2D( 
-        	0,self.win.width,
-            0,self.win.height)
+	def game_projection(self):
+		glMatrixMode(GL_PROJECTION)
+		glLoadIdentity()
+		glTranslatef(self.x, self.y, self.z)
+		gluOrtho2D( 
+			0,self.win.width,
+			0,self.win.height)
+
+	def hud_projection(self):
+		glMatrixMode(GL_PROJECTION)
+		glLoadIdentity()
+		#glTranslatef(self.x, self.y, self.z)
+		gluOrtho2D( 
+			0,self.win.width,
+			0,self.win.height)
+
 
 class Game_Window(pyglet.window.Window):
 
@@ -37,7 +48,7 @@ class Game_Window(pyglet.window.Window):
 		self.bullets = []
 
 		self.enemies = []
-		for i in range(500):
+		for i in range(700):
 			self.enemies.append(EnemyShip(img=res.player, x=randint(50,self.width-50), y=randint(50,self.height-50), batch=self.main_batch))
 		
 		pyglet.clock.set_fps_limit(60)
@@ -56,7 +67,6 @@ class Game_Window(pyglet.window.Window):
 
 		self.camera.x = (win_width/2 - self.ship.x)/float(win_width/2)
 		self.camera.y = (win_height/2 - self.ship.y)/float(win_height/2)
-		#self.camera.y = win_height/2 - self.ship.y
 
 		for bullet in [b for b in self.bullets if b.dead]:
 			self.bullets.remove(bullet)
@@ -70,7 +80,7 @@ class Game_Window(pyglet.window.Window):
 			col, cell, col_e, cell_e = map(lambda x: int(x/cell_size), bullet.pos_vertices())
 			for a in range(col, col_e+1):
 				for b in range(cell, cell_e+1):
-					if a < 30 and b < 40 and a >= 0 and b >= 0:
+					if a < max_cell_h and b < max_cell_w and a >= 0 and b >= 0:
 						hit_squares[a][b][1].append(bullet)
 			bullet.update(dt)
 
@@ -78,7 +88,7 @@ class Game_Window(pyglet.window.Window):
 			col, cell, col_e, cell_e = map(lambda x: int(x/cell_size), enemy.pos_vertices())
 			for a in range(col, col_e+1):
 				for b in range(cell, cell_e+1):
-					if a < 30 and b < 40 and a >= 0 and b >= 0:
+					if a < max_cell_h and b < max_cell_w and a >= 0 and b >= 0:
 						hit_squares[a][b][0].append(enemy)
 			enemy.update(dt)
 
@@ -98,6 +108,7 @@ class Game_Window(pyglet.window.Window):
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
+		self.camera.hud_projection()
  		fps_display.draw()
 
 		self.camera.game_projection()
