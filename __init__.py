@@ -128,7 +128,7 @@ class Game_Window(pyglet.window.Window):
 				bullets = cell[1]
 				for a in enemies:
 					for b in bullets:
-						if utils.distance_sq(b, a) < (a.width/2 + b.width/2)**2:
+						if not (a.dead or b.dead) and utils.distance_sq(b, a) < (a.width/2 + b.width/2)**2:
 							a.dead = True
 							b.dead = True
 
