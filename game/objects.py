@@ -1,9 +1,6 @@
-import pyglet, math, resources as res
+import pyglet, math, resources as res, constants as CONSTS
 from pyglet.window import key
 from random import randint
-
-win_width = 800
-win_height = 600
 
 class Sprite(pyglet.sprite.Sprite):
 
@@ -17,8 +14,11 @@ class Sprite(pyglet.sprite.Sprite):
 		self.min_x = -self.image.width/2
 		self.min_y = -self.image.height/2
 		#todo -hardcoded windows
-		self.max_x = win_width + self.image.width/2
-		self.max_y = win_height + self.image.height/2
+		self.max_x = CONSTS.win_width + self.image.width/2
+		self.max_y = CONSTS.win_height + self.image.height/2
+
+		self.half_width = self.image.width/2
+		self.half_height = self.image.width/2
 
 	def pos_vertices(self):
 		return [self.y-self.height/2, self.x-self.width/2, self.y+self.height/2, self.x+self.width/2]
@@ -59,8 +59,8 @@ class EnemyShip(Sprite):
 		self.min_x = self.image.width/2
 		self.min_y = self.image.height/2
 		#todo -hardcoded windows
-		self.max_x = win_width-200 - self.image.width/2
-		self.max_y = win_height - self.image.height/2
+		self.max_x = CONSTS.game_width - self.half_width
+		self.max_y = CONSTS.game_height - self.half_height
 
 	def update(self, dt):
 		Sprite.update(self, dt)
@@ -108,6 +108,15 @@ class Ship(Sprite):
 		self.speed_y *= 0.95
 		self.x += self.speed_x
 		self.y += self.speed_y
+
+		if self.x > CONSTS.game_width - self.half_width:
+			self.x = CONSTS.game_width - self.half_width
+		if self.x <  self.half_width:
+			self.x = self.half_width
+		if self.y > CONSTS.game_height - self.half_height:
+			self.y = CONSTS.game_height - self.half_height
+		if self.y < self.half_height:
+			self.y = self.half_height
 
 	def on_key_press(self, symbol, modifiers):
 		if symbol == key.SPACE:

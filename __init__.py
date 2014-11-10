@@ -1,18 +1,12 @@
 from itertools import repeat
 import utils
-import pyglet, math, resources as res
+import pyglet, math, resources as res, constants as CONSTS
 from pyglet.window import key
 from pyglet.graphics import glMatrixMode, GL_PROJECTION, glLoadIdentity, gluOrtho2D, glClear, GL_COLOR_BUFFER_BIT, GL_MODELVIEW, glTranslatef
 import game.graphics
 from game.objects import Ship, EnemyShip, Bullet, Sprite
 from random import randint
 import math
-
-win_width = 800
-win_height = 600
-cell_size = 40.0
-max_cell_w = win_width/cell_size
-max_cell_h = win_height/cell_size
 
 fps_display = pyglet.clock.ClockDisplay()
 
@@ -34,8 +28,8 @@ class Camera(object):
 			self._angle += 180 if randint(0, 1) == 0 else 60 
 			self._offset = [math.sin(self._angle) * self._radius , math.cos(self._angle) * self._radius]
 			if math.floor(self._radius) == 0.0: self._radius = 0
-		self.x = ( self._track.x + self._offset[1] )/float(win_width/2)
-		self.y = ( self._track.y + self._offset[0] )/float(win_height/2)
+		self.x = ( self._track.x + self._offset[1] )/float(CONSTS.win_width/2)
+		self.y = ( self._track.y + self._offset[0] )/float(CONSTS.win_height/2)
 
 	def track(self, track):
 		self._track = track
@@ -68,9 +62,11 @@ class Spatial_Grid():
 		self._cb_type_i = 0
 		self._cb_types = [] #cache _cb_types for hit list creation
 		self._entities = [] #memory intensive
+		self.max_cell_w = CONSTS.game_width/CONSTS.cell_size
+		self.max_cell_h = CONSTS.game_height/CONSTS.cell_size
 
 	def clear(self):
-		self._hit_squares = [[[[] for i in self._cb_types] for b in range(int(win_width/cell_size))] for a in range(int(win_height/cell_size))]
+		self._hit_squares = [[[[] for i in self._cb_types] for b in range(int(CONSTS.game_width/CONSTS.cell_size))] for a in range(int(CONSTS.game_height/CONSTS.cell_size))]
 
 	def update(self):
 		for col in self._hit_squares:
@@ -90,10 +86,10 @@ class Spatial_Grid():
 		self._entities[i].remove(e) #warning: O(n)
 
 	def add(self, item, i):
-		col, cell, col_e, cell_e = map(lambda x: int(x/cell_size), item.pos_vertices())
+		col, cell, col_e, cell_e = map(lambda x: int(x/CONSTS.cell_size), item.pos_vertices())
 		for a in range(col, col_e+1):
 			for b in range(cell, cell_e+1):
-				if a < max_cell_h and b < max_cell_w and a >= 0 and b >= 0:
+				if a < self.max_cell_h and b < self.max_cell_w and a >= 0 and b >= 0:
 					self._hit_squares[a][b][i].append(item)
 
 	def cb_type(self):
@@ -121,8 +117,9 @@ class Game_Window(pyglet.window.Window):
 		self.bullets = []
 		self.enemies = []
 
-		for i in range(300):
-			enemy = EnemyShip(img=res.player, x=randint(50,self.width-50), y=randint(50,self.height-50), batch=self.main_batch)
+		for i in range(10):
+			#y=randint(50,self.height-50)
+			enemy = EnemyShip(img=res.player, x=randint(50,self.width-50), y=900, batch=self.main_batch)
 			self.spatial_grid.add_entity(enemy, self.ENEMY_CB_TYPE)
 			self.enemies.append(enemy)
 		
@@ -141,8 +138,8 @@ class Game_Window(pyglet.window.Window):
 			self.bullets.append(bullet)
 		self.ship.update(dt)
 
-		self.main_batch.x = (win_width/2 - self.ship.x)
-		self.main_batch.y = (win_height/2 - self.ship.y)
+		self.main_batch.x = (CONSTS.win_width/2 - self.ship.x)
+		self.main_batch.y = (CONSTS.win_height/2 - self.ship.y)
 
 		self.camera.update(dt)
 
