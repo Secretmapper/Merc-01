@@ -14,8 +14,8 @@ class Sprite(pyglet.sprite.Sprite):
 		self.min_x = -self.image.width/2
 		self.min_y = -self.image.height/2
 		#todo -hardcoded windows
-		self.max_x = CONSTS.win_width + self.image.width/2
-		self.max_y = CONSTS.win_height + self.image.height/2
+		self.max_x = CONSTS.game_width + self.image.width/2
+		self.max_y = CONSTS.game_height + self.image.height/2
 
 		self.half_width = self.image.width/2
 		self.half_height = self.image.width/2
@@ -28,7 +28,7 @@ class Sprite(pyglet.sprite.Sprite):
 			self.check_bounds()
 
 	def check_bounds(self):
-		if self.x < self.min_x or self.x > self.max_x or self.x < self.min_y or self.y > self.max_y:
+		if self.x < self.min_x or self.x > self.max_x or self.y < self.min_y or self.y > self.max_y:
 			self.dead = True
 
 class Bullet(Sprite):
@@ -58,7 +58,6 @@ class EnemyShip(Sprite):
 
 		self.min_x = self.image.width/2
 		self.min_y = self.image.height/2
-		#todo -hardcoded windows
 		self.max_x = CONSTS.game_width - self.half_width
 		self.max_y = CONSTS.game_height - self.half_height
 
