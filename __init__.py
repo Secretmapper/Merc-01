@@ -28,6 +28,7 @@ class Camera(object):
 			self._angle += 180 if randint(0, 1) == 0 else 60 
 			self._offset = [math.sin(self._angle) * self._radius , math.cos(self._angle) * self._radius]
 			if math.floor(self._radius) == 0.0: self._radius = 0
+
 		self.x = ( self._track.x + self._offset[1] )/float(CONSTS.win_width/2)
 		self.y = ( self._track.y + self._offset[0] )/float(CONSTS.win_height/2)
 
@@ -117,9 +118,9 @@ class Game_Window(pyglet.window.Window):
 		self.bullets = []
 		self.enemies = []
 
-		for i in range(10):
+		for i in range(1):
 			#y=randint(50,self.height-50)
-			enemy = EnemyShip(img=res.player, x=randint(50,self.width-50), y=900, batch=self.main_batch)
+			enemy = EnemyShip(img=res.player, x=randint(50,self.width-50), y=randint(50, self.height-50), batch=self.main_batch)
 			self.spatial_grid.add_entity(enemy, self.ENEMY_CB_TYPE)
 			self.enemies.append(enemy)
 		
@@ -133,7 +134,7 @@ class Game_Window(pyglet.window.Window):
 
 	def on_update(self, dt):
 		if self.ship.shoot:
-			bullet = Bullet(on_bounds_kill=False, img=res.bullet, x=self.ship.x, y=self.ship.y, r=self.ship.rotation, batch=self.main_batch)
+			bullet = Bullet(on_bounds_kill=True, img=res.bullet, x=self.ship.x, y=self.ship.y, r=self.ship.rotation, batch=self.main_batch)
 			self.spatial_grid.add_entity(bullet, self.BULLET_CB_TYPE)
 			self.bullets.append(bullet)
 		self.ship.update(dt)
@@ -167,6 +168,14 @@ class Game_Window(pyglet.window.Window):
 		glClear(GL_COLOR_BUFFER_BIT)
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
+
+		pyglet.graphics.draw_indexed(4, pyglet.gl.GL_TRIANGLES,
+			[0, 1, 2, 0, 2, 3],
+			('v2i', (0, 0,
+					0, CONSTS.game_height,
+					CONSTS.game_width, CONSTS.game_height,
+					CONSTS.game_width, 0)),
+			('c4B', (50, 50, 50, 255) * 4))
 
 		self.camera.hud_projection()
  		fps_display.draw()
