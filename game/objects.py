@@ -38,7 +38,7 @@ class Bullet(Sprite):
 		r *= -math.pi/180
 		self.dir_x = math.cos(r)
 		self.dir_y = math.sin(r)
-		self.speed = 10
+		self.speed = 20
 
 	def update(self, dt):
 		Sprite.update(self, dt)
@@ -63,14 +63,34 @@ class EnemyShip(Sprite):
 
 	def update(self, dt):
 		Sprite.update(self, dt)
+		xdt = dt/CONSTS.game_iter
 		#return
-		self.x += self.dir_x * self.speed
-		self.y += self.dir_y * self.speed
+		self.x += self.dir_x * self.speed * xdt
+		self.y += self.dir_y * self.speed * xdt
 
 		if self.y <= self.min_y or self.y >= self.max_y:
 			self.dir_y = -self.dir_y
 		elif self.x <= self.min_x or self.x >= self.max_x:
 			self.dir_x = -self.dir_x
+
+class TrackerShip(Sprite):
+
+	def __init__(self, *args, **kwargs):
+		if 'track' in kwargs:
+			self.track = kwargs.pop('track')
+		super(TrackerShip, self).__init__(**kwargs)
+		r = randint(0, 360)
+		r *= -math.pi/180
+		self.dir_x = math.cos(r)
+		self.dir_y = math.sin(r)
+		self.speed = 0.05
+
+	def update(self, dt):
+		Sprite.update(self, dt)
+		xdt = dt/CONSTS.game_iter
+		#return
+		self.x += (self.track.x - self.x) * self.speed * xdt
+		self.y += (self.track.y - self.y) * self.speed * xdt
 
 class Ship(Sprite):
 
@@ -89,6 +109,7 @@ class Ship(Sprite):
 
 	def update(self, dt):
 		Sprite.update(self, dt)
+		xdt = dt/CONSTS.game_iter
 		self.shoot = False
 		self.i_shoot -= 1
 		if self.i_shoot < 0:
@@ -96,13 +117,13 @@ class Ship(Sprite):
 			self.i_shoot = self.shoot_timer
 		
 		if self.keys['W']:
-			self.speed_y += self.speed * 1
+			self.speed_y += self.speed * xdt
 		if self.keys['S']:
-			self.speed_y -= self.speed * 1
+			self.speed_y -= self.speed * xdt
 		if self.keys['A']:
-			self.speed_x -= self.speed * 1
+			self.speed_x -= self.speed * xdt
 		if self.keys['D']:
-			self.speed_x += self.speed * 1
+			self.speed_x += self.speed * xdt
 		self.speed_x *= 0.95
 		self.speed_y *= 0.95
 		self.x += self.speed_x

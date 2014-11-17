@@ -4,7 +4,7 @@ import pyglet, math, resources as res, constants as CONSTS
 from pyglet.window import key
 from pyglet.graphics import glMatrixMode, GL_PROJECTION, glLoadIdentity, gluOrtho2D, glClear, GL_COLOR_BUFFER_BIT, GL_MODELVIEW, glTranslatef
 import game.graphics
-from game.objects import Ship, EnemyShip, Bullet, Sprite
+from game.objects import Ship, EnemyShip, TrackerShip, Bullet, Sprite
 from random import randint
 import math
 
@@ -71,9 +71,9 @@ class Game_Window(pyglet.window.Window):
 		self.bullets = []
 		self.enemies = []
 
-		for i in range(1):
+		for i in range(50):
 			#y=randint(50,self.height-50)
-			enemy = EnemyShip(img=res.player, x=randint(50,self.width-50), y=randint(50, self.height-50), batch=self.main_batch)
+			enemy = TrackerShip(img=res.tracker,track=self.ship, x=randint(50,self.width-50), y=randint(50, self.height-50), batch=self.main_batch)
 			self.spatial_grid.add_entity(enemy, self.ENEMY_CB_TYPE)
 			self.enemies.append(enemy)
 		
@@ -103,6 +103,7 @@ class Game_Window(pyglet.window.Window):
 
 		for enemy in [b for b in self.enemies if b.dead]:
 			self.enemies.remove(enemy)
+			self.camera.shake(5)
 			self.spatial_grid.remove_entity(enemy, self.ENEMY_CB_TYPE)
 
 		self.spatial_grid.clear()
@@ -132,6 +133,7 @@ class Game_Window(pyglet.window.Window):
 
 		self.camera.hud_projection()
  		fps_display.draw()
+ 		#self.main_batch.draw()
 
 		self.camera.game_projection()
 		self.main_batch.draw()
