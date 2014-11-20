@@ -1,3 +1,8 @@
+def rotate(self):
+    while(True):
+        self.rotation += 5
+        yield 0
+
 def bounce(self):
     speed = 10
     while(True):
@@ -10,6 +15,22 @@ def bounce(self):
             self.dir_x = -self.dir_x
         yield 0
 
+def move_square(self):
+    f = 30
+    speed = 1
+    while(True):
+        for i in xrange(f):
+            self.vel_x += speed
+            yield 0
+        for i in xrange(f):
+            self.vel_y -= speed
+            yield 0
+        for i in xrange(f):
+            self.vel_x -= speed
+            yield 0
+        for i in xrange(f):
+            self.vel_y += speed
+            yield 0
 
 def follow_player(self):
     speed = 0.005
