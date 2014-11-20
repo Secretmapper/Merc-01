@@ -24,10 +24,15 @@ class Sprite(pyglet.sprite.Sprite):
         self.half_width = self.image.width / 2
         self.half_height = self.image.width / 2
 
+        self.debug_vertex_list = None
+
     def pos_vertices(self):
         return [self.y - self.height / 2, self.x - self.width / 2, self.y + self.height / 2, self.x + self.width / 2]
 
     def update(self, dt):
+        if self.debug_vertex_list:
+            self.debug_vertex_list.delete()
+
         if self.on_bounds_kill:
             self.check_bounds()
 
@@ -56,9 +61,6 @@ class EnemyShip(Sprite):
     def __init__(self, behaviours, track, *args, **kwargs):
         super(EnemyShip, self).__init__(**kwargs)
         self.hit = True
-        r = -randint(0, 360) * math.pi / 180
-        self.dir_x = math.cos(r)
-        self.dir_y = math.sin(r)
 
         self.min_x = self.image.width / 2
         self.min_y = self.image.height / 2
@@ -72,16 +74,34 @@ class EnemyShip(Sprite):
         for behaviour in behaviours:
             self.behaviours.append(behaviour(self))
 
+    def kill(self):
+        if self.debug_vertex_list:
+            self.debug_vertex_list.delete()
+            self.opacity = 50
+
     def update(self, dt):
         Sprite.update(self, dt)
         self.xdt = dt / CONSTS.game_iter
         for behaviour in self.behaviours:
             behaviour.next()
 
+        last_x = self.x
+        last_y = self.y
         self.x += self.vel_x * self.xdt
         self.y += self.vel_y * self.xdt
         self.vel_x *= 0.8 * self.xdt
         self.vel_y *= 0.8 * self.xdt
+
+        if not self.vel_x == 0:
+            theta = math.atan2(self.y - last_y, self.x - last_x)
+        else:
+            theta = 5
+
+        print self.y -self.vel_y, theta, math.sin(theta)
+        self.debug_vertex_list = CONSTS.debug_batch.add(2, pyglet.gl.GL_LINES,
+            None,
+            ('v2f', (self.x, self.y, self.x+math.cos(theta)*50, self.y+math.sin(theta)*50))
+        )
 
     def type_overlap_cb(self, other):
         """ Push self away when colliding with another object
