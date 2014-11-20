@@ -1,3 +1,5 @@
+from random import randint
+import math
 def rotate(self):
     while(True):
         self.rotation += 5
@@ -5,14 +7,17 @@ def rotate(self):
 
 def bounce(self):
     speed = 10
+    r = -randint(0, 360) * math.pi / 180
+    self.dir_x = math.cos(r)
+    self.dir_y = math.sin(r)
     while(True):
-        self.x += self.dir_x * speed
-        self.y += self.dir_y * speed
-
         if self.y <= self.min_y or self.y >= self.max_y:
             self.dir_y = -self.dir_y
         elif self.x <= self.min_x or self.x >= self.max_x:
             self.dir_x = -self.dir_x
+
+        self.vel_x = self.dir_x * speed
+        self.vel_y = self.dir_y * speed
         yield 0
 
 def move_square(self):
