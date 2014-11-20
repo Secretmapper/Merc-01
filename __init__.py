@@ -8,7 +8,8 @@ from game.physics import Spatial_Grid
 from pyglet.window import key
 from pyglet.graphics import glMatrixMode, GL_PROJECTION, glLoadIdentity, gluOrtho2D, glClear, GL_COLOR_BUFFER_BIT, GL_MODELVIEW, glTranslatef
 import game.graphics
-from game.objects import Ship, EnemyShip, TrackerShip, Bullet, Sprite
+from game.objects import Ship, EnemyShip, Bullet, Sprite
+import game.behaviours as behaviours
 from random import randint
 import math
 
@@ -34,8 +35,7 @@ class Game_Window(pyglet.window.Window):
         self.enemies = []
 
         for i in range(50):
-            # y=randint(50,self.height-50)
-            enemy = TrackerShip(img=res.tracker, track=self.ship, x=randint(
+            enemy = EnemyShip(behaviours=[game.behaviours.bounce], img=res.tracker, track=self.ship, x=randint(
                 50, self.width - 50), y=randint(50, self.height - 50), batch=self.main_batch)
             self.spatial_grid.add_entity(enemy, self.ENEMY_CB_TYPE)
             self.enemies.append(enemy)

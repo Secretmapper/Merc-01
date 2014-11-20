@@ -53,51 +53,28 @@ class Bullet(Sprite):
 
 class EnemyShip(Sprite):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, behaviours, track, *args, **kwargs):
         super(EnemyShip, self).__init__(**kwargs)
         self.hit = True
-        r = randint(0, 360)
-        r *= -math.pi / 180
+        r = -randint(0, 360) * math.pi / 180
         self.dir_x = math.cos(r)
         self.dir_y = math.sin(r)
-        self.speed = 10
 
         self.min_x = self.image.width / 2
         self.min_y = self.image.height / 2
         self.max_x = CONSTS.game_width - self.half_width
         self.max_y = CONSTS.game_height - self.half_height
 
-    def update(self, dt):
-        Sprite.update(self, dt)
-        xdt = dt / CONSTS.game_iter
-        # return
-        self.x += self.dir_x * self.speed * xdt
-        self.y += self.dir_y * self.speed * xdt
-
-        if self.y <= self.min_y or self.y >= self.max_y:
-            self.dir_y = -self.dir_y
-        elif self.x <= self.min_x or self.x >= self.max_x:
-            self.dir_x = -self.dir_x
-
-
-class TrackerShip(Sprite):
-
-    def __init__(self, *args, **kwargs):
-        if 'track' in kwargs:
-            self.track = kwargs.pop('track')
-        super(TrackerShip, self).__init__(**kwargs)
-        r = randint(0, 360)
-        r *= -math.pi / 180
-        self.dir_x = math.cos(r)
-        self.dir_y = math.sin(r)
-        self.speed = 0.05
+        self.track = track
+        self.behaviours = []
+        for behaviour in behaviours:
+            self.behaviours.append(behaviour(self))
 
     def update(self, dt):
         Sprite.update(self, dt)
-        xdt = dt / CONSTS.game_iter
-        # return
-        self.x += (self.track.x - self.x) * self.speed * xdt
-        self.y += (self.track.y - self.y) * self.speed * xdt
+        self.xdt = dt / CONSTS.game_iter
+        for behaviour in self.behaviours:
+            behaviour.next()
 
 
 class Ship(Sprite):
