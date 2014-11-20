@@ -21,9 +21,16 @@ class Spatial_Grid():
                 b_list = cell[1]
                 for a in a_list:
                     for b in b_list:
-                        if not (a.dead or b.dead) and utils.distance_sq(b, a) < (a.width / 2 + b.width / 2):
+                        if not (a.dead or b.dead) and utils.distance_sq(b, a) < (a.width / 2 + b.width / 2) ** 2:
                             a.dead = True
                             b.dead = True
+                a_list = cell[1]
+                b_list = cell[1]
+                for a in a_list:
+                    for b in b_list:
+                        if not (a.dead or b.dead) and utils.distance_sq(b, a) > (a.width / 2 + b.width / 2):
+                            a.type_overlap_cb(a)
+                            b.type_overlap_cb(a)
 
     def add_entity(self, e, i):
         self._entities[i].append(e)

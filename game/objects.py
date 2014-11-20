@@ -80,8 +80,24 @@ class EnemyShip(Sprite):
 
         self.x += self.vel_x * self.xdt
         self.y += self.vel_y * self.xdt
-        self.vel_x *= 0.8
-        self.vel_y *= 0.8
+        self.vel_x *= 0.8 * self.xdt
+        self.vel_y *= 0.8 * self.xdt
+
+    def type_overlap_cb(self, other):
+        """ Push self away when colliding with another object
+        This prevents overlapping of enemies.
+
+        Currently Limited to ~70 objects until weird things happen
+        """
+        #vector subtraction
+        v_x, v_y = self.x - other.x, self.y - other.y
+
+        #vector magnitude
+        v_mag = (v_x * v_x + v_y * v_y) + 1
+
+        #push enemy away
+        self.vel_x += 1*(v_x/v_mag)
+        self.vel_y += 1*(v_y/v_mag)
 
 
 class Ship(Sprite):
