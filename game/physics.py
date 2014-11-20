@@ -21,7 +21,7 @@ class Spatial_Grid():
                 b_list = cell[1]
                 for a in a_list:
                     for b in b_list:
-                        if not (a.dead or b.dead) and utils.distance_sq(b, a) < (a.width / 2 + b.width / 2) ** 2:
+                        if not (a.dead or b.dead) and utils.distance_sq(b, a) < (a.width / 2 + b.width / 2):
                             a.dead = True
                             b.dead = True
 
