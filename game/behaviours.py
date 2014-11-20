@@ -1,8 +1,8 @@
 def bounce(self):
     speed = 10
     while(True):
-        self.x += self.dir_x * speed * self.xdt
-        self.y += self.dir_y * speed * self.xdt
+        self.x += self.dir_x * speed
+        self.y += self.dir_y * speed
 
         if self.y <= self.min_y or self.y >= self.max_y:
             self.dir_y = -self.dir_y
@@ -12,8 +12,8 @@ def bounce(self):
 
 
 def follow_player(self):
-    speed = 0.05
+    speed = 0.005
     while(True):
-        self.x += (self.track.x - self.x) * speed * self.xdt
-        self.y += (self.track.y - self.y) * speed * self.xdt
+        self.vel_x += (self.track.x - self.x) * speed
+        self.vel_y += (self.track.y - self.y) * speed
         yield 0

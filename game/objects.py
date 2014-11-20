@@ -65,6 +65,8 @@ class EnemyShip(Sprite):
         self.max_x = CONSTS.game_width - self.half_width
         self.max_y = CONSTS.game_height - self.half_height
 
+        self.vel_x = self.vel_y = 0
+
         self.track = track
         self.behaviours = []
         for behaviour in behaviours:
@@ -75,6 +77,11 @@ class EnemyShip(Sprite):
         self.xdt = dt / CONSTS.game_iter
         for behaviour in self.behaviours:
             behaviour.next()
+
+        self.x += self.vel_x * self.xdt
+        self.y += self.vel_y * self.xdt
+        self.vel_x *= 0.8
+        self.vel_y *= 0.8
 
 
 class Ship(Sprite):
