@@ -1,9 +1,12 @@
 from random import randint
 import math
+
+
 def rotate(self):
     while(True):
         self.rotation += 5
         yield 0
+
 
 def bounce(self):
     speed = 10
@@ -19,6 +22,7 @@ def bounce(self):
         self.vel_x = self.dir_x * speed
         self.vel_y = self.dir_y * speed
         yield 0
+
 
 def move_square(self):
     f = 30
@@ -36,6 +40,7 @@ def move_square(self):
         for i in xrange(f):
             self.vel_y += speed
             yield 0
+
 
 def follow_player(self):
     speed = 0.005

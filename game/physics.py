@@ -1,6 +1,7 @@
 import constants as CONSTS
 import utils
 
+
 class Spatial_Grid():
 
     def __init__(self):

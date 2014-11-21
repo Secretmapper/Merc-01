@@ -99,9 +99,10 @@ class EnemyShip(Sprite):
 
         if CONSTS.DEBUG_MODE:
             self.debug_vertex_list = CONSTS.debug_batch.add(2, pyglet.gl.GL_LINES,
-                None,
-                ('v2f', (self.x, self.y, self.x+math.cos(theta)*50, self.y+math.sin(theta)*50))
-            )
+                                                            None,
+                                                            ('v2f', (
+                                                                self.x, self.y, self.x + math.cos(theta) * 50, self.y + math.sin(theta) * 50))
+                                                            )
 
     def type_overlap_cb(self, other):
         """ Push self away when colliding with another object
@@ -109,15 +110,15 @@ class EnemyShip(Sprite):
 
         Currently Limited to ~70 objects until weird things happen
         """
-        #vector subtraction
+        # vector subtraction
         v_x, v_y = self.x - other.x, self.y - other.y
 
-        #vector magnitude
+        # vector magnitude
         v_mag = (v_x * v_x + v_y * v_y) + 1
 
-        #push enemy away
-        self.vel_x += 1*(v_x/v_mag)
-        self.vel_y += 1*(v_y/v_mag)
+        # push enemy away
+        self.vel_x += 1 * (v_x / v_mag)
+        self.vel_y += 1 * (v_y / v_mag)
 
 
 class Ship(Sprite):
@@ -126,7 +127,7 @@ class Ship(Sprite):
         super(Ship, self).__init__(**kwargs)
         self.mouse_pos = (0, 0)
         self.keys = dict(spacebar=False, W=False, A=False, S=False, D=False,
-                        left=False, right=False, up=False, down=False)
+                         left=False, right=False, up=False, down=False)
         self.shoot = False
         self.shoot_timer = 10
         self.i_shoot = self.shoot_timer
@@ -209,7 +210,6 @@ class Ship(Sprite):
         if symbol == key.DOWN:
             self.keys['down'] = True
 
-
     def on_key_release(self, symbol, modifiers):
         if symbol == key.SPACE:
             self.keys['spacebar'] = False
@@ -230,4 +230,3 @@ class Ship(Sprite):
             self.keys['right'] = False
         if symbol == key.DOWN:
             self.keys['down'] = False
-
