@@ -125,7 +125,8 @@ class Ship(Sprite):
     def __init__(self, *args, **kwargs):
         super(Ship, self).__init__(**kwargs)
         self.mouse_pos = (0, 0)
-        self.keys = dict(spacebar=False, W=False, A=False, S=False, D=False)
+        self.keys = dict(spacebar=False, W=False, A=False, S=False, D=False,
+                        left=False, right=False, up=False, down=False)
         self.shoot = False
         self.shoot_timer = 10
         self.i_shoot = self.shoot_timer
@@ -154,6 +155,25 @@ class Ship(Sprite):
             self.speed_x -= self.speed * xdt
         if self.keys['D']:
             self.speed_x += self.speed * xdt
+
+        if self.keys['right']:
+            self.rotation = 0
+        if self.keys['down']:
+            self.rotation = 90
+        if self.keys['left']:
+            self.rotation = 180
+        if self.keys['up']:
+            self.rotation = 270
+
+        if self.keys['down'] and self.keys['left']:
+            self.rotation = 135
+        if self.keys['down'] and self.keys['right']:
+            self.rotation = 45
+        if self.keys['up'] and self.keys['left']:
+            self.rotation = 225
+        if self.keys['up'] and self.keys['right']:
+            self.rotation = 315
+
         self.speed_x *= 0.95
         self.speed_y *= 0.95
         self.x += self.speed_x
@@ -180,6 +200,16 @@ class Ship(Sprite):
         if symbol == key.D:
             self.keys['D'] = True
 
+        if symbol == key.UP:
+            self.keys['up'] = True
+        if symbol == key.LEFT:
+            self.keys['left'] = True
+        if symbol == key.RIGHT:
+            self.keys['right'] = True
+        if symbol == key.DOWN:
+            self.keys['down'] = True
+
+
     def on_key_release(self, symbol, modifiers):
         if symbol == key.SPACE:
             self.keys['spacebar'] = False
@@ -191,3 +221,13 @@ class Ship(Sprite):
             self.keys['S'] = False
         if symbol == key.D:
             self.keys['D'] = False
+
+        if symbol == key.UP:
+            self.keys['up'] = False
+        if symbol == key.LEFT:
+            self.keys['left'] = False
+        if symbol == key.RIGHT:
+            self.keys['right'] = False
+        if symbol == key.DOWN:
+            self.keys['down'] = False
+
