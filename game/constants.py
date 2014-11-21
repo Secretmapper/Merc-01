@@ -9,3 +9,4 @@ game_width = 1280
 game_height = 960
 
 debug_batch = pyglet.graphics.Batch()
+DEBUG_MODE = True

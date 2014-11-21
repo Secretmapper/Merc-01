@@ -101,7 +101,9 @@ class Game_Window(pyglet.window.Window):
 
         self.camera.game_projection()
         self.main_batch.draw()
-        CONSTS.debug_batch.draw()
+
+        if CONSTS.DEBUG_MODE:
+            CONSTS.debug_batch.draw()
 
 game_window = Game_Window(800, 600)
 

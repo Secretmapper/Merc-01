@@ -30,7 +30,7 @@ class Sprite(pyglet.sprite.Sprite):
         return [self.y - self.height / 2, self.x - self.width / 2, self.y + self.height / 2, self.x + self.width / 2]
 
     def update(self, dt):
-        if self.debug_vertex_list:
+        if CONSTS.DEBUG_MODE and self.debug_vertex_list:
             self.debug_vertex_list.delete()
 
         if self.on_bounds_kill:
@@ -97,11 +97,11 @@ class EnemyShip(Sprite):
         else:
             theta = 5
 
-        print self.y -self.vel_y, theta, math.sin(theta)
-        self.debug_vertex_list = CONSTS.debug_batch.add(2, pyglet.gl.GL_LINES,
-            None,
-            ('v2f', (self.x, self.y, self.x+math.cos(theta)*50, self.y+math.sin(theta)*50))
-        )
+        if CONSTS.DEBUG_MODE:
+            self.debug_vertex_list = CONSTS.debug_batch.add(2, pyglet.gl.GL_LINES,
+                None,
+                ('v2f', (self.x, self.y, self.x+math.cos(theta)*50, self.y+math.sin(theta)*50))
+            )
 
     def type_overlap_cb(self, other):
         """ Push self away when colliding with another object
