@@ -1,4 +1,5 @@
 import constants as CONSTS
+import math
 import utils
 
 
@@ -29,8 +30,8 @@ class Spatial_Grid():
                 b_list = cell[1]
                 for a in a_list:
                     for b in b_list:
-                        if not (a.dead or b.dead) and utils.distance_sq(b, a) > (a.width / 2 + b.width / 2):
-                            a.type_overlap_cb(a)
+                        if not (a.dead or b.dead) and utils.distance_sq(b, a) < (a.width / 2 + b.width / 2) ** 2:
+                            a.type_overlap_cb(b)
                             b.type_overlap_cb(a)
 
     def add_entity(self, e, i):

@@ -1,5 +1,6 @@
 import pyglet
 import math
+import utils
 import resources as res
 import constants as CONSTS
 from pyglet.window import key
@@ -24,14 +25,16 @@ class Sprite(pyglet.sprite.Sprite):
         self.half_width = self.image.width / 2
         self.half_height = self.image.width / 2
 
-        self.debug_vertex_list = None
+        self.debug_vertex_list = []
 
     def pos_vertices(self):
         return [self.y - self.height / 2, self.x - self.width / 2, self.y + self.height / 2, self.x + self.width / 2]
 
     def update(self, dt):
-        if CONSTS.DEBUG_MODE and self.debug_vertex_list:
-            self.debug_vertex_list.delete()
+        if CONSTS.DEBUG_MODE:
+            for i in self.debug_vertex_list:
+                i.delete()
+            self.debug_vertex_list = []
 
         if self.on_bounds_kill:
             self.check_bounds()
@@ -73,24 +76,49 @@ class EnemyShip(Sprite):
         self.behaviours = []
         for behaviour in behaviours:
             self.behaviours.append(behaviour(self))
+        self.near_player = False
+        self.neighbors = 1
+        self.v_sx = 0
+        self.v_sy = 0
+        self.des_vx = self.des_vy = 0
 
     def kill(self):
-        if self.debug_vertex_list:
-            self.debug_vertex_list.delete()
-            self.opacity = 50
+        self.opacity = 50
+        for i in self.debug_vertex_list:
+            i.delete()
 
     def update(self, dt):
-        Sprite.update(self, dt)
         self.xdt = dt / CONSTS.game_iter
+
+        Sprite.update(self, dt)
+
         for behaviour in self.behaviours:
             behaviour.next()
 
         last_x = self.x
         last_y = self.y
-        self.x += self.vel_x * self.xdt
-        self.y += self.vel_y * self.xdt
-        self.vel_x *= 0.8 * self.xdt
-        self.vel_y *= 0.8 * self.xdt
+
+        """
+        Separation
+        """
+        steer_x = utils.trunc(self.des_vx - self.vel_x, 0.5)
+        steer_y = utils.trunc(self.des_vy - self.vel_y, 0.5)
+
+        self.vel_x += steer_x
+        self.vel_y += steer_y
+
+        self.v_sx /= self.neighbors
+        self.v_sy /= self.neighbors
+        self.v_sx *= -1
+        self.v_sy *= -1
+        self.v_sx, self.v_sy = utils.normalize(self.v_sx, self.v_sy)
+        self.v_sx *= 2
+        self.v_sy *= 2
+
+        self.vel_x += self.v_sx
+        self.vel_y += self.v_sy
+        self.x = self.x + self.vel_x
+        self.y = self.y + self.vel_y
 
         if not self.vel_x == 0:
             theta = math.atan2(self.y - last_y, self.x - last_x)
@@ -98,27 +126,34 @@ class EnemyShip(Sprite):
             theta = 5
 
         if CONSTS.DEBUG_MODE:
-            self.debug_vertex_list = CONSTS.debug_batch.add(2, pyglet.gl.GL_LINES,
-                                                            None,
-                                                            ('v2f', (
-                                                                self.x, self.y, self.x + math.cos(theta) * 50, self.y + math.sin(theta) * 50))
-                                                            )
+            self.debug_vertex_list.append(CONSTS.debug_batch.add(2, pyglet.gl.GL_LINES,
+                                                                 None,
+                                                                 ('v2f', (
+                                                                     self.x, self.y, self.x + math.cos(theta) * 50, self.y + math.sin(theta) * 50)),
+                                                                 ('c4B', (0, 255,
+                                                                          0, 255) * 2)
+                                                                 ))
+            self.debug_vertex_list.append(CONSTS.debug_batch.add(2, pyglet.gl.GL_LINES,
+                                                                 None,
+                                                                 ('v2f', (
+                                                                     self.x, self.y, self.x + steer_x * 100, self.y + steer_y * 100)),
+                                                                 ('c4B', (255,
+                                                                          0, 0, 255) * 2)
+                                                                 ))
+
+        self.v_sx = self.v_sy = 0
+        self.neighbors = 1
+        self.near_player = False
 
     def type_overlap_cb(self, other):
         """ Push self away when colliding with another object
         This prevents overlapping of enemies.
-
-        Currently Limited to ~70 objects until weird things happen
         """
-        # vector subtraction
-        v_x, v_y = self.x - other.x, self.y - other.y
+        # print 'over'
+        self.neighbors += 1
 
-        # vector magnitude
-        v_mag = (v_x * v_x + v_y * v_y) + 1
-
-        # push enemy away
-        self.vel_x += 1 * (v_x / v_mag)
-        self.vel_y += 1 * (v_y / v_mag)
+        self.v_sx += other.x - self.x
+        self.v_sy += other.y - self.y
 
 
 class Ship(Sprite):
@@ -135,7 +170,7 @@ class Ship(Sprite):
         self.speed = 0.5
 
     def on_mouse_motion(self, x, y, dx, dy):
-        self.rotation = - \
+        self.rotation = -\
             math.atan2(
                 y - (self.y + self.layer.y), x - (self.x + self.layer.x)) * 180 / math.pi
 

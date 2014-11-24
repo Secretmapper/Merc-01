@@ -1,5 +1,6 @@
 from random import randint
 import math
+import utils
 
 
 def rotate(self):
@@ -45,6 +46,8 @@ def move_square(self):
 def follow_player(self):
     speed = 0.005
     while(True):
-        self.vel_x += (self.track.x - self.x) * speed
-        self.vel_y += (self.track.y - self.y) * speed
+        self.des_vx, self.des_vy = utils.normalize(
+            self.track.x - self.x, self.track.y - self.y)
+        self.des_vx *= 5
+        self.des_vy *= 5
         yield 0

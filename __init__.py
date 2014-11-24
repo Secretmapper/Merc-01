@@ -34,8 +34,8 @@ class Game_Window(pyglet.window.Window):
         self.bullets = []
         self.enemies = []
 
-        for i in range(100):
-            enemy = EnemyShip(behaviours=[behaviours.bounce, behaviours.rotate], img=res.tracker, track=self.ship, x=randint(
+        for i in range(50):
+            enemy = EnemyShip(behaviours=[behaviours.follow_player], img=res.tracker, track=self.ship, x=randint(
                 50, self.width - 50), y=randint(50, self.height - 50), batch=self.main_batch)
             self.spatial_grid.add_entity(enemy, self.ENEMY_CB_TYPE)
             self.enemies.append(enemy)
