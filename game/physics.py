@@ -34,8 +34,8 @@ class Spatial_Grid():
                     for a in a_list:
                         if not (a.dead or b.dead):
                             if utils.distance_sq(b, a) < (a.width / 2 + b.width / 2) ** 2:
-                                #a.dead = True
-                                #b.dead = True
+                                a.dead = True
+                                b.dead = True
                                 self.color_grid(x, y, (0, 0, 255, 100) * 4)
                     if not b.dead:
                         """

@@ -168,7 +168,6 @@ class EnemyShip(Sprite):
         """ Push self away when colliding with another object
         This prevents overlapping of enemies.
         """
-        # print 'over'
         self.neighbors += 1
 
         self.v_sx += other.x - self.x

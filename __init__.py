@@ -35,7 +35,7 @@ class Game_Window(pyglet.window.Window):
         self.bullets = []
         self.enemies = []
 
-        for i in range(5):
+        for i in range(50):
             enemy = EnemyShip(behaviours=[behaviours.follow_player, behaviours.evade], img=res.tracker, track=self.ship, x=randint(
                 50, self.width - 50), y=randint(50, self.height - 50), batch=self.main_batch)
             self.spatial_grid.add_entity(enemy, self.ENEMY_CB_TYPE)
@@ -94,7 +94,6 @@ class Game_Window(pyglet.window.Window):
                                        utils.trunc((CONSTS.win_width / 2 - self.ship.x), max_x, 40), 0.5)
         self.main_batch.y = utils.lerp(self.main_batch.y,
                                        utils.trunc((CONSTS.win_height / 2 - self.ship.y), max_y, 40), 0.5)
-        print utils.trunc((CONSTS.win_width / 2 - self.ship.x), max_x, 40)
 
         self.camera.update(dt)
 
