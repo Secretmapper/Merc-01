@@ -51,7 +51,29 @@ def follow_player(self):
         vy *= speed
         self.des_vx = vx
         self.des_vy = vy
+        yield 0
 
+
+def zip(self):
+    x_active = False
+
+    friction = 0.98
+    iter_i = 0
+    while(True):
+        iter_i -= 1
+        if iter_i <= 0:
+            iter_i = 240
+            x_active = not x_active
+            self.vel_x = self.vel_y = self.des_vx = self.des_vy = 0
+            vx = 10 if self.track.x > self.x else -10
+            vy = 10 if self.track.y > self.y else -10
+
+        if x_active:
+            vx *= friction
+            self.des_vx = vx
+        else:
+            vy *= friction
+            self.des_vy = vy
         yield 0
 
 
