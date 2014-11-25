@@ -86,8 +86,15 @@ class Game_Window(pyglet.window.Window):
             self.bullets.append(bullet)
         self.ship.update(dt)
 
-        self.main_batch.x = (CONSTS.win_width / 2 - self.ship.x)
-        self.main_batch.y = (CONSTS.win_height / 2 - self.ship.y)
+        max_y = CONSTS.win_height / 2 - \
+            (CONSTS.game_height - (CONSTS.win_height / 2 - 40))
+        max_x = CONSTS.win_width / 2 - \
+            (CONSTS.game_width - (CONSTS.win_width / 2 - 40))
+        self.main_batch.x = utils.lerp(self.main_batch.x,
+                                       utils.trunc((CONSTS.win_width / 2 - self.ship.x), max_x, 40), 0.5)
+        self.main_batch.y = utils.lerp(self.main_batch.y,
+                                       utils.trunc((CONSTS.win_height / 2 - self.ship.y), max_y, 40), 0.5)
+        print utils.trunc((CONSTS.win_width / 2 - self.ship.x), max_x, 40)
 
         self.camera.update(dt)
 

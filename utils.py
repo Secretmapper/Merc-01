@@ -28,3 +28,9 @@ def truncate(a, n):
     i = n / 2
     i = 1 if i < 1 else i
     return [a[0] * i, a[1] * i]
+
+
+def lerp(a, b, p):
+    # return a + w*(b-a);
+    # return (a + b) / float(p)
+    return a + p * (b - a)
