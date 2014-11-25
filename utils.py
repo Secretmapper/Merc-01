@@ -17,8 +17,11 @@ def normalize(x, y):
         return 0, 0
 
 
-def trunc(a, n):
-    return max(min(a, n), -n)
+def trunc(a, n, m=None):
+    if m == None:
+        return max(min(a, n), -n)
+    else:
+        return max(min(a, m), n)
 
 
 def truncate(a, n):

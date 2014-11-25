@@ -49,8 +49,8 @@ def follow_player(self):
         vx, vy = utils.normalize(self.track.x - self.x, self.track.y - self.y)
         vx *= speed
         vy *= speed
-        self.des_vx += vx
-        self.des_vy += vy
+        self.des_vx = vx
+        self.des_vy = vy
 
         yield 0
 
