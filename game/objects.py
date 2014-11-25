@@ -9,7 +9,12 @@ from random import randint
 
 class Sprite(pyglet.sprite.Sprite):
 
+    uid = 0
+
     def __init__(self, on_bounds_kill=False, *args, **kwargs):
+        Sprite.uid += 1
+        self.id = Sprite.uid
+
         if 'batch' in kwargs:
             self.layer = kwargs['batch']
         super(Sprite, self).__init__(**kwargs)

@@ -4,6 +4,7 @@ import math
 import utils
 import game.resources as res
 import game.constants as CONSTS
+import game.globals as GLBS
 from game.physics import Spatial_Grid
 from pyglet.window import key
 from pyglet.graphics import glMatrixMode, GL_PROJECTION, glLoadIdentity, gluOrtho2D, glClear, GL_COLOR_BUFFER_BIT, GL_MODELVIEW, glTranslatef
@@ -34,7 +35,7 @@ class Game_Window(pyglet.window.Window):
         self.bullets = []
         self.enemies = []
 
-        for i in range(50):
+        for i in range(5):
             enemy = EnemyShip(behaviours=[behaviours.follow_player], img=res.tracker, track=self.ship, x=randint(
                 50, self.width - 50), y=randint(50, self.height - 50), batch=self.main_batch)
             self.spatial_grid.add_entity(enemy, self.ENEMY_CB_TYPE)
@@ -53,8 +54,31 @@ class Game_Window(pyglet.window.Window):
             CONSTS.DEBUG_MODE = not CONSTS.DEBUG_MODE
         if CONSTS.DEBUG_MODE and symbol == key.GRAVE:
             CONSTS.DEBUG_MODE_OBJ['shoot'] = not CONSTS.DEBUG_MODE_OBJ['shoot']
+        if CONSTS.DEBUG_MODE and symbol == key.SPACE:
+            CONSTS.DEBUG_MODE_OBJ['play'] = not CONSTS.DEBUG_MODE_OBJ['play']
+        if CONSTS.DEBUG_MODE and symbol == key.G:
+            if len(GLBS.grid_lst) == 0:
+                for i in xrange(int(CONSTS.game_width / CONSTS.cell_size)):
+                    GLBS.grid_lst.append(CONSTS.debug_batch.add(2, pyglet.gl.GL_LINES,
+                                                                None,
+                                                                ('v2f', (
+                                                                    i * CONSTS.cell_size, 0, i * CONSTS.cell_size, CONSTS.game_height)),
+                                                                ))
+
+                for i in xrange(int(CONSTS.game_height / CONSTS.cell_size)):
+                    GLBS.grid_lst.append(CONSTS.debug_batch.add(2, pyglet.gl.GL_LINES,
+                                                                None,
+                                                                ('v2f', (
+                                                                    0, i * CONSTS.cell_size, CONSTS.game_width, i * CONSTS.cell_size)),
+                                                                ))
+            else:
+                for i in GLBS.grid_lst:
+                    i.delete()
+                    GLBS.grid_lst = []
 
     def on_update(self, dt):
+        if not CONSTS.DEBUG_MODE_OBJ['play']:
+            return
         if self.ship.shoot and CONSTS.DEBUG_MODE_VAR('shoot'):
             bullet = Bullet(on_bounds_kill=True, img=res.bullet, x=self.ship.x,
                             y=self.ship.y, r=self.ship.rotation, batch=self.main_batch)
@@ -106,10 +130,9 @@ class Game_Window(pyglet.window.Window):
         fps_display.draw()
 
         self.camera.game_projection()
-        self.main_batch.draw()
-
         if CONSTS.DEBUG_MODE:
             CONSTS.debug_batch.draw()
+        self.main_batch.draw()
 
 game_window = Game_Window(800, 600)
 
