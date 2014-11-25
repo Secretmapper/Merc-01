@@ -54,14 +54,14 @@ class Bullet(Sprite):
     def __init__(self, r, *args, **kwargs):
         super(Bullet, self).__init__(**kwargs)
         r *= -math.pi / 180
-        self.dir_x = math.cos(r)
-        self.dir_y = math.sin(r)
         self.speed = 20
+        self.vel_x = math.cos(r) * self.speed
+        self.vel_y = math.sin(r) * self.speed
 
     def update(self, dt):
         Sprite.update(self, dt)
-        self.x += self.dir_x * self.speed
-        self.y += self.dir_y * self.speed
+        self.x += self.vel_x
+        self.y += self.vel_y
 
 
 class EnemyShip(Sprite):
