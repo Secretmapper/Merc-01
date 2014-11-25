@@ -36,10 +36,9 @@ class Sprite(pyglet.sprite.Sprite):
         return [self.y - self.height / 2, self.x - self.width / 2, self.y + self.height / 2, self.x + self.width / 2]
 
     def update(self, dt):
-        if CONSTS.DEBUG_MODE:
-            for i in self.debug_vertex_list:
-                i.delete()
-            self.debug_vertex_list = []
+        for i in self.debug_vertex_list:
+            i.delete()
+        self.debug_vertex_list = []
 
         if self.on_bounds_kill:
             self.check_bounds()
