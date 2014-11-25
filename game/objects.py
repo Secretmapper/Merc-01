@@ -83,9 +83,11 @@ class EnemyShip(Sprite):
             self.behaviours.append(behaviour(self))
         self.near_player = False
         self.neighbors = 1
-        self.v_sx = 0
-        self.v_sy = 0
+        self.v_sx = self.v_sy = 0
+        self.aneighbors = 1
+        self.av_sx = self.av_sy = 0
         self.des_vx = self.des_vy = 0
+        self.evade_list = []
 
     def kill(self):
         self.opacity = 50
@@ -100,30 +102,40 @@ class EnemyShip(Sprite):
         for behaviour in self.behaviours:
             behaviour.next()
 
-        last_x = self.x
-        last_y = self.y
+        last_x, last_y = self.x, self.y
 
-        """
-        Separation
-        """
+        steer_x = steer_y = 0
+        steer_x, steer_y = self.des_vx - self.vel_x, self.des_vy - self.vel_y
+        # truncate
         steer_x = utils.trunc(self.des_vx - self.vel_x, 0.5)
         steer_y = utils.trunc(self.des_vy - self.vel_y, 0.5)
 
         self.vel_x += steer_x
         self.vel_y += steer_y
 
+        """
+        Separation
+        """
         self.v_sx /= self.neighbors
         self.v_sy /= self.neighbors
-        self.v_sx *= -1
-        self.v_sy *= -1
         self.v_sx, self.v_sy = utils.normalize(self.v_sx, self.v_sy)
-        self.v_sx *= 2
-        self.v_sy *= 2
+        self.v_sx *= -2
+        self.v_sy *= -2
 
         self.vel_x += self.v_sx
         self.vel_y += self.v_sy
-        self.x = self.x + self.vel_x
-        self.y = self.y + self.vel_y
+        """
+        self.av_sx /= self.aneighbors
+        self.av_sy /= self.aneighbors
+        self.av_sx, self.av_sy = utils.normalize(self.av_sx, self.av_sy)
+        self.av_sx *= -5
+        self.av_sy *= -5
+
+        self.vel_x += utils.trunc(self.av_sx, -2, 2)
+        self.vel_y += utils.trunc(self.av_sy, -2, 2)
+        """
+        self.x = utils.trunc(self.x + self.vel_x, 0, CONSTS.game_width)
+        self.y = utils.trunc(self.y + self.vel_y, 0, CONSTS.game_height)
 
         if not self.vel_x == 0:
             theta = math.atan2(self.y - last_y, self.x - last_x)
@@ -147,7 +159,10 @@ class EnemyShip(Sprite):
                                                                  ))
 
         self.v_sx = self.v_sy = 0
+        self.evade_list = []
+        self.av_sx = self.av_sy = 0
         self.neighbors = 1
+        self.aneighbors = 1
         self.near_player = False
 
     def type_overlap_cb(self, other):
@@ -159,6 +174,12 @@ class EnemyShip(Sprite):
 
         self.v_sx += other.x - self.x
         self.v_sy += other.y - self.y
+
+    def near_by_cb(self, others):
+        """Callback when bullets are near_player
+            Used for Evasion Behaviour
+        """
+        self.evade_list = sum(others, [])
 
 
 class Ship(Sprite):
