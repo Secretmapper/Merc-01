@@ -48,8 +48,14 @@ class Game_Window(pyglet.window.Window):
     def on_mouse_motion(self, x, y, dx, dy):
         self.last_mouse_pos = (x, y)
 
+    def on_key_press(self, symbol, modifiers):
+        if symbol == key.TAB:
+            CONSTS.DEBUG_MODE = not CONSTS.DEBUG_MODE
+        if CONSTS.DEBUG_MODE and symbol == key.GRAVE:
+            CONSTS.DEBUG_MODE_OBJ['shoot'] = not CONSTS.DEBUG_MODE_OBJ['shoot']
+
     def on_update(self, dt):
-        if self.ship.shoot:
+        if self.ship.shoot and CONSTS.DEBUG_MODE_VAR('shoot'):
             bullet = Bullet(on_bounds_kill=True, img=res.bullet, x=self.ship.x,
                             y=self.ship.y, r=self.ship.rotation, batch=self.main_batch)
             self.spatial_grid.add_entity(bullet, self.BULLET_CB_TYPE)
