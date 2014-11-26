@@ -71,15 +71,15 @@ class Camera(object):
 
 class ParticleSystem():
 
-    def __init__(self, x, y):
+    def __init__(self, x, y, life=60, particles=90):
         pic = pyglet.image.load(
             'particle.png', file=pyglet.resource.file('particle.png'))
         self.texture = pic.get_texture()
 
         self.x, self.y = 0, 0
-        self.total_particles = 90
+        self.total_particles = particles
         self.size = 16
-        self.life = 60
+        self.life = life
         self.dead = False
         self.alpha_delta = 1 / float(self.life)
 

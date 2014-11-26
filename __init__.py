@@ -106,7 +106,7 @@ class Game_Window(pyglet.window.Window):
             self.spatial_grid.remove_entity(bullet, self.BULLET_CB_TYPE)
             if bullet.bounds_death:
                 self.emitter_list.append(
-                    game.graphics.ParticleSystem(bullet.x, bullet.y))
+                    game.graphics.ParticleSystem(bullet.x, bullet.y, life=20, particles=20 + randint(0, 30)))
             bullet.delete()
 
         for enemy in [b for b in self.enemies if b.dead]:
