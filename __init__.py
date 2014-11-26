@@ -7,7 +7,7 @@ import game.constants as CONSTS
 import game.globals as GLBS
 from game.physics import Spatial_Grid
 from pyglet.window import key
-from pyglet.graphics import glMatrixMode, GL_PROJECTION, glLoadIdentity, gluOrtho2D, glClear, GL_COLOR_BUFFER_BIT, GL_MODELVIEW, glTranslatef
+from pyglet.graphics import *
 import game.graphics
 from game.objects import Ship, EnemyShip, Bullet, Sprite
 import game.behaviours as behaviours
@@ -45,10 +45,8 @@ class Game_Window(pyglet.window.Window):
                               x=x_r + i * 200, y=y_r, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE)
             self.spatial_grid.add_entity(enemy, self.ENEMY_CB_TYPE)
             self.enemies.append(enemy)
-            print 's', enemy
             enemy = EnemyShip(behaviours=[[behaviours.link, enemy]], img=res.tracker, track=self.ship,
                               x=x_r + 100 + i * 200, y=y_r, batch=self.main_batch, cb_type=self.ENEMY_LINE_CB_TYPE)
-            print 'line', enemy
             self.spatial_grid.add_entity(enemy, self.ENEMY_LINE_CB_TYPE)
             self.enemies.append(enemy)
             continue
@@ -147,6 +145,8 @@ class Game_Window(pyglet.window.Window):
     def on_draw(self, ):
         glClear(GL_COLOR_BUFFER_BIT)
         glMatrixMode(GL_MODELVIEW)
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE)
         glLoadIdentity()
 
         pyglet.graphics.draw_indexed(4, pyglet.gl.GL_TRIANGLES,
