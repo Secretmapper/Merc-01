@@ -30,6 +30,17 @@ class Spatial_Grid():
             for x in xrange(len(row)):
                 cell = row[x]
 
+                """
+                Player - Sensor Checks (Line Enemy)
+                """
+                a_list = cell[CONSTS.PLAYER_CB_TYPE]
+                b_list = cell[CONSTS.SENSOR_CB_TYPE]
+                for b in b_list:
+                    for a in a_list:
+                        if not (a.dead or b.dead):
+                            if utils.distance_sq(b, a) < (a.width / 2 + b.width / 2) ** 2:
+                                b.dead = True
+
                 a_list = cell[CONSTS.BULLET_CB_TYPE]
                 b_list = cell[CONSTS.ENEMY_CB_TYPE]
                 """
@@ -78,42 +89,6 @@ class Spatial_Grid():
                             a.type_overlap_cb(b)
                             b.type_overlap_cb(a)
                             self.color_grid(x, y, (255, 0, 0, 100) * 4)
-                """
-                PLAYER - ENEMY LINE Checks
-                """
-                a_list = cell[CONSTS.PLAYER_CB_TYPE]
-                b_list = cell[CONSTS.ENEMY_LINE_CB_TYPE]
-
-                raycast_possibs = []
-                for enemy in b_list:
-                    if not (enemy.dead):
-                        vpos = []
-                        for o_pair in [enemy, enemy.pair]:
-                            col, cell, col_e, cell_e = map(
-                                lambda x: int(x / CONSTS.cell_size), o_pair.pos_vertices())
-                            vpos.append((cell, col))
-                            vpos.append((cell_e, col_e))
-
-                        max_x = max(vpos, key=lambda x: x[0])[0]
-                        max_y = max(vpos, key=lambda x: x[1])[1]
-                        min_x = min(vpos, key=lambda x: x[0])[0]
-                        min_y = min(vpos, key=lambda x: x[1])[1]
-
-                        for x in xrange(min_x, max_x + 1):
-                            for y in xrange(min_y, max_y + 1):
-                                raycast_possibs.append((x, y))
-                if len(b_list) > 0:
-                    raycast_check_list.append((enemy, raycast_possibs))
-
-        for enemy, possibs in raycast_check_list:
-            player = None
-            for x, y in possibs:
-                players = self._hit_squares[y][x][CONSTS.PLAYER_CB_TYPE]
-                if len(players) > 0:
-                    player = players[0]
-            if player:
-                for x, y in possibs:
-                    self.color_grid(x, y, (255, 255, 0, 50) * 4)
 
     def color_grid(self, x, y, color):
         coords = (

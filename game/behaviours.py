@@ -115,10 +115,36 @@ def flee(self):
         yield 0
 
 
-def link(self, pair=None):
+def link_sensor(self):
+    """
+    Callback when link sensor is collided to
+    """
+    self.link_enemy.link_collide()
+
+
+def link(self, pair=None, sensors=None):
+
     if not pair == None:
         self.pair = pair
+        init_dists = []
+        # Get the initial distances for the sensors (radial movement)
+        for sensor in sensors:
+            init_dists.append(sensor.x - pair.x)
+            sensor.link_enemy = self
         init_dist = self.x - pair.x
+
+        """
+        Kill the whole Line when collided with sensor
+        """
+        def link_collide():
+            if self.dead == False:
+                self.dead = True
+                pair.dead = True
+                for sensor in sensors:
+                    sensor.dead = True
+                    sensor.kill()
+
+        self.link_collide = link_collide
     while(True):
         if pair == None:
             self.rotation -= 1
@@ -127,12 +153,19 @@ def link(self, pair=None):
                 math.sin(-pair.rotation * math.pi / 180)
             self.x = pair.x + init_dist * \
                 math.cos(-pair.rotation * math.pi / 180)
+
+            for i in xrange(len(sensors)):
+                sensors[i].y = pair.y + init_dists[i] * \
+                    math.sin(-pair.rotation * math.pi / 180)
+                sensors[i].x = pair.x + init_dists[i] * \
+                    math.cos(-pair.rotation * math.pi / 180)
+
             self.rotation = pair.rotation - 180
-            self.debug_vertex_list.append(CONSTS.debug_batch.add(2, pyglet.gl.GL_LINES,
-                                                                 None,
-                                                                 ('v2f', (
-                                                                     self.x, self.y, pair.x, pair.y)),
-                                                                 ('c4B', (255,
-                                                                          0, 0, 255) * 2)
-                                                                 ))
+            self.debug_vertex_list.append(self.layer.add(2, pyglet.gl.GL_LINES,
+                                                         None,
+                                                         ('v2f', (
+                                                             self.x, self.y, pair.x, pair.y)),
+                                                         ('c4B', (255,
+                                                                  0, 0, 255) * 2)
+                                                         ))
         yield 0

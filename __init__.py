@@ -9,7 +9,7 @@ from game.physics import Spatial_Grid
 from pyglet.window import key
 from pyglet.graphics import *
 import game.graphics
-from game.objects import Ship, EnemyShip, Bullet, Sprite
+from game.objects import Ship, EnemyShip, Bullet, Sprite, Sensor
 import game.behaviours as behaviours
 from random import randint
 import math
@@ -38,19 +38,34 @@ class Game_Window(pyglet.window.Window):
         self.bullets = []
         self.enemies = []
 
-        for i in range(2):
-            x_r = 350
-            y_r = 400
-            enemy = EnemyShip(behaviours=[[behaviours.link]], img=res.tracker, track=self.ship,
-                              x=x_r + i * 200, y=y_r, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE)
-            self.spatial_grid.add_entity(enemy, self.ENEMY_CB_TYPE)
-            self.enemies.append(enemy)
-            enemy = EnemyShip(behaviours=[[behaviours.link, enemy]], img=res.tracker, track=self.ship,
-                              x=x_r + 100 + i * 200, y=y_r, batch=self.main_batch, cb_type=self.ENEMY_LINE_CB_TYPE)
-            self.spatial_grid.add_entity(enemy, self.ENEMY_LINE_CB_TYPE)
-            self.enemies.append(enemy)
-            continue
-            self.enemies.append(enemy)
+        def spawn_line(x, y):
+            # spawn the first enemy of the line (the anchor)
+            enemy1 = EnemyShip(behaviours=[[behaviours.link]], img=res.liner, track=self.ship,
+                               x=x, y=y, batch=self.main_batch, cb_type=self.ENEMY_LINE_CB_TYPE)
+            # start sensor spawn
+            sensors = []
+            for d in xrange(1, 5):
+                sensors.append(Sensor(callbacks=[behaviours.link_sensor], img=res.liner, track=self.ship,
+                                      x=x + res.tracker.width * d, y=y, batch=self.main_batch, cb_type=CONSTS.SENSOR_CB_TYPE))
+                [self.enemies.append(sensor) for sensor in sensors]
+
+            enemy2 = EnemyShip(behaviours=[[behaviours.link, enemy1, sensors]], img=res.liner, track=self.ship,
+                               x=x + 100, y=y, batch=self.main_batch, cb_type=self.ENEMY_LINE_CB_TYPE)
+            # end sensor spawn
+            self.spatial_grid.add_entity(enemy1, self.ENEMY_LINE_CB_TYPE)
+            self.spatial_grid.add_entity(enemy2, self.ENEMY_LINE_CB_TYPE)
+            self.enemies.append(enemy1)
+            self.enemies.append(enemy2)
+
+        for i in range(60):
+            x = randint(100, CONSTS.game_width - 100)
+            y = randint(100, CONSTS.game_height - 100)
+            if i % 5 == 0:
+                spawn_line(x, y)
+            else:
+                enemy = EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, track=self.ship,
+                                  x=x, y=y, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE)
+                self.enemies.append(enemy)
 
         pyglet.clock.set_fps_limit(60)
         pyglet.clock.schedule(self.on_update)
@@ -122,11 +137,11 @@ class Game_Window(pyglet.window.Window):
 
         for enemy in [b for b in self.enemies if b.dead]:
             self.emitter_list.append(
-                game.graphics.ParticleSystem(enemy.x, enemy.y))
+                game.graphics.ParticleSystem(enemy.x, enemy.y, **enemy.particle_data))
             self.enemies.remove(enemy)
             enemy.kill()
             self.camera.shake(5)
-            #self.spatial_grid.remove_entity(enemy, self.ENEMY_CB_TYPE)
+            # self.spatial_grid.remove_entity(enemy, self.ENEMY_CB_TYPE)
 
         self.spatial_grid.clear()
 

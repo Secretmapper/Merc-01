@@ -69,11 +69,26 @@ class Bullet(Sprite):
         self.y = utils.trunc(self.y + self.vel_y, 0, self.max_y)
 
 
+class Sensor(Sprite):
+
+    def __init__(self, callbacks, track, *args, **kwargs):
+        super(Sensor, self).__init__(**kwargs)
+        self.opacity = 0
+        self.callbacks = callbacks
+        self.particle_data = {'particles': 0, 'life': 1}
+
+    def kill(self):
+        self.opacity = 0
+        for i in self.callbacks:
+            i(self)
+
+
 class EnemyShip(Sprite):
 
-    def __init__(self, behaviours, track, *args, **kwargs):
+    def __init__(self, behaviours, track, particle_data={}, *args, **kwargs):
         super(EnemyShip, self).__init__(**kwargs)
         self.hit = True
+        self.particle_data = particle_data
 
         self.min_x = self.image.width / 2
         self.min_y = self.image.height / 2
@@ -99,6 +114,7 @@ class EnemyShip(Sprite):
         self.opacity = 50
         for i in self.debug_vertex_list:
             i.delete()
+        self.debug_vertex_list = []
 
     def update(self, dt):
         self.xdt = dt / CONSTS.game_iter

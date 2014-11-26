@@ -24,10 +24,11 @@ DEBUG_MODE_OBJ = {
 }
 
 # number of cb types
-CB_TYPES = 4
+CB_TYPES = 5
 
 # cb types:
 BULLET_CB_TYPE = 0
 ENEMY_CB_TYPE = 1
 ENEMY_LINE_CB_TYPE = 2
 PLAYER_CB_TYPE = 3
+SENSOR_CB_TYPE = 4
