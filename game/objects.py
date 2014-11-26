@@ -31,6 +31,7 @@ class Sprite(pyglet.sprite.Sprite):
         self.half_height = self.image.width / 2
 
         self.debug_vertex_list = []
+        self.bounds_death = False
 
     def pos_vertices(self):
         return [self.y - self.height / 2, self.x - self.width / 2, self.y + self.height / 2, self.x + self.width / 2]
@@ -45,6 +46,8 @@ class Sprite(pyglet.sprite.Sprite):
 
     def check_bounds(self):
         if self.x < self.min_x or self.x >= self.max_x or self.y < self.min_y or self.y >= self.max_y:
+            if not self.dead:
+                self.bounds_death = True
             self.dead = True
 
 
