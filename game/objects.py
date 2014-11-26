@@ -11,12 +11,15 @@ class Sprite(pyglet.sprite.Sprite):
 
     uid = 0
 
-    def __init__(self, on_bounds_kill=False, *args, **kwargs):
+    def __init__(self, on_bounds_kill=False, cb_type=-1, *args, **kwargs):
         Sprite.uid += 1
         self.id = Sprite.uid
 
         if 'batch' in kwargs:
             self.layer = kwargs['batch']
+
+        self.cb_type = cb_type
+
         super(Sprite, self).__init__(**kwargs)
         self.dead = False
         self.on_bounds_kill = on_bounds_kill
@@ -82,7 +85,8 @@ class EnemyShip(Sprite):
         self.track = track
         self.behaviours = []
         for behaviour in behaviours:
-            self.behaviours.append(behaviour(self))
+            # behaviour is an array, function, **kwargs
+            self.behaviours.append(behaviour[0](self, *behaviour[1:]))
         self.near_player = False
         self.neighbors = 1
         self.v_sx = self.v_sy = 0

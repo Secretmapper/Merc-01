@@ -28,7 +28,7 @@ class Game_Window(pyglet.window.Window):
         self.camera.shake(50)
 
         self.spatial_grid = Spatial_Grid()
-        for i in range(3):
+        for i in range(CONSTS.CB_TYPES):
             self.spatial_grid.cb_type()
         self.BULLET_CB_TYPE = CONSTS.BULLET_CB_TYPE
         self.ENEMY_CB_TYPE = CONSTS.ENEMY_CB_TYPE
@@ -38,10 +38,20 @@ class Game_Window(pyglet.window.Window):
         self.bullets = []
         self.enemies = []
 
-        for i in range(50):
-            enemy = EnemyShip(behaviours=[behaviours.follow_player], img=res.tracker, track=self.ship, x=randint(
-                50, self.width - 50), y=randint(50, self.height - 50), batch=self.main_batch)
+        for i in range(2):
+            x_r = 350
+            y_r = 400
+            enemy = EnemyShip(behaviours=[[behaviours.link]], img=res.tracker, track=self.ship,
+                              x=x_r + i * 200, y=y_r, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE)
             self.spatial_grid.add_entity(enemy, self.ENEMY_CB_TYPE)
+            self.enemies.append(enemy)
+            print 's', enemy
+            enemy = EnemyShip(behaviours=[[behaviours.link, enemy]], img=res.tracker, track=self.ship,
+                              x=x_r + 100 + i * 200, y=y_r, batch=self.main_batch, cb_type=self.ENEMY_LINE_CB_TYPE)
+            print 'line', enemy
+            self.spatial_grid.add_entity(enemy, self.ENEMY_LINE_CB_TYPE)
+            self.enemies.append(enemy)
+            continue
             self.enemies.append(enemy)
 
         pyglet.clock.set_fps_limit(60)
@@ -118,9 +128,11 @@ class Game_Window(pyglet.window.Window):
             self.enemies.remove(enemy)
             enemy.kill()
             self.camera.shake(5)
-            self.spatial_grid.remove_entity(enemy, self.ENEMY_CB_TYPE)
+            #self.spatial_grid.remove_entity(enemy, self.ENEMY_CB_TYPE)
 
         self.spatial_grid.clear()
+
+        self.spatial_grid.add(self.ship, CONSTS.PLAYER_CB_TYPE)
 
         for bullet in self.bullets:
             bullet.update(dt)
@@ -128,7 +140,7 @@ class Game_Window(pyglet.window.Window):
 
         for enemy in self.enemies:
             enemy.update(dt)
-            self.spatial_grid.add(enemy, self.ENEMY_CB_TYPE)
+            self.spatial_grid.add(enemy, enemy.cb_type)
 
         self.spatial_grid.update()
 

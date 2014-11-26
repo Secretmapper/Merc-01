@@ -1,6 +1,8 @@
 from random import randint
 import math
 import utils
+import pyglet
+import constants as CONSTS
 
 
 def rotate(self):
@@ -110,4 +112,27 @@ def flee(self):
         vy *= speed
         self.des_vx += vx
         self.des_vy += vy
+        yield 0
+
+
+def link(self, pair=None):
+    if not pair == None:
+        self.pair = pair
+        init_dist = self.x - pair.x
+    while(True):
+        if pair == None:
+            self.rotation -= 1
+        else:
+            self.y = pair.y + init_dist * \
+                math.sin(-pair.rotation * math.pi / 180)
+            self.x = pair.x + init_dist * \
+                math.cos(-pair.rotation * math.pi / 180)
+            self.rotation = pair.rotation - 180
+            self.debug_vertex_list.append(CONSTS.debug_batch.add(2, pyglet.gl.GL_LINES,
+                                                                 None,
+                                                                 ('v2f', (
+                                                                     self.x, self.y, pair.x, pair.y)),
+                                                                 ('c4B', (255,
+                                                                          0, 0, 255) * 2)
+                                                                 ))
         yield 0
