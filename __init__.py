@@ -35,8 +35,8 @@ class Game_Window(pyglet.window.Window):
         self.bullets = []
         self.enemies = []
 
-        for i in range(1):
-            enemy = EnemyShip(behaviours=[behaviours.zip], img=res.tracker, track=self.ship, x=randint(
+        for i in range(50):
+            enemy = EnemyShip(behaviours=[behaviours.follow_player], img=res.tracker, track=self.ship, x=randint(
                 50, self.width - 50), y=randint(50, self.height - 50), batch=self.main_batch)
             self.spatial_grid.add_entity(enemy, self.ENEMY_CB_TYPE)
             self.enemies.append(enemy)
@@ -45,6 +45,7 @@ class Game_Window(pyglet.window.Window):
         pyglet.clock.schedule(self.on_update)
 
         self.push_handlers(self.ship)
+        self.emitter_list = []
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.last_mouse_pos = (x, y)
@@ -97,11 +98,16 @@ class Game_Window(pyglet.window.Window):
 
         self.camera.update(dt)
 
+        for emitter in self.emitter_list:
+            emitter.update()
+
         for bullet in [b for b in self.bullets if b.dead]:
             self.bullets.remove(bullet)
             self.spatial_grid.remove_entity(bullet, self.BULLET_CB_TYPE)
 
         for enemy in [b for b in self.enemies if b.dead]:
+            self.emitter_list.append(
+                game.graphics.ParticleSystem(enemy.x, enemy.y))
             self.enemies.remove(enemy)
             enemy.kill()
             self.camera.shake(5)
@@ -139,6 +145,11 @@ class Game_Window(pyglet.window.Window):
         if CONSTS.DEBUG_MODE:
             CONSTS.debug_batch.draw()
         self.main_batch.draw()
+        for emitter in self.emitter_list:
+            emitter.draw()
+
+        for emitter in [b for b in self.emitter_list if b.dead]:
+            self.emitter_list.remove(emitter)
 
 game_window = Game_Window(800, 600)
 
