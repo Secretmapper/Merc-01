@@ -56,7 +56,7 @@ class Bullet(Sprite):
     def __init__(self, r, *args, **kwargs):
         super(Bullet, self).__init__(**kwargs)
         r *= -math.pi / 180
-        self.speed = 20
+        self.speed = 10
         self.vel_x = math.cos(r) * self.speed
         self.vel_y = math.sin(r) * self.speed
 
@@ -126,16 +126,7 @@ class EnemyShip(Sprite):
 
         self.vel_x += self.v_sx
         self.vel_y += self.v_sy
-        """
-        self.av_sx /= self.aneighbors
-        self.av_sy /= self.aneighbors
-        self.av_sx, self.av_sy = utils.normalize(self.av_sx, self.av_sy)
-        self.av_sx *= -5
-        self.av_sy *= -5
 
-        self.vel_x += utils.trunc(self.av_sx, -2, 2)
-        self.vel_y += utils.trunc(self.av_sy, -2, 2)
-        """
         self.x = utils.trunc(self.x + self.vel_x, 0, CONSTS.game_width)
         self.y = utils.trunc(self.y + self.vel_y, 0, CONSTS.game_height)
 
@@ -164,7 +155,6 @@ class EnemyShip(Sprite):
         self.evade_list = []
         self.av_sx = self.av_sy = 0
         self.neighbors = 1
-        self.aneighbors = 1
         self.near_player = False
 
     def type_overlap_cb(self, other):

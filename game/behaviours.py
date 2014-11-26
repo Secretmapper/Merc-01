@@ -94,11 +94,11 @@ def evade(self):
         vx /= self.aneighbors
         vy /= self.aneighbors
         vx, vy = utils.normalize(vx, vy)
-        vx *= -5
-        vy *= -5
+        vx *= -2
+        vy *= -2
 
-        self.vel_x += utils.trunc(vx, -2, 2)
-        self.vel_y += utils.trunc(vy, -2, 2)
+        self.vel_x += vx
+        self.vel_y += vy
         yield 0
 
 
