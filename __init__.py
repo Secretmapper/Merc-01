@@ -28,8 +28,11 @@ class Game_Window(pyglet.window.Window):
         self.camera.shake(50)
 
         self.spatial_grid = Spatial_Grid()
-        self.BULLET_CB_TYPE = self.spatial_grid.cb_type()
-        self.ENEMY_CB_TYPE = self.spatial_grid.cb_type()
+        for i in range(3):
+            self.spatial_grid.cb_type()
+        self.BULLET_CB_TYPE = CONSTS.BULLET_CB_TYPE
+        self.ENEMY_CB_TYPE = CONSTS.ENEMY_CB_TYPE
+        self.ENEMY_LINE_CB_TYPE = CONSTS.ENEMY_LINE_CB_TYPE
 
         self.ship = Ship(img=res.player, x=400, y=300, batch=self.main_batch)
         self.bullets = []

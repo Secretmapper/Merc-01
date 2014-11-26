@@ -27,8 +27,8 @@ class Spatial_Grid():
             row = self._hit_squares[y]
             for x in xrange(len(row)):
                 cell = row[x]
-                a_list = cell[0]
-                b_list = cell[1]
+                a_list = cell[CONSTS.BULLET_CB_TYPE]
+                b_list = cell[CONSTS.ENEMY_CB_TYPE]
                 for b in b_list:
 
                     for a in a_list:
@@ -58,14 +58,12 @@ class Spatial_Grid():
                             y_row = self._hit_squares[y_row_i]
                             x_rows = [y_row[i] for i in x_rows_n]
                             for cell_i in xrange(len(x_rows)):
-                                nearby_bullets.append(x_rows[cell_i][0])
-                                # self.color_grid(
-                                # x_rows_n[cell_i], y_row_i, (0, 100, 100, 100) *
-                                # 4)
+                                nearby_bullets.append(
+                                    x_rows[cell_i][CONSTS.BULLET_CB_TYPE])
                         # nearby
                         b.near_by_cb(nearby_bullets)
-                a_list = cell[1]
-                b_list = cell[1]
+                a_list = cell[CONSTS.ENEMY_CB_TYPE]
+                b_list = cell[CONSTS.ENEMY_CB_TYPE]
                 for a in a_list:
                     for b in b_list:
                         if not (a.id == b.id) and not (a.dead or b.dead) and utils.distance_sq(a, b) < (a.width / 2 + b.width / 2) ** 2:

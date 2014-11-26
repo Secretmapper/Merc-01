@@ -22,3 +22,11 @@ DEBUG_MODE_OBJ = {
     'shoot': False,
     'play': True,
 }
+
+# number of cb types
+CB_TYPES = 3
+
+# cb types:
+BULLET_CB_TYPE = 0
+ENEMY_CB_TYPE = 1
+ENEMY_LINE_CB_TYPE = 2
