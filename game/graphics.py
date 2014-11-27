@@ -73,7 +73,7 @@ class ParticleSystem():
 
     def __init__(self, x, y, life=60, particles=90):
         pic = pyglet.image.load(
-            'particle.png', file=pyglet.resource.file('particle.png'))
+            'fire-particle.png', file=pyglet.resource.file('fire-particle.png'))
         self.texture = pic.get_texture()
 
         self.x, self.y = 0, 0
