@@ -26,9 +26,8 @@ class Sprite(pyglet.sprite.Sprite):
 
         self.min_x = self.image.width / 2
         self.min_y = self.image.height / 2
-        # todo -hardcoded windows
-        self.max_x = CONSTS.game_width + self.image.width / 2
-        self.max_y = CONSTS.game_height + self.image.height / 2
+        self.max_x = CONSTS.game_width
+        self.max_y = CONSTS.game_height
 
         self.half_width = self.image.width / 2
         self.half_height = self.image.width / 2
