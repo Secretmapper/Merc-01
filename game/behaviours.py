@@ -202,9 +202,44 @@ def shoot_circle(self):
                                 img=res.fire_particle, batch=self.batch, on_bounds_kill=True)
                 self.bullets.append(bullet)
         yield 0
+
+
+def shoot_fire(self, angle=90):
+    from game.objects import Bullet
+
+    timer_i = 10
+    mod_dist = 5
+    a_i = angle
+    mod = True
+
+    while(True):
+        timer_i -= 1
+        if timer_i <= 0:
+            timer_i = 10
+
+            a_i += mod_dist
+
+            bullet = Bullet(behaviours=[[by_angle, a_i]], x=self.x, y=self.y, speed=2,
+                            img=res.fire_particle, batch=self.batch, on_bounds_kill=True)
+            self.bullets.append(bullet)
+
+        yield 0
 """
 Bullet Behaviours
 """
+
+
+def spiral(self, i):
+    wait = 60
+    while(True):
+        wait -= 1
+        if wait < 0:
+            i += 0.2
+        r = i * -math.pi / 180
+        self.vel_x = math.cos(r) * self.speed
+        self.vel_y = -2  # math.sin(r) * self.speed
+
+        yield 0
 
 
 def by_angle(self, r):
