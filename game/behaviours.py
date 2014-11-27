@@ -56,6 +56,18 @@ def follow_player(self):
         yield 0
 
 
+def rotate_to_player(self):
+    i = 0
+    amplitude = 5
+    speed = 2
+    while(True):
+        i += amplitude
+        vx, vy = utils.normalize(self.track.x - self.x, self.track.y - self.y)
+        self.des_vy = amplitude * math.cos(i * math.pi / 180) + vy * speed
+        self.des_vx = amplitude * math.sin(i * math.pi / 180) + vx * speed
+        yield 0
+
+
 def zip(self):
     x_active = False
 
