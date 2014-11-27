@@ -122,6 +122,12 @@ def link_sensor(self):
     self.link_enemy.link_collide()
 
 
+def split(self):
+    while(True):
+        self.split = True
+        yield 0
+
+
 def link(self, pair=None, sensors=None):
 
     if not pair == None:

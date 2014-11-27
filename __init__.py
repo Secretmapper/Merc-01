@@ -57,15 +57,12 @@ class Game_Window(pyglet.window.Window):
             self.enemies.append(enemy1)
             self.enemies.append(enemy2)
 
-        for i in range(60):
+        for i in range(5):
             x = randint(100, CONSTS.game_width - 100)
             y = randint(100, CONSTS.game_height - 100)
-            if i % 5 == 0:
-                spawn_line(x, y)
-            else:
-                enemy = EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, track=self.ship,
-                                  x=x, y=y, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE)
-                self.enemies.append(enemy)
+            enemy = EnemyShip(behaviours=[[behaviours.split], [behaviours.zip]], img=res.tracker, track=self.ship,
+                              x=x, y=y, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE)
+            self.enemies.append(enemy)
 
         pyglet.clock.set_fps_limit(60)
         pyglet.clock.schedule(self.on_update)
@@ -141,7 +138,11 @@ class Game_Window(pyglet.window.Window):
             self.enemies.remove(enemy)
             enemy.kill()
             self.camera.shake(5)
-            # self.spatial_grid.remove_entity(enemy, self.ENEMY_CB_TYPE)
+            if enemy.split:
+                self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, track=self.ship,
+                                              x=enemy.x + enemy.image.width * 2, y=enemy.y + enemy.image.height * 2, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
+                self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, track=self.ship,
+                                              x=enemy.x + enemy.image.width * -2, y=enemy.y + enemy.image.height * -2, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
 
         self.spatial_grid.clear()
 

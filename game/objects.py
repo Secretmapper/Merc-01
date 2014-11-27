@@ -109,6 +109,7 @@ class EnemyShip(Sprite):
         self.av_sx = self.av_sy = 0
         self.des_vx = self.des_vy = 0
         self.evade_list = []
+        self.split = False
 
     def kill(self):
         self.opacity = 50
