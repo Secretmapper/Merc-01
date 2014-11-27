@@ -2,6 +2,7 @@ from random import randint
 import math
 import utils
 import pyglet
+import resources as res
 import constants as CONSTS
 
 
@@ -186,4 +187,40 @@ def link(self, pair=None, sensors=None):
                                                          ('c4B', (255,
                                                                   0, 0, 255) * 2)
                                                          ))
+        yield 0
+
+
+def shoot_circle(self):
+    from game.objects import Bullet
+    timer_i = 10
+    while(True):
+        timer_i -= 1
+        if timer_i <= 0:
+            timer_i = 60
+            for i in range(0, 360, 15):
+                bullet = Bullet(behaviours=[[by_angle, i]], x=self.x, y=self.y, speed=2,
+                                img=res.fire_particle, batch=self.batch, on_bounds_kill=True)
+                self.bullets.append(bullet)
+        yield 0
+"""
+Bullet Behaviours
+"""
+
+
+def by_angle(self, r):
+    r *= -math.pi / 180
+    self.vel_x = math.cos(r) * self.speed
+    self.vel_y = math.sin(r) * self.speed
+    while(True):
+        yield 0
+
+
+def penrose(self):
+    r = 0
+    while(True):
+        r += 5
+        r_pi = r * -math.pi / 180
+        k = 6 / float(5)
+        self.x = math.cos(k * r_pi) * math.sin(r_pi) * 100 + self.first_x
+        self.y = math.sin(k * r_pi) * math.sin(r_pi) * 100 + self.first_y
         yield 0

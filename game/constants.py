@@ -5,7 +5,7 @@ win_height = 600
 cell_size = 40.0
 
 game_iter = float(1) / 60
-game_width = 880
+game_width = 800
 game_height = 720
 
 debug_batch = pyglet.graphics.Batch()
@@ -24,7 +24,7 @@ DEBUG_MODE_OBJ = {
 }
 
 # number of cb types
-CB_TYPES = 5
+CB_TYPES = 6
 
 # cb types:
 BULLET_CB_TYPE = 0
@@ -32,3 +32,4 @@ ENEMY_CB_TYPE = 1
 ENEMY_LINE_CB_TYPE = 2
 PLAYER_CB_TYPE = 3
 SENSOR_CB_TYPE = 4
+ENEMY_BULLET_CB_TYPE = 5

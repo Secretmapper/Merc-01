@@ -5,6 +5,7 @@ import resources as res
 import constants as CONSTS
 from pyglet.window import key
 from random import randint
+import behaviours
 
 
 class Sprite(pyglet.sprite.Sprite):
@@ -55,17 +56,24 @@ class Sprite(pyglet.sprite.Sprite):
 
 class Bullet(Sprite):
 
-    def __init__(self, r, *args, **kwargs):
+    def __init__(self, behaviours=None, speed=10, track=None, * args, **kwargs):
         super(Bullet, self).__init__(**kwargs)
-        r *= -math.pi / 180
-        self.speed = 10
-        self.vel_x = math.cos(r) * self.speed
-        self.vel_y = math.sin(r) * self.speed
+        self.track = track
+        self.speed = speed
+        self.first_x, self.first_y = self.x, self.y
+        self.behaviours = []
+        for behaviour in behaviours:
+            # behaviour is an array, function, **kwargs
+            self.behaviours.append(behaviour[0](self, *behaviour[1:]))
+        self.vel_x = self.vel_y = 0
 
     def update(self, dt):
         Sprite.update(self, dt)
-        self.x = utils.trunc(self.x + self.vel_x, 0, self.max_x)
-        self.y = utils.trunc(self.y + self.vel_y, 0, self.max_y)
+
+        for behaviour in self.behaviours:
+            behaviour.next()
+        self.x = utils.trunc(self.x + self.vel_x, 0, CONSTS.game_width)
+        self.y = utils.trunc(self.y + self.vel_y, 0, CONSTS.game_height)
 
 
 class Sensor(Sprite):
@@ -109,6 +117,7 @@ class EnemyShip(Sprite):
         self.des_vx = self.des_vy = 0
         self.evade_list = []
         self.split = False
+        self.bullets = []
 
     def kill(self):
         self.opacity = 50
@@ -117,14 +126,16 @@ class EnemyShip(Sprite):
         self.debug_vertex_list = []
 
     def update(self, dt):
+        self.bullets = []
+
         self.xdt = dt / CONSTS.game_iter
 
         Sprite.update(self, dt)
 
+        last_x, last_y = self.x, self.y
+
         for behaviour in self.behaviours:
             behaviour.next()
-
-        last_x, last_y = self.x, self.y
 
         steer_x = steer_y = 0
         steer_x, steer_y = self.des_vx - self.vel_x, self.des_vy - self.vel_y
@@ -154,7 +165,6 @@ class EnemyShip(Sprite):
             theta = math.atan2(self.y - last_y, self.x - last_x)
         else:
             theta = 5
-
         if CONSTS.DEBUG_MODE:
             self.debug_vertex_list.append(CONSTS.debug_batch.add(2, pyglet.gl.GL_LINES,
                                                                  None,

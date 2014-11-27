@@ -41,6 +41,14 @@ class Spatial_Grid():
                             if utils.distance_sq(b, a) < (a.width / 2 + b.width / 2) ** 2:
                                 b.dead = True
 
+                a_list = cell[CONSTS.PLAYER_CB_TYPE]
+                b_list = cell[CONSTS.ENEMY_BULLET_CB_TYPE]
+                for b in b_list:
+                    for a in a_list:
+                        if not (a.dead or b.dead):
+                            if utils.distance_sq(b, a) < (a.width / 2 + b.width / 2) ** 2:
+                                b.dead = True
+
                 a_list = cell[CONSTS.BULLET_CB_TYPE]
                 b_list = cell[CONSTS.ENEMY_CB_TYPE]
                 """

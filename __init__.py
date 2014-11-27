@@ -37,6 +37,7 @@ class Game_Window(pyglet.window.Window):
         self.ship = Ship(img=res.player, x=400, y=300, batch=self.main_batch)
         self.bullets = []
         self.enemies = []
+        self.enemy_bullets = []
 
         def spawn_line(x, y):
             # spawn the first enemy of the line (the anchor)
@@ -57,10 +58,10 @@ class Game_Window(pyglet.window.Window):
             self.enemies.append(enemy1)
             self.enemies.append(enemy2)
 
-        for i in range(5):
+        for i in range(1):
             x = randint(100, CONSTS.game_width - 100)
             y = randint(100, CONSTS.game_height - 100)
-            enemy = EnemyShip(behaviours=[[behaviours.split], [behaviours.zip]], img=res.tracker, track=self.ship,
+            enemy = EnemyShip(behaviours=[[behaviours.zip], [behaviours.shoot_circle]], img=res.tracker, track=self.ship,
                               x=x, y=y, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE)
             self.enemies.append(enemy)
 
@@ -104,8 +105,8 @@ class Game_Window(pyglet.window.Window):
         if not CONSTS.DEBUG_MODE_OBJ['play']:
             return
         if self.ship.shoot and CONSTS.DEBUG_MODE_VAR('shoot'):
-            bullet = Bullet(on_bounds_kill=True, img=res.bullet, x=self.ship.x,
-                            y=self.ship.y, r=self.ship.rotation, batch=self.main_batch)
+            bullet = Bullet(behaviours=[[behaviours.by_angle, self.ship.rotation]], on_bounds_kill=True, img=res.bullet, x=self.ship.x,
+                            y=self.ship.y, batch=self.main_batch)
             self.spatial_grid.add_entity(bullet, self.BULLET_CB_TYPE)
             self.bullets.append(bullet)
         self.ship.update(dt)
@@ -132,6 +133,13 @@ class Game_Window(pyglet.window.Window):
                     game.graphics.ParticleSystem(bullet.x, bullet.y, life=20, particles=20 + randint(0, 30)))
             bullet.delete()
 
+        for bullet in [b for b in self.enemy_bullets if b.dead]:
+            self.enemy_bullets.remove(bullet)
+            if bullet.bounds_death:
+                self.emitter_list.append(
+                    game.graphics.ParticleSystem(bullet.x, bullet.y, life=20, particles=1 + randint(0, 30)))
+            bullet.delete()
+
         for enemy in [b for b in self.enemies if b.dead]:
             self.emitter_list.append(
                 game.graphics.ParticleSystem(enemy.x, enemy.y, **enemy.particle_data))
@@ -154,7 +162,13 @@ class Game_Window(pyglet.window.Window):
 
         for enemy in self.enemies:
             enemy.update(dt)
+            self.enemy_bullets += enemy.bullets
             self.spatial_grid.add(enemy, enemy.cb_type)
+
+        for enemy_bullet in self.enemy_bullets:
+            enemy_bullet.update(dt)
+
+            self.spatial_grid.add(enemy_bullet, CONSTS.ENEMY_BULLET_CB_TYPE)
 
         self.spatial_grid.update()
 
