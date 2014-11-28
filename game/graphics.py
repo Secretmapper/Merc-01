@@ -90,8 +90,9 @@ class ParticleSystem():
 
         rand = lambda: random.random() * 2 - 1
         for i in xrange(0, self.total_particles):
-            self.particle_rad.append(10 * rand())
-            self.particle_rad.append(10 * rand())
+            x_v, y_v = utils.normalize(10 * rand(), 10 * rand())
+            self.particle_rad.append(x_v * rand() * 5)
+            self.particle_rad.append(y_v * rand() * 5)
 
             self.particle_color.append(0.7)
             self.particle_color.append(0.2)
