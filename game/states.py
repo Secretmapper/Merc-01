@@ -66,14 +66,20 @@ class Play_State(object):
             self.enemies.append(enemy1)
             self.enemies.append(enemy2)
 
-        for i in range(1):
-            x = randint(100, CONSTS.game_width - 100)
-            y = randint(400, CONSTS.game_height - 100)
-            behaviours_list = [[behaviours.shoot_fire, ang, -5]
-                               for ang in range(0, 360, 45)]
-            behaviours_list += [[behaviours.shoot_fire, ang, 5]
-                                for ang in range(0, 360, 45)]
+        for i in range(10):
+            x = randint(0, CONSTS.game_width)
+            y = randint(0, CONSTS.game_height)
+            # behaviours_list = [[behaviours.shoot_fire, ang, -5]
+            #                   for ang in range(0, 360, 45)]
+            # behaviours_list += [[behaviours.shoot_fire, ang, 5]
+            #                    for ang in range(0, 360, 45)]
+            behaviours_list = [[behaviours.follow_player], [behaviours.evade]]
             enemy = EnemyShip(behaviours=behaviours_list, img=res.tracker, track=self.ship,
+                              x=x, y=y, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE)
+            self.enemies.append(enemy)
+
+            behaviours_list = [[behaviours.follow_player], [behaviours.split]]
+            enemy = EnemyShip(behaviours=behaviours_list, img=res.splitter, track=self.ship,
                               x=x, y=y, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE)
             self.enemies.append(enemy)
 

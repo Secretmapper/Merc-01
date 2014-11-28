@@ -10,6 +10,7 @@ def center_anchor(image):
 
 player = center_anchor(pyglet.resource.image('shooter.png'))
 tracker = center_anchor(pyglet.resource.image('tracker.png'))
+splitter = center_anchor(pyglet.resource.image('splitter.png'))
 liner = center_anchor(pyglet.resource.image('liner.png'))
 bullet = center_anchor(pyglet.resource.image('bullet.png'))
 fire_particle = center_anchor(pyglet.resource.image('fire-particle.png'))

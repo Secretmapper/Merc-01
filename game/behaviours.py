@@ -243,6 +243,7 @@ def spiral(self, i):
 
 
 def by_angle(self, r):
+    self.rotation = r
     r *= -math.pi / 180
     self.vel_x = math.cos(r) * self.speed
     self.vel_y = math.sin(r) * self.speed
