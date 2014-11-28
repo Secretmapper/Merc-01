@@ -59,11 +59,12 @@ class Game_Window(pyglet.window.Window):
             self.enemies.append(enemy2)
 
         for i in range(1):
-            x = 400  # randint(100, CONSTS.game_width - 100)
+            x = randint(100, CONSTS.game_width - 100)
             y = randint(400, CONSTS.game_height - 100)
-            behaviours_list = [[behaviours.shoot_fire, ang]
+            behaviours_list = [[behaviours.shoot_fire, ang, -5]
                                for ang in range(0, 360, 45)]
-            behaviours_list += [[behaviours.shoot_circle]]
+            behaviours_list += [[behaviours.shoot_fire, ang, 5]
+                                for ang in range(0, 360, 45)]
             enemy = EnemyShip(behaviours=behaviours_list, img=res.tracker, track=self.ship,
                               x=x, y=y, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE)
             self.enemies.append(enemy)

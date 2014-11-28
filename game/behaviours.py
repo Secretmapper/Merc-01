@@ -190,13 +190,13 @@ def link(self, pair=None, sensors=None):
         yield 0
 
 
-def shoot_circle(self):
+def shoot_circle(self, timer=60):
     from game.objects import Bullet
     timer_i = 10
     while(True):
         timer_i -= 1
         if timer_i <= 0:
-            timer_i = 60
+            timer_i = timer
             for i in range(0, 360, 15):
                 bullet = Bullet(behaviours=[[by_angle, i]], x=self.x, y=self.y, speed=2,
                                 img=res.fire_particle, batch=self.batch, on_bounds_kill=True)
@@ -204,18 +204,18 @@ def shoot_circle(self):
         yield 0
 
 
-def shoot_fire(self, angle=90):
+def shoot_fire(self, angle=90, mod_dist=5):
     from game.objects import Bullet
 
     timer_i = 10
-    mod_dist = 5
+    mod_dist = mod_dist
     a_i = angle
     mod = True
 
     while(True):
         timer_i -= 1
         if timer_i <= 0:
-            timer_i = 10
+            timer_i = 20
 
             a_i += mod_dist
 
@@ -234,7 +234,7 @@ def spiral(self, i):
     while(True):
         wait -= 1
         if wait < 0:
-            i += 0.2
+            i += 0.4
         r = i * -math.pi / 180
         self.vel_x = math.cos(r) * self.speed
         self.vel_y = -2  # math.sin(r) * self.speed
