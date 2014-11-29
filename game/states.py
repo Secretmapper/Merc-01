@@ -13,6 +13,7 @@ from game.objects import Ship, EnemyShip, Bullet, Sprite, Sensor
 import game.behaviours as behaviours
 from random import randint
 import math
+import logic
 
 
 fps_display = pyglet.clock.ClockDisplay()
@@ -66,28 +67,12 @@ class Play_State(object):
             self.enemies.append(enemy1)
             self.enemies.append(enemy2)
 
-        for i in range(10):
-            x = randint(0, CONSTS.game_width)
-            y = randint(0, CONSTS.game_height)
-            # behaviours_list = [[behaviours.shoot_fire, ang, -5]
-            #                   for ang in range(0, 360, 45)]
-            # behaviours_list += [[behaviours.shoot_fire, ang, 5]
-            #                    for ang in range(0, 360, 45)]
-            behaviours_list = [[behaviours.follow_player], [behaviours.evade]]
-            enemy = EnemyShip(behaviours=behaviours_list, img=res.tracker, track=self.ship,
-                              x=x, y=y, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE)
-            self.enemies.append(enemy)
-
-            behaviours_list = [[behaviours.follow_player], [behaviours.split]]
-            enemy = EnemyShip(behaviours=behaviours_list, img=res.splitter, track=self.ship,
-                              x=x, y=y, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE)
-            self.enemies.append(enemy)
-
         pyglet.clock.set_fps_limit(60)
         pyglet.clock.schedule(self.on_update)
 
         win.push_handlers(self.ship)
         self.emitter_list = []
+        self.spawner = logic.Enemy_Spawner(self)
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.last_mouse_pos = (x, y)
@@ -122,6 +107,11 @@ class Play_State(object):
     def on_update(self, dt):
         if not CONSTS.DEBUG_MODE_OBJ['play']:
             return
+
+        self.spawner.update()
+        for enemy in self.spawner.enemies:
+            self.enemies.append(enemy)
+
         if self.ship.shoot and CONSTS.DEBUG_MODE_VAR('shoot'):
             bullet = Bullet(behaviours=[[behaviours.by_angle, self.ship.rotation]], on_bounds_kill=True, img=res.bullet, x=self.ship.x,
                             y=self.ship.y, batch=self.main_batch)
