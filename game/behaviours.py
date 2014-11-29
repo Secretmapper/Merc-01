@@ -76,8 +76,8 @@ def move_square(self):
             yield 0
 
 
-def follow_player(self):
-    speed = 5
+def follow_player(self, speed=5):
+    speed = speed
     while(True):
         vx, vy = utils.normalize(self.track.x - self.x, self.track.y - self.y)
         vx *= speed
