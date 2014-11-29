@@ -33,7 +33,6 @@ class Enemy_Spawner(object):
             # x2 + y2 = r2
             x = math.cos(a) * 200 + self.ship.x
             y = math.sin(a) * 200 + self.ship.y
-            print x, y, math.cos(a), math.sin(a)
 
             behaviours_list = [
                 [behaviours.follow_player, 1 + float(a) / 1000], [behaviours.split], [behaviours.delay, a * 2, float(a) / angles_ln]]

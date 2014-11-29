@@ -46,7 +46,7 @@ class Camera(object):
         self._track = track
 
     def shake(self, r, dec=0.9):
-        self._radius = r
+        self._radius += r
         self._shake_dec = dec
         self._angle = random.randint(0, 360)
         self._offset = [
@@ -71,17 +71,33 @@ class Camera(object):
 
 class ParticleSystem():
 
-    def __init__(self, x, y, life=60, particles=90):
+    def __init__(self, x, y, life=0, rate=30, speed=2, speed_var=0, particle_life=60, particles=90, angle=45):
         pic = pyglet.image.load(
             'fire-particle.png', file=pyglet.resource.file('fire-particle.png'))
         self.texture = pic.get_texture()
 
+        self.total_life = particle_life
+
         self.x, self.y = 0, 0
         self.total_particles = particles
         self.size = 16
+
+        self.infi_life = False
+        self.emit_rate = self.total_life
+        self.emit_counter = 0
+        if life < 0:
+            self.infi_life = True
+            self.emit_counter = self.emit_rate * 2
+        elif life == 0:
+            life = particle_life
+
         self.life = life
+        self.particle_life_i = particle_life
+        self.particle_life = particle_life
+
         self.dead = False
-        self.alpha_delta = 1 / float(self.life)
+        self.alpha_delta = 1 / float(self.particle_life)
+        self.angle = angle
 
         self.particle_pos = sum([[x, y]
                                  for i in xrange(0, self.total_particles)], [])
@@ -90,9 +106,22 @@ class ParticleSystem():
 
         rand = lambda: random.random() * 2 - 1
         for i in xrange(0, self.total_particles):
-            x_v, y_v = utils.normalize(10 * rand(), 10 * rand())
-            self.particle_rad.append(x_v * rand() * 5)
-            self.particle_rad.append(y_v * rand() * 5)
+
+            if self.infi_life:
+                # If infi_life, linear angle
+                a = math.radians(angle)
+                v_x, v_y = math.cos(a), math.sin(a)
+
+                sp = 1 * random.random()  # rand()
+                self.particle_rad.append(v_x * sp)
+                self.particle_rad.append(v_y * sp)
+
+                # self.particle_rad.append(0)
+                # self.particle_rad.append(0)
+            else:
+                x_v, y_v = utils.normalize(1 * rand(), 1 * rand())
+                self.particle_rad.append(x_v * rand() * speed)
+                self.particle_rad.append(y_v * rand() * speed)
 
             self.particle_color.append(0.7)
             self.particle_color.append(0.2)
@@ -100,7 +129,9 @@ class ParticleSystem():
             self.particle_color.append(1.0)
 
         self.particle_life = [
-            self.life for i in xrange(0, self.total_particles)]
+            particle_life for i in xrange(0, self.total_particles)]
+
+        self.emission_rate = 75
 
     def add_particle(self):
         self._init_particle(self)
@@ -115,8 +146,40 @@ class ParticleSystem():
 
     def update_particles(self):
 
+        self.emit_counter += 120
+
+        while self.emit_counter > self.emit_rate:
+            ix = -1
+            for i in range(len(self.particle_life)):
+                if self.particle_life[i] <= 0:
+                    ix = i
+                    break
+
+            if ix == -1:
+                break
+
+            self.emit_counter = 0
+            self.particle_pos[ix * 2] = self.x
+            self.particle_pos[ix * 2 + 1] = self.y
+            self.particle_life[ix] = self.particle_life_i
+
+            rand = lambda: random.random() * 2 - 1
+            a = math.radians((180 - self.angle) + 10 * rand())
+            v_x, v_y = math.cos(a), math.sin(a)
+
+            sp = 1 * rand()
+            self.particle_rad[ix * 2] = v_x + sp
+            self.particle_rad[ix * 2 + 1] = v_y + sp
+
+            self.particle_color[ix * 4] = 0.7
+            self.particle_color[ix * 4 + 1] = 0.2
+            self.particle_color[ix * 4 + 2] = 0.1
+            self.particle_color[ix * 4 + 3] = 1.0
+
+            self.emit_counter -= self.emit_rate
+
         self.life -= 1
-        if self.life <= 0:
+        if self.life <= 0 and not self.infi_life:
             self.dead = True
 
         for i in xrange(0, len(self.particle_pos), 2):

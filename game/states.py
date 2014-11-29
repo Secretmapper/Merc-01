@@ -74,6 +74,14 @@ class Play_State(object):
         self.emitter_list = []
         self.spawner = logic.Enemy_Spawner(self)
 
+        p_y = math.sin(self.ship.rotation * math.pi / 180) * \
+            self.ship.half_height + self.ship.y
+        p_x = -math.cos(self.ship.rotation * math.pi / 180) * \
+            self.ship.half_width + self.ship.x
+        self.ship_emitter = game.graphics.ParticleSystem(
+            p_x, p_y, angle=180 - self.ship.rotation, life=-1, particle_life=50, particles=90)
+        self.emitter_list.append(self.ship_emitter)
+
     def on_mouse_motion(self, x, y, dx, dy):
         self.last_mouse_pos = (x, y)
 
@@ -130,6 +138,14 @@ class Play_State(object):
             self.main_batch.y = utils.lerp(self.main_batch.y,
                                            utils.trunc((CONSTS.win_height / 2 - self.ship.y), max_y, 40), 0.5)
 
+        p_y = math.sin(self.ship.rotation * math.pi / 180) * \
+            self.ship.half_height + self.ship.y
+        p_x = -math.cos(self.ship.rotation * math.pi / 180) * \
+            self.ship.half_width + self.ship.x
+        self.ship_emitter.x = p_x
+        self.ship_emitter.y = p_y
+        self.ship_emitter.angle = self.ship.rotation
+
         self.camera.update(dt)
 
         for emitter in self.emitter_list:
@@ -140,14 +156,14 @@ class Play_State(object):
             self.spatial_grid.remove_entity(bullet, self.BULLET_CB_TYPE)
             if bullet.bounds_death:
                 self.emitter_list.append(
-                    game.graphics.ParticleSystem(bullet.x, bullet.y, life=20, particles=20 + randint(0, 30)))
+                    game.graphics.ParticleSystem(bullet.x, bullet.y, particle_life=20, particles=20 + randint(0, 30)))
             bullet.delete()
 
         for bullet in [b for b in self.enemy_bullets if b.dead]:
             self.enemy_bullets.remove(bullet)
             if bullet.bounds_death:
                 self.emitter_list.append(
-                    game.graphics.ParticleSystem(bullet.x, bullet.y, life=20, particles=1 + randint(0, 30)))
+                    game.graphics.ParticleSystem(bullet.x, bullet.y, particle_life=20, particles=1 + randint(0, 30)))
             bullet.delete()
 
         for enemy in [b for b in self.enemies if b.dead]:
@@ -155,7 +171,7 @@ class Play_State(object):
                 game.graphics.ParticleSystem(enemy.x, enemy.y, **enemy.particle_data))
             self.enemies.remove(enemy)
             enemy.kill()
-            self.camera.shake(5)
+            self.camera.shake(10)
             if enemy.split:
                 self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, track=self.ship,
                                               x=enemy.x + enemy.image.width * 2, y=enemy.y + enemy.image.height * 2, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))

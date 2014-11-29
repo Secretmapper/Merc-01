@@ -82,7 +82,7 @@ class Sensor(Sprite):
         super(Sensor, self).__init__(**kwargs)
         self.opacity = 0
         self.callbacks = callbacks
-        self.particle_data = {'particles': 0, 'life': 1}
+        self.particle_data = {'particles': 0, 'particle_life': 20}
 
     def kill(self):
         self.opacity = 0
@@ -239,22 +239,22 @@ class Ship(Sprite):
         if self.keys['D']:
             self.speed_x += self.speed * xdt
 
-        if self.keys['right']:
+        if self.keys['D']:
             self.rotation = 0
-        if self.keys['down']:
+        if self.keys['S']:
             self.rotation = 90
-        if self.keys['left']:
+        if self.keys['A']:
             self.rotation = 180
-        if self.keys['up']:
+        if self.keys['W']:
             self.rotation = 270
 
-        if self.keys['down'] and self.keys['left']:
+        if self.keys['S'] and self.keys['A']:
             self.rotation = 135
-        if self.keys['down'] and self.keys['right']:
+        if self.keys['S'] and self.keys['D']:
             self.rotation = 45
-        if self.keys['up'] and self.keys['left']:
+        if self.keys['W'] and self.keys['A']:
             self.rotation = 225
-        if self.keys['up'] and self.keys['right']:
+        if self.keys['W'] and self.keys['D']:
             self.rotation = 315
 
         self.speed_x *= 0.95
