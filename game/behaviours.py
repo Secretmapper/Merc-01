@@ -6,6 +6,36 @@ import resources as res
 import constants as CONSTS
 
 
+def delay(self, delay_time, alpha_time=False):
+    """
+    Function that delays 'Enemy Spawn'
+    Useful for delayed spawning ofc :P
+
+    Keyword arguments:
+    delay_time -- time when enemy should be active
+    alpha_time -- time when enemy should appear
+
+    An enemy can appear but still be inactive (alpha_time)
+    """
+    if not alpha_time and not alpha_time == 0:
+        alpha_time = delay_time
+
+    first_x, first_y = self.x, self.y
+    i = 0
+    while(True):
+        if i <= delay_time:
+            self.des_vy = 0
+            self.des_vx = 0
+            self.vel_x = 0
+            self.vel_y = 0
+        if i <= alpha_time:
+            self.opacity = 0
+        else:
+            self.opacity = 255
+        i += 1
+        yield 0
+
+
 def rotate(self):
     while(True):
         self.rotation += 5
