@@ -174,7 +174,7 @@ class Play_State(object):
             self.camera.shake(10)
             self.dead_enemies.append(enemy)
             if enemy.split:
-                self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player], [behaviours.circle_detect]], img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
+                self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
                                               x=enemy.x + enemy.image.width * 2, y=enemy.y + enemy.image.height * 2, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
                 self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
                                               x=enemy.x + enemy.image.width * -2, y=enemy.y + enemy.image.height * -2, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
@@ -237,10 +237,51 @@ class Play_State(object):
         for emitter in [b for b in self.emitter_list if b.dead]:
             self.emitter_list.remove(emitter)
 
-        #glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA)
+        self.camera.hud_project()
+        particle_pos = []
+        colors = []
+
+        ratio = 0.3
+
+        max_x = CONSTS.win_width - 20
+        max_y = CONSTS.win_height - 20
+
+        min_x = max_x - int(CONSTS.win_width * ratio)
+        min_y = max_y - int(CONSTS.win_height * ratio)
+
+        minimap = (min_x, min_y,
+                   min_x, max_y,
+                   max_x, max_y,
+                   max_x, min_y)
+
+        pyglet.graphics.draw_indexed(4, pyglet.gl.GL_TRIANGLES,
+                                     [0, 1, 2, 0, 2, 3],
+                                     ('v2i', minimap),
+                                     ('c4B', (88, 198, 211, 30) * 4))
+
+        for i in self.enemies:
+            particle_pos.append(
+                (max_x + ((234.0 / CONSTS.game_width) * i.x) - 234) - 2.5)
+            particle_pos.append(
+                max_y + ((180.0 / CONSTS.game_height) * i.y) - 180)
+            colors.append(1.0 if not i.sensor else 0)
+            colors.append(0 if not i.sensor else 1)
+            colors.append(0)
+            colors.append(1.0)
+
+        particle_pos.append(
+            (max_x + ((234.0 / CONSTS.game_width) * self.ship.x) - 234) - 2.5)
+        particle_pos.append(
+            max_y + ((180.0 / CONSTS.game_height) * self.ship.y) - 180)
+        colors.append(0)
+        colors.append(1.0)
+        colors.append(0)
+        colors.append(1.0)
+
+        game.graphics.Drawer().draw(particle_pos, colors)
+
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR)
-        # pyglet.gl.glDepthFun(GL_LEQUAL)
-        self.camera.hud_projection()
+
         if CONSTS.DEBUG_MODE:
             pyglet.graphics.draw_indexed(4, pyglet.gl.GL_TRIANGLES,
                                          [0, 1, 2, 0, 2, 3],
@@ -250,4 +291,5 @@ class Play_State(object):
                                                   CONSTS.win_width, 0)),
                                          ('c4B', (50, 50, 50, 255) * 4))
         fps_display.draw()
+        self.camera.hud_projection()
         self.hud_batch.draw()

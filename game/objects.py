@@ -86,6 +86,7 @@ class Sensor(Sprite):
         self.particle_data = {'particles': 0, 'particle_life': 20}
         self.bullets = False
         self.split = False
+        self.sensor = True
 
     def kill(self):
         self.opacity = 0
@@ -97,6 +98,7 @@ class EnemyShip(Sprite):
 
     def __init__(self, behaviours, track, particle_data={}, *args, **kwargs):
         super(EnemyShip, self).__init__(**kwargs)
+        self.sensor = False
         self.hit = True
         self.particle_data = particle_data
 

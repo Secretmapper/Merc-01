@@ -39,7 +39,12 @@ class Enemy_Spawner(object):
         if self.spwn_chance >= random.randint(0, 100) and len(self.state.enemies) <= 0:
             self.spwn_chance = 0
             self.spawn_circle()
-            spawn_line(random.randint(0, 400), random.randint(0, 300))
+            spawn_line(
+                random.randint(100, CONSTS.game_width - 100), random.randint(100, CONSTS.game_height - 100))
+            spawn_line(
+                random.randint(100, CONSTS.game_width - 100), random.randint(100, CONSTS.game_height - 100))
+            spawn_line(
+                random.randint(100, CONSTS.game_width - 100), random.randint(100, CONSTS.game_height - 100))
 
         if self.spwn_chance > 20:
             self.spwn_chance += 0.000005
