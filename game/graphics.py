@@ -52,6 +52,16 @@ class Camera(object):
         self._offset = [
             math.sin(self._angle) * self._radius, math.cos(self._angle) * self._radius]
 
+    def star_projection(self):
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        x = (self._track.x + self._offset[1]) / float(CONSTS.win_width / 3)
+        y = (self._track.y + self._offset[0]) / float(CONSTS.win_height / 3)
+        glTranslatef(x, y, self.z)
+        gluOrtho2D(
+            0, self.win.width,
+            0, self.win.height)
+
     def game_projection(self):
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
@@ -237,6 +247,82 @@ class ParticleSystem():
 
         # Actual Draw
         glDrawArrays(GL_POINTS, 0, self.total_particles)
+
+        # Pop Buffer Blend
+        glPopAttrib()
+        # Pop Color Preserve
+        glPopAttrib()
+
+        # Disable States
+        glDisableClientState(GL_COLOR_ARRAY)
+        glDisableClientState(GL_VERTEX_ARRAY)
+        glDisable(GL_POINT_SPRITE)
+        glDisable(GL_TEXTURE_2D)
+
+        glPopMatrix()
+
+
+class Starfield():
+
+    @staticmethod
+    def create(seed=None, min_x=-50, max_x=50, min_y=-50, max_y=50, size=4, particles=50):
+        pic = pyglet.image.load(
+            'star.png', file=pyglet.resource.file('star.png'))
+        texture = pic.get_texture()
+
+        total_particles = particles
+        particle_pos = []
+        if seed:
+            myrand = random.Random(seed)
+        else:
+            myrand = random.Random()
+        for x in range(0, total_particles):
+            particle_pos.append(myrand.randint(min_x, max_x))
+            particle_pos.append(myrand.randint(min_y, max_y))
+        glPushMatrix()
+        glPushAttrib(GL_CURRENT_BIT)
+
+        glPointSize(size)
+
+        # Enable States
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, texture.id)
+        glEnable(GL_POINT_SPRITE)
+        glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE)
+
+        #FramebufferName = 0
+        #glGenFramebuffers(1, FramebufferName)
+        #glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName)
+
+        # Vertices Data
+        glEnableClientState(GL_VERTEX_ARRAY)
+        vertex_ptr = particle_pos
+        vertex_ptr = (GLfloat * len(vertex_ptr))(*vertex_ptr)
+        glVertexPointer(2, GL_FLOAT, 0, vertex_ptr)
+
+        particle_color = []
+
+        rand = lambda: random.random() * 2 - 1
+        for i in xrange(0, total_particles):
+
+            particle_color.append(1.0 - myrand.random())
+            particle_color.append(1.0 - myrand.random())
+            particle_color.append(1.0 - myrand.random())
+            particle_color.append(1.0 - myrand.random())
+
+        # Color Data
+        glEnableClientState(GL_COLOR_ARRAY)
+        color_ptr = particle_color
+        color_ptr = (GLfloat * len(color_ptr))(*color_ptr)
+        glColorPointer(4, GL_FLOAT, 0, color_ptr)
+
+        # Color Buffer for Blend
+        glPushAttrib(GL_COLOR_BUFFER_BIT)
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE)
+
+        # Actual Draw
+        glDrawArrays(GL_POINTS, 0, total_particles)
 
         # Pop Buffer Blend
         glPopAttrib()

@@ -205,18 +205,17 @@ class Play_State(object):
         glBlendFunc(GL_SRC_ALPHA, GL_ONE)
         glLoadIdentity()
 
-        pyglet.graphics.draw_indexed(4, pyglet.gl.GL_TRIANGLES,
-                                     [0, 1, 2, 0, 2, 3],
-                                     ('v2i', (0, 0,
-                                              0, CONSTS.game_height,
-                                              CONSTS.game_width, CONSTS.game_height,
-                                              CONSTS.game_width, 0)),
-                                     ('c4B', (50, 50, 50, 255) * 4))
-
         self.camera.hud_projection()
         fps_display.draw()
 
+        self.camera.star_projection()
+        game.graphics.Starfield.create(
+            max_x=CONSTS.game_width + 50, max_y=CONSTS.game_height + 50, size=12, seed=10293, particles=100)
+
         self.camera.game_projection()
+
+        game.graphics.Starfield.create(
+            min_x=-100, min_y=-100, max_x=CONSTS.game_width + 100, max_y=CONSTS.game_height + 100, size=8, seed=99023, particles=200)
         if CONSTS.DEBUG_MODE:
             CONSTS.debug_batch.draw()
         self.main_batch.draw()
