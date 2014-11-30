@@ -121,9 +121,11 @@ class Play_State(object):
         if not(CONSTS.win_width == CONSTS.game_width):
             self.main_batch.x = utils.lerp(self.main_batch.x,
                                            utils.trunc((CONSTS.win_width / 2 - self.ship.x), max_x, 40), 0.5)
+            self.camera.ax = self.ship.x
         if not(CONSTS.win_height == CONSTS.game_height):
             self.main_batch.y = utils.lerp(self.main_batch.y,
                                            utils.trunc((CONSTS.win_height / 2 - self.ship.y), max_y, 40), 0.5)
+            self.camera.ay = self.ship.x
 
         p_y = math.sin(self.ship.rotation * math.pi / 180) * \
             self.ship.half_height + self.ship.y
@@ -200,9 +202,6 @@ class Play_State(object):
         glBlendFunc(GL_SRC_ALPHA, GL_ONE)
         glLoadIdentity()
 
-        self.camera.hud_projection()
-        fps_display.draw()
-
         self.camera.star_projection()
         game.graphics.Starfield.create(
             max_x=CONSTS.game_width + 50, max_y=CONSTS.game_height + 50, size=12, seed=10293, particles=200)
@@ -219,3 +218,18 @@ class Play_State(object):
 
         for emitter in [b for b in self.emitter_list if b.dead]:
             self.emitter_list.remove(emitter)
+
+        #glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA)
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR)
+        # pyglet.gl.glDepthFun(GL_LEQUAL)
+        self.camera.hud_projection()
+        if CONSTS.DEBUG_MODE:
+            pyglet.graphics.draw_indexed(4, pyglet.gl.GL_TRIANGLES,
+                                         [0, 1, 2, 0, 2, 3],
+                                         ('v2i', (0, 0,
+                                                  0, CONSTS.win_height,
+                                                  CONSTS.win_width, CONSTS.win_height,
+                                                  CONSTS.win_width, 0)),
+                                         ('c4B', (50, 50, 50, 255) * 4))
+        fps_display.draw()
+        self.hud_batch.draw()

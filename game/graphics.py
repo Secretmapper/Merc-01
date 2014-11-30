@@ -27,6 +27,7 @@ class Camera(object):
         self._track = type('obj', (object,), {'x': 0, 'y': 0})
         self._radius = 0
         self._shake_dec = 0  # how much the shake dies down every update
+        self.a = 0
 
     def update(self, dt):
         if self._radius > 0:
@@ -71,12 +72,26 @@ class Camera(object):
             0, self.win.height)
 
     def hud_projection(self):
+        """
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
         # glTranslatef(self.x, self.y, self.z)
         gluOrtho2D(
             0, self.win.width,
             0, self.win.height)
+        """
+
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        gluPerspective(
+            40.0, CONSTS.game_width / float(CONSTS.game_height), 0.1, 2000.0)
+        glTranslatef(0, 0, -800)
+        ang = min(15, (1 - float(self.ax) / (CONSTS.game_width / 2)) * 30)
+        # print ang
+        if ang >= 0:
+            glRotatef(ang, 0, CONSTS.game_height / 2, 0)
+        glTranslatef(-400, -300, 0)
+        glMatrixMode(GL_MODELVIEW)
 
 
 class ParticleSystem():
