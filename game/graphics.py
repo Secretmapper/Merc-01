@@ -46,7 +46,7 @@ class Camera(object):
         self._track = track
 
     def shake(self, r, dec=0.9):
-        self._radius += r
+        self._radius = r
         self._shake_dec = dec
         self._angle = random.randint(0, 360)
         self._offset = [

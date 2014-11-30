@@ -49,25 +49,6 @@ class Play_State(object):
         self.enemies = []
         self.enemy_bullets = []
 
-        def spawn_line(x, y):
-            # spawn the first enemy of the line (the anchor)
-            enemy1 = EnemyShip(behaviours=[[behaviours.link]], img=res.liner, track=self.ship,
-                               x=x, y=y, batch=self.main_batch, cb_type=self.ENEMY_LINE_CB_TYPE)
-            # start sensor spawn
-            sensors = []
-            for d in xrange(1, 5):
-                sensors.append(Sensor(callbacks=[behaviours.link_sensor], img=res.liner, track=self.ship,
-                                      x=x + res.tracker.width * d, y=y, batch=self.main_batch, cb_type=CONSTS.SENSOR_CB_TYPE))
-                [self.enemies.append(sensor) for sensor in sensors]
-
-            enemy2 = EnemyShip(behaviours=[[behaviours.link, enemy1, sensors]], img=res.liner, track=self.ship,
-                               x=x + 100, y=y, batch=self.main_batch, cb_type=self.ENEMY_LINE_CB_TYPE)
-            # end sensor spawn
-            self.spatial_grid.add_entity(enemy1, self.ENEMY_LINE_CB_TYPE)
-            self.spatial_grid.add_entity(enemy2, self.ENEMY_LINE_CB_TYPE)
-            self.enemies.append(enemy1)
-            self.enemies.append(enemy2)
-
         pyglet.clock.set_fps_limit(60)
         pyglet.clock.schedule(self.on_update)
 
@@ -197,7 +178,8 @@ class Play_State(object):
 
         for enemy in self.enemies:
             enemy.update(dt)
-            self.enemy_bullets += enemy.bullets
+            if enemy.bullets:
+                self.enemy_bullets += enemy.bullets
             self.spatial_grid.add(enemy, enemy.cb_type)
 
         for enemy_bullet in self.enemy_bullets:
@@ -219,12 +201,12 @@ class Play_State(object):
 
         self.camera.star_projection()
         game.graphics.Starfield.create(
-            max_x=CONSTS.game_width + 50, max_y=CONSTS.game_height + 50, size=12, seed=10293, particles=100)
+            max_x=CONSTS.game_width + 50, max_y=CONSTS.game_height + 50, size=12, seed=10293, particles=200)
 
         self.camera.game_projection()
 
         game.graphics.Starfield.create(
-            min_x=-100, min_y=-100, max_x=CONSTS.game_width + 100, max_y=CONSTS.game_height + 100, size=8, seed=99023, particles=200)
+            min_x=-100, min_y=-100, max_x=CONSTS.game_width + 100, max_y=CONSTS.game_height + 100, size=8, seed=99023, particles=300)
         if CONSTS.DEBUG_MODE:
             CONSTS.debug_batch.draw()
         self.main_batch.draw()

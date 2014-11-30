@@ -84,6 +84,8 @@ class Sensor(Sprite):
         self.opacity = 0
         self.callbacks = callbacks
         self.particle_data = {'particles': 0, 'particle_life': 20}
+        self.bullets = False
+        self.split = False
 
     def kill(self):
         self.opacity = 0
@@ -120,6 +122,7 @@ class EnemyShip(Sprite):
         self.split = False
         self.bullets = []
         self.kill_bullet = None
+        self.dead_y = self.dead_x = False
 
     def shot(self, bullet):
         self.kill_bullet = bullet
@@ -134,12 +137,18 @@ class EnemyShip(Sprite):
 
     def update(self, dt):
         if self.dead:
-            theta = math.atan2(
-                self.dead_y - self.kill_bullet.y, self.dead_x - self.kill_bullet.x)
-            self.x += math.cos(theta) * 0.2
-            self.y += math.sin(theta) * 0.2
-            self.scale *= 0.999
-            if self.scale <= 0.3:
+            # if positional death (because of bullets, fade)
+            if self.dead_y:
+                theta = math.atan2(
+                    self.dead_y - self.kill_bullet.y, self.dead_x - self.kill_bullet.x)
+                self.x += math.cos(theta) * 0.2
+                self.y += math.sin(theta) * 0.2
+                self.scale *= 0.999
+                if self.scale <= 0.3:
+                    self.remove = True
+            # else if non-positional death (i.e., line enemy, out of bounds),
+            # just remove
+            else:
                 self.remove = True
             return
         self.bullets = []
