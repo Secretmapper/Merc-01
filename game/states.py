@@ -15,7 +15,7 @@ from random import randint
 import random
 import math
 import logic
-
+import locale
 
 fps_display = pyglet.clock.ClockDisplay()
 
@@ -47,6 +47,17 @@ class Play_State(object):
 
         self.health_bar = pyglet.sprite.Sprite(subpixel=True,
                                                img=res.health_bar, x=res.health_bar.width / 2 + 50, y=CONSTS.win_height - res.health_bar.height / 2 - 50, batch=self.hud_batch)
+
+        locale.setlocale(locale.LC_ALL, 'en_US')
+        self.score = 0
+        self.target_score = 0
+        self.score_text = pyglet.text.Label(text=locale.format("%d", self.score, grouping=True),
+                                            font_name='04b03',
+                                            font_size=18,
+                                            anchor_x='left',
+                                            batch=self.hud_batch,
+                                            color=(87, 198, 211, 200),
+                                            x=50, y=CONSTS.win_height - 100)
 
         self.ship = Ship(img=res.player, x=400, y=300, batch=self.main_batch)
         self.bullets = []
@@ -167,6 +178,13 @@ class Play_State(object):
                                               x=enemy.x + enemy.image.width * 2, y=enemy.y + enemy.image.height * 2, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
                 self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
                                               x=enemy.x + enemy.image.width * -2, y=enemy.y + enemy.image.height * -2, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
+
+            self.target_score += 100
+
+        if self.target_score > self.score:
+            self.score = utils.lerp(self.score, self.target_score, 0.2)
+            self.score_text.text = locale.format(
+                "%d", round(self.score), grouping=True)
 
         for dead in self.dead_enemies:
             dead.update(dt)
