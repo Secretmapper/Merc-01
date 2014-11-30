@@ -135,7 +135,7 @@ class EnemyShip(Sprite):
         for behaviour in self.behaviours:
             behaviour.next()
 
-        self.opacity = 50
+        self.opacity = 75
         for i in self.debug_vertex_list:
             i.delete()
         self.debug_vertex_list = []
