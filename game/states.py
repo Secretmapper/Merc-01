@@ -32,6 +32,7 @@ class Play_State(object):
         super(Play_State, self).__init__()
         self.width, self.height = width, height
         self.main_batch = game.graphics.Layer()
+        self.hud_batch = game.graphics.Layer()
 
         self.camera = game.graphics.Camera(self, zoom=500.0)
         self.camera.track(self.main_batch)
@@ -43,6 +44,9 @@ class Play_State(object):
         self.BULLET_CB_TYPE = CONSTS.BULLET_CB_TYPE
         self.ENEMY_CB_TYPE = CONSTS.ENEMY_CB_TYPE
         self.ENEMY_LINE_CB_TYPE = CONSTS.ENEMY_LINE_CB_TYPE
+
+        self.health_bar = pyglet.sprite.Sprite(subpixel=True,
+                                               img=res.health_bar, x=res.health_bar.width / 2 + 25, y=CONSTS.win_height - res.health_bar.height / 2 - 25, batch=self.hud_batch)
 
         self.ship = Ship(img=res.player, x=400, y=300, batch=self.main_batch)
         self.bullets = []

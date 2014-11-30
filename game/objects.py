@@ -130,6 +130,11 @@ class EnemyShip(Sprite):
         self.dead_x = self.x
 
     def kill(self):
+        # Let's call behaviours one last time for cleanup callbacks when dead
+        # i.e. Circle Detect
+        for behaviour in self.behaviours:
+            behaviour.next()
+
         self.opacity = 50
         for i in self.debug_vertex_list:
             i.delete()

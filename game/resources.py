@@ -19,3 +19,5 @@ splitter_colors = [170, 104, 170]
 liner = center_anchor(pyglet.resource.image('liner.png'))
 bullet = center_anchor(pyglet.resource.image('bullet.png'))
 fire_particle = center_anchor(pyglet.resource.image('fire-particle.png'))
+
+circle_detect = center_anchor(pyglet.resource.image('circle-detect.png'))

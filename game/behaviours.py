@@ -290,3 +290,17 @@ def penrose(self):
         self.x = math.cos(k * r_pi) * math.sin(r_pi) * 100 + self.first_x
         self.y = math.sin(k * r_pi) * math.sin(r_pi) * 100 + self.first_y
         yield 0
+
+
+def circle_detect(self):
+    detect = pyglet.sprite.Sprite(
+        x=0, y=0, img=res.circle_detect, batch=self.layer)
+    while(True):
+        if self.dead:
+            detect.opacity = 0
+            detect.delete()
+        else:
+            detect.x = self.x
+            detect.y = self.y
+            detect.rotation += 5
+        yield 0
