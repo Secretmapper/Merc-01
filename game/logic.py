@@ -54,7 +54,7 @@ class Enemy_Spawner(object):
             y = math.sin(a) * 200 + self.ship.y
 
             behaviours_list = [
-                [behaviours.follow_player, 1 + float(a) / 1000], [behaviours.split], [behaviours.delay, a * 2, float(a) / angles_ln]]
+                [behaviours.follow_player, 1 + float(a) / 1000], [behaviours.delay, a * 2, float(a) / angles_ln], [behaviours.split]]
             enemy = EnemyShip(behaviours=behaviours_list, img=res.splitter, particle_data={'rgb': res.splitter_colors}, track=self.ship,
                               x=x, y=y, batch=self.main_batch, cb_type=CONSTS.ENEMY_CB_TYPE)
             self.enemies.append(enemy)

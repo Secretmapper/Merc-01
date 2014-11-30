@@ -156,6 +156,7 @@ class EnemyShip(Sprite):
             else:
                 self.remove = True
             return
+
         self.bullets = []
 
         self.xdt = dt / CONSTS.game_iter

@@ -293,14 +293,22 @@ def penrose(self):
 
 
 def circle_detect(self):
+
+    background = pyglet.graphics.OrderedGroup(0)
+    foreground = pyglet.graphics.OrderedGroup(1)
     detect = pyglet.sprite.Sprite(
-        x=0, y=0, img=res.circle_detect, batch=self.layer)
+        x=0, y=0, img=res.circle_detect, batch=self.layer, group=background)
+    detect_text = pyglet.sprite.Sprite(
+        x=0, y=0, img=res.circle_detect_text, batch=self.layer, group=foreground)
     while(True):
         if self.dead:
             detect.opacity = 0
             detect.delete()
+            detect_text.delete()
         else:
             detect.x = self.x
             detect.y = self.y
             detect.rotation += 5
+            detect_text.x = self.x
+            detect_text.y = self.y
         yield 0

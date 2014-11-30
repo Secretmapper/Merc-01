@@ -46,7 +46,7 @@ class Play_State(object):
         self.ENEMY_LINE_CB_TYPE = CONSTS.ENEMY_LINE_CB_TYPE
 
         self.health_bar = pyglet.sprite.Sprite(subpixel=True,
-                                               img=res.health_bar, x=res.health_bar.width / 2 + 25, y=CONSTS.win_height - res.health_bar.height / 2 - 25, batch=self.hud_batch)
+                                               img=res.health_bar, x=res.health_bar.width / 2 + 50, y=CONSTS.win_height - res.health_bar.height / 2 - 50, batch=self.hud_batch)
 
         self.ship = Ship(img=res.player, x=400, y=300, batch=self.main_batch)
         self.bullets = []
@@ -161,7 +161,7 @@ class Play_State(object):
             self.camera.shake(10)
             self.dead_enemies.append(enemy)
             if enemy.split:
-                self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
+                self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player], [behaviours.circle_detect]], img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
                                               x=enemy.x + enemy.image.width * 2, y=enemy.y + enemy.image.height * 2, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
                 self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
                                               x=enemy.x + enemy.image.width * -2, y=enemy.y + enemy.image.height * -2, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
