@@ -81,7 +81,7 @@ class Camera(object):
 
 class ParticleSystem():
 
-    def __init__(self, x, y, life=0, rate=30, speed=2, speed_var=0, particle_life=60, particles=90, angle=45):
+    def __init__(self, x, y, life=0, rate=30, speed=2, speed_var=0, particle_life=60, particles=90, angle=45, rgb=[0.7 * 255, 0.25 * 255, 0.1 * 255]):
         pic = pyglet.image.load(
             'fire-particle.png', file=pyglet.resource.file('fire-particle.png'))
         self.texture = pic.get_texture()
@@ -125,17 +125,14 @@ class ParticleSystem():
                 sp = 1 * random.random()  # rand()
                 self.particle_rad.append(v_x * sp)
                 self.particle_rad.append(v_y * sp)
-
-                # self.particle_rad.append(0)
-                # self.particle_rad.append(0)
             else:
                 x_v, y_v = utils.normalize(1 * rand(), 1 * rand())
                 self.particle_rad.append(x_v * rand() * speed)
                 self.particle_rad.append(y_v * rand() * speed)
 
-            self.particle_color.append(0.7)
-            self.particle_color.append(0.2)
-            self.particle_color.append(0.1)
+            self.particle_color.append(rgb[0] / 255.0)
+            self.particle_color.append(rgb[1] / 255.0)
+            self.particle_color.append(rgb[2] / 255.0)
             self.particle_color.append(1.0)
 
         self.particle_life = [

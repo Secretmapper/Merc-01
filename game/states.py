@@ -176,9 +176,9 @@ class Play_State(object):
             self.camera.shake(10)
             self.dead_enemies.append(enemy)
             if enemy.split:
-                self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, track=self.ship,
+                self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
                                               x=enemy.x + enemy.image.width * 2, y=enemy.y + enemy.image.height * 2, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
-                self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, track=self.ship,
+                self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
                                               x=enemy.x + enemy.image.width * -2, y=enemy.y + enemy.image.height * -2, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
 
         for dead in self.dead_enemies:
