@@ -35,6 +35,7 @@ class Sprite(pyglet.sprite.Sprite):
 
         self.debug_vertex_list = []
         self.bounds_death = False
+        self.remove = False
 
     def pos_vertices(self):
         return [self.y - self.height / 2, self.x - self.width / 2, self.y + self.height / 2, self.x + self.width / 2]
@@ -118,6 +119,12 @@ class EnemyShip(Sprite):
         self.evade_list = []
         self.split = False
         self.bullets = []
+        self.kill_bullet = None
+
+    def shot(self, bullet):
+        self.kill_bullet = bullet
+        self.dead_y = self.y
+        self.dead_x = self.x
 
     def kill(self):
         self.opacity = 50
@@ -126,6 +133,15 @@ class EnemyShip(Sprite):
         self.debug_vertex_list = []
 
     def update(self, dt):
+        if self.dead:
+            theta = math.atan2(
+                self.dead_y - self.kill_bullet.y, self.dead_x - self.kill_bullet.x)
+            self.x += math.cos(theta) * 0.2
+            self.y += math.sin(theta) * 0.2
+            self.scale *= 0.999
+            if self.scale <= 0.3:
+                self.remove = True
+            return
         self.bullets = []
 
         self.xdt = dt / CONSTS.game_iter

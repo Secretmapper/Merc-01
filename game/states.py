@@ -12,6 +12,7 @@ import game.graphics
 from game.objects import Ship, EnemyShip, Bullet, Sprite, Sensor
 import game.behaviours as behaviours
 from random import randint
+import random
 import math
 import logic
 
@@ -81,6 +82,7 @@ class Play_State(object):
         self.ship_emitter = game.graphics.ParticleSystem(
             p_x, p_y, angle=180 - self.ship.rotation, life=-1, particle_life=50, particles=90)
         self.emitter_list.append(self.ship_emitter)
+        self.dead_enemies = []
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.last_mouse_pos = (x, y)
@@ -172,11 +174,18 @@ class Play_State(object):
             self.enemies.remove(enemy)
             enemy.kill()
             self.camera.shake(10)
+            self.dead_enemies.append(enemy)
             if enemy.split:
                 self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, track=self.ship,
                                               x=enemy.x + enemy.image.width * 2, y=enemy.y + enemy.image.height * 2, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
                 self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, track=self.ship,
                                               x=enemy.x + enemy.image.width * -2, y=enemy.y + enemy.image.height * -2, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
+
+        for dead in self.dead_enemies:
+            dead.update(dt)
+        for removal in [b for b in self.dead_enemies if b.remove]:
+            self.dead_enemies.remove(removal)
+            removal.delete()
 
         self.spatial_grid.clear()
 
