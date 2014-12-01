@@ -91,12 +91,12 @@ class Camera(object):
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
         gluPerspective(
-            40.0, CONSTS.game_width / float(CONSTS.game_height), 0.1, 2000.0)
+            40.0, CONSTS.win_width / float(CONSTS.win_height), 0.1, 2000.0)
         glTranslatef(0, 0, -800)
-        ang = min(15, (1 - float(self.ax) / (CONSTS.game_width / 2)) * 30)
+        ang = min(15, (1 - float(self.ax) / (CONSTS.win_width / 2)) * 30)
         # print ang
         if ang >= 0:
-            glRotatef(ang, 0, CONSTS.game_height / 2, 0)
+            glRotatef(ang, 0, CONSTS.win_height / 2, 0)
         glTranslatef(-400, -300, 0)
         glMatrixMode(GL_MODELVIEW)
 
