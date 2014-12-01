@@ -45,8 +45,22 @@ class Play_State(object):
         self.ENEMY_CB_TYPE = CONSTS.ENEMY_CB_TYPE
         self.ENEMY_LINE_CB_TYPE = CONSTS.ENEMY_LINE_CB_TYPE
 
-        self.health_bar = pyglet.sprite.Sprite(subpixel=True,
-                                               img=res.health_bar, x=res.health_bar.width / 2 + 50, y=CONSTS.win_height - res.health_bar.height / 2 - 50, batch=self.hud_batch)
+        self.health_bars = []
+
+        health_bars = {
+            'subpixel': True, 'batch': self.hud_batch}
+        health_bar_coords = [{'img': res.health_bar, 'x': res.health_bar.width / 2 + 50,
+                              'y': CONSTS.win_height - res.health_bar.height / 2 - 50},
+                             {'img': res.health_bar, 'x': res.health_bar.width / 2 + 75,
+                              'y': CONSTS.win_height - res.health_bar.height / 2 - 50},
+                             {'img': res.health_bar, 'x': res.health_bar.width / 2 + 100,
+                              'y': CONSTS.win_height - res.health_bar.height / 2 - 50},
+                             {'img': res.health_bar_un, 'x': res.health_bar.width / 2 + 125,
+                              'y': CONSTS.win_height - res.health_bar.height / 2 - 50},
+                             {'img': res.health_bar_un, 'x': res.health_bar.width / 2 + 150,
+                              'y': CONSTS.win_height - res.health_bar.height / 2 - 50}]
+        [self.health_bars.append(pyglet.sprite.Sprite(
+            **dict(health_bars.items() + coords.items()))) for coords in health_bar_coords]
 
         locale.setlocale(locale.LC_ALL, 'en_US')
         self.score = 0

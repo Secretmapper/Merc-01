@@ -20,7 +20,14 @@ liner = center_anchor(pyglet.resource.image('liner.png'))
 bullet = center_anchor(pyglet.resource.image('bullet.png'))
 fire_particle = center_anchor(pyglet.resource.image('fire-particle.png'))
 
-health_bar = center_anchor(pyglet.resource.image('health.png'))
+health_bar = center_anchor(pyglet.resource.image('health-bar.png'))
+health_bar.anchor_y = 10
+health_bar.anchor_x = 80
+
+health_bar_un = center_anchor(pyglet.resource.image('health-bar-un.png'))
+health_bar_un.anchor_y = 10
+health_bar_un.anchor_x = 80
+
 circle_detect = center_anchor(pyglet.resource.image('circle-detect.png'))
 
 circle_detect_text = pyglet.resource.image('circle-detect-text.png')
