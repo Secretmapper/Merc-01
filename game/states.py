@@ -132,7 +132,7 @@ class Play_State(object):
         if not CONSTS.DEBUG_MODE_OBJ['play']:
             return
 
-        self.spawner.update()
+        self.spawner.update(dt)
         for enemy in self.spawner.enemies:
             self.enemies.append(enemy)
 
