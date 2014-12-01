@@ -137,6 +137,8 @@ class EnemyShip(AbstractEnemy):
         self.death_vx = False
         self.trackable = True
 
+        self.nonactive = True
+
     def shot(self, x, y):
         death_theta = math.atan2(
             self.y - y, self.x - x)
@@ -155,6 +157,19 @@ class EnemyShip(AbstractEnemy):
         self.debug_vertex_list = []
 
     def update(self, dt):
+        if self.nonactive:
+            if self.x < self.min_x:
+                self.x += 5
+            elif self.x >= self.max_x:
+                self.x -= 5
+            if self.y < self.min_y:
+                self.y += 5
+            elif self.y > self.max_y:
+                self.y -= 5
+
+            if not (self.x < self.min_x or self.x >= self.max_x or self.y < self.min_y or self.y >= self.max_y):
+                self.nonactive = False
+            return
         if self.dead:
             # if positional death (because of bullets, fade)
             if self.death_vx:
