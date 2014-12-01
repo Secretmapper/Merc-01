@@ -60,7 +60,7 @@ class Spatial_Grid():
                             if utils.distance_sq(b, a) < (a.width / 2 + b.width / 2) ** 2:
                                 a.dead = True
                                 b.dead = True
-                                b.shot(a)
+                                b.shot(a.x, a.y)
                                 self.color_grid(x, y, (0, 0, 255, 100) * 4)
                     if not b.dead:
                         """

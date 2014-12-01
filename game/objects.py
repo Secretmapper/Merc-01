@@ -88,10 +88,12 @@ class Sensor(Sprite):
         self.split = False
         self.sensor = True
 
+    def trigger(self, *args, **kwargs):
+        for i in self.callbacks:
+            i(self, **kwargs)
+
     def kill(self):
         self.opacity = 0
-        for i in self.callbacks:
-            i(self)
 
 
 class EnemyShip(Sprite):
@@ -123,13 +125,13 @@ class EnemyShip(Sprite):
         self.evade_list = []
         self.split = False
         self.bullets = []
-        self.kill_bullet = None
-        self.dead_y = self.dead_x = False
+        self.death_vx = False
 
-    def shot(self, bullet):
-        self.kill_bullet = bullet
-        self.dead_y = self.y
-        self.dead_x = self.x
+    def shot(self, x, y):
+        death_theta = math.atan2(
+            self.y - y, self.x - x)
+        self.death_vx = math.cos(death_theta) * 0.2
+        self.death_vy = math.sin(death_theta) * 0.2
 
     def kill(self):
         # Let's call behaviours one last time for cleanup callbacks when dead
@@ -145,11 +147,9 @@ class EnemyShip(Sprite):
     def update(self, dt):
         if self.dead:
             # if positional death (because of bullets, fade)
-            if self.dead_y:
-                theta = math.atan2(
-                    self.dead_y - self.kill_bullet.y, self.dead_x - self.kill_bullet.x)
-                self.x += math.cos(theta) * 0.2
-                self.y += math.sin(theta) * 0.2
+            if self.death_vx:
+                self.x += self.death_vx
+                self.y += self.death_vy
                 self.scale *= 0.999
                 if self.scale <= 0.3:
                     self.remove = True

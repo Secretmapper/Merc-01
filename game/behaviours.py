@@ -158,11 +158,11 @@ def flee(self):
         yield 0
 
 
-def link_sensor(self):
+def link_sensor(self, x, y,):
     """
     Callback when link sensor is collided to
     """
-    self.link_enemy.link_collide()
+    self.link_enemy.link_collide(x, y)
 
 
 def split(self):
@@ -185,10 +185,11 @@ def link(self, pair=None, sensors=None):
         """
         Kill the whole Line when collided with sensor
         """
-        def link_collide():
+        def link_collide(x, y):
             if self.dead == False:
                 self.dead = True
                 pair.dead = True
+                self.shot(x, y)
                 for sensor in sensors:
                     sensor.dead = True
                     sensor.kill()
