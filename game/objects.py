@@ -259,18 +259,23 @@ class Ship(Sprite):
     def __init__(self, *args, **kwargs):
         super(Ship, self).__init__(**kwargs)
         self.mouse_pos = (0, 0)
-        self.keys = dict(spacebar=False, W=False, A=False, S=False, D=False,
+        self.keys = dict(spacebar=False, W=False, A=False, S=False, D=False, shift=False,
                          left=False, right=False, up=False, down=False)
         self.shoot = False
         self.shoot_timer = 10
         self.i_shoot = self.shoot_timer
         self.speed_x, self.speed_y = 0, 0
-        self.speed = 0.5
+        self.speed = 0.3
+        self.boost = False
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.rotation = -\
             math.atan2(
                 y - (self.y + self.layer.y), x - (self.x + self.layer.x)) * 180 / math.pi
+
+    def hit(self):
+        1
+        #self.opacity = 0
 
     def update(self, dt):
         Sprite.update(self, dt)
@@ -280,6 +285,13 @@ class Ship(Sprite):
         if self.i_shoot < 0:
             self.shoot = True
             self.i_shoot = self.shoot_timer
+
+        if self.keys['shift']:
+            self.speed = 1.0
+            self.boost = True
+        else:
+            self.speed = 0.3
+            self.boost = False
 
         if self.keys['W']:
             self.speed_y += self.speed * xdt
@@ -325,6 +337,8 @@ class Ship(Sprite):
     def on_key_press(self, symbol, modifiers):
         if symbol == key.SPACE:
             self.keys['spacebar'] = True
+        if symbol == key.LSHIFT:
+            self.keys['shift'] = True
         if symbol == key.W:
             self.keys['W'] = True
         if symbol == key.A:
@@ -346,6 +360,8 @@ class Ship(Sprite):
     def on_key_release(self, symbol, modifiers):
         if symbol == key.SPACE:
             self.keys['spacebar'] = False
+        if symbol == key.LSHIFT:
+            self.keys['shift'] = False
         if symbol == key.W:
             self.keys['W'] = False
         if symbol == key.A:
