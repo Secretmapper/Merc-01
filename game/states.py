@@ -64,7 +64,7 @@ class Play_State(object):
         self.enemies = []
         self.enemy_bullets = []
 
-        pyglet.clock.set_fps_limit(60)
+        pyglet.clock.set_fps_limit(30)
         pyglet.clock.schedule(self.on_update)
 
         win.push_handlers(self.ship)
@@ -79,6 +79,10 @@ class Play_State(object):
             p_x, p_y, angle=180 - self.ship.rotation, life=-1, particle_life=50, particles=90)
         self.emitter_list.append(self.ship_emitter)
         self.dead_enemies = []
+
+        def prini(dt):
+            print pyglet.clock.get_fps()
+        pyglet.clock.schedule_once(prini, 10)
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.last_mouse_pos = (x, y)
@@ -222,12 +226,12 @@ class Play_State(object):
 
         self.camera.star_projection()
         game.graphics.Starfield.create(
-            max_x=CONSTS.game_width + 50, max_y=CONSTS.game_height + 50, size=12, seed=10293, particles=200)
+            max_x=CONSTS.game_width + 50, max_y=CONSTS.game_height + 50, size=16, seed=10293, particles=100)
 
         self.camera.game_projection()
 
         game.graphics.Starfield.create(
-            min_x=-100, min_y=-100, max_x=CONSTS.game_width + 100, max_y=CONSTS.game_height + 100, size=8, seed=99023, particles=300)
+            min_x=-100, min_y=-100, max_x=CONSTS.game_width + 100, max_y=CONSTS.game_height + 100, size=12, seed=99023, particles=200)
         if CONSTS.DEBUG_MODE:
             CONSTS.debug_batch.draw()
         self.main_batch.draw()
@@ -259,24 +263,26 @@ class Play_State(object):
                                      ('v2i', minimap),
                                      ('c4B', (88, 198, 211, 30) * 4))
 
-        for i in self.enemies:
-            particle_pos.append(
-                (max_x + ((234.0 / CONSTS.game_width) * i.x) - 234) - 2.5)
-            particle_pos.append(
-                max_y + ((180.0 / CONSTS.game_height) * i.y) - 180)
-            colors.append(1.0 if not i.sensor else 0)
-            colors.append(0 if not i.sensor else 1)
-            colors.append(0)
-            colors.append(1.0)
+        """
+        We initialize our positions, colors through a double for list comprehension
+        We need this part of the code to be VERY fast
+        """
+
+        # for i in self.enemies:
+        # particle_pos.append(
+        #    (max_x + ((234.0 / CONSTS.game_width) * i.x) - 234) - 2.5)
+        # particle_pos.append(
+        #    max_y + ((180.0 / CONSTS.game_height) * i.y) - 180)
+        particle_pos = [
+            pos for enemy in self.enemies for pos in [(max_x + ((234.0 / CONSTS.game_width) * enemy.x) - 234) - 2.5,
+                                                      max_y + ((180.0 / CONSTS.game_height) * enemy.y) - 180]]
+        colors = [c for enemy in self.enemies for c in [1.0, 0.0, 0.0, 1.0]]
 
         particle_pos.append(
             (max_x + ((234.0 / CONSTS.game_width) * self.ship.x) - 234) - 2.5)
         particle_pos.append(
             max_y + ((180.0 / CONSTS.game_height) * self.ship.y) - 180)
-        colors.append(0)
-        colors.append(1.0)
-        colors.append(0)
-        colors.append(1.0)
+        colors.extend([0, 1.0, 0, 1.0])
 
         game.graphics.Drawer().draw(particle_pos, colors)
 
