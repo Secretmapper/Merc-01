@@ -77,7 +77,17 @@ class Bullet(Sprite):
         self.y = utils.trunc(self.y + self.vel_y, 0, CONSTS.game_height)
 
 
-class Sensor(Sprite):
+class AbstractEnemy(Sprite):
+
+    def __init__(self, *args, **kwargs):
+        super(AbstractEnemy, self).__init__(**kwargs)
+        self.bullets = False
+        self.split = False
+        self.sensor = False
+        self.trackable = True
+
+
+class Sensor(AbstractEnemy):
 
     def __init__(self, callbacks, track, *args, **kwargs):
         super(Sensor, self).__init__(**kwargs)
@@ -85,8 +95,8 @@ class Sensor(Sprite):
         self.callbacks = callbacks
         self.particle_data = {'particles': 0, 'particle_life': 20}
         self.bullets = False
-        self.split = False
         self.sensor = True
+        self.trackable = False
 
     def trigger(self, *args, **kwargs):
         for i in self.callbacks:
@@ -96,13 +106,10 @@ class Sensor(Sprite):
         self.opacity = 0
 
 
-class EnemyShip(Sprite):
+class EnemyShip(AbstractEnemy):
 
     def __init__(self, behaviours, track, particle_data={}, *args, **kwargs):
         super(EnemyShip, self).__init__(**kwargs)
-        self.sensor = False
-        self.hit = True
-        self.particle_data = particle_data
 
         self.min_x = self.image.width / 2
         self.min_y = self.image.height / 2
@@ -111,21 +118,20 @@ class EnemyShip(Sprite):
 
         self.vel_x = self.vel_y = 0
 
-        self.track = track
         self.behaviours = []
         for behaviour in behaviours:
             # behaviour is an array, function, **kwargs
             self.behaviours.append(behaviour[0](self, *behaviour[1:]))
+        self.particle_data = particle_data
+        self.track = track
         self.near_player = False
+        self.bullets = []
         self.neighbors = 1
         self.v_sx = self.v_sy = 0
-        self.aneighbors = 1
-        self.av_sx = self.av_sy = 0
         self.des_vx = self.des_vy = 0
         self.evade_list = []
-        self.split = False
-        self.bullets = []
         self.death_vx = False
+        self.trackable = True
 
     def shot(self, x, y):
         death_theta = math.atan2(
@@ -216,7 +222,6 @@ class EnemyShip(Sprite):
 
         self.v_sx = self.v_sy = 0
         self.evade_list = []
-        self.av_sx = self.av_sy = 0
         self.neighbors = 1
         self.near_player = False
 
