@@ -79,11 +79,13 @@ def move_square(self):
 def follow_player(self, speed=5):
     speed = speed
     while(True):
-        vx, vy = utils.normalize(self.track.x - self.x, self.track.y - self.y)
-        vx *= speed
-        vy *= speed
-        self.des_vx = vx
-        self.des_vy = vy
+        if not self.track.dead:
+            vx, vy = utils.normalize(
+                self.track.x - self.x, self.track.y - self.y)
+            vx *= speed
+            vy *= speed
+            self.des_vx = vx
+            self.des_vy = vy
         yield 0
 
 
@@ -172,6 +174,8 @@ def split(self):
 
 
 def link(self, pair=None, sensors=None):
+
+    self.trackable = False
 
     if not pair == None:
         self.pair = pair

@@ -57,7 +57,7 @@ class Sprite(pyglet.sprite.Sprite):
 
 class Bullet(Sprite):
 
-    def __init__(self, behaviours=None, speed=10, track=None, * args, **kwargs):
+    def __init__(self, behaviours=None, speed=10, track=None, rotation=0, *args, **kwargs):
         super(Bullet, self).__init__(**kwargs)
         self.track = track
         self.speed = speed
@@ -66,13 +66,26 @@ class Bullet(Sprite):
         for behaviour in behaviours:
             # behaviour is an array, function, **kwargs
             self.behaviours.append(behaviour[0](self, *behaviour[1:]))
-        self.vel_x = self.vel_y = 0
+        rotation *= -math.pi / 180
+        self.vel_x = math.cos(rotation) * 10
+        self.vel_y = math.sin(rotation) * 10
+        self.des_vx = self.des_vy = 0
 
     def update(self, dt):
         Sprite.update(self, dt)
 
         for behaviour in self.behaviours:
             behaviour.next()
+
+        steer_x = steer_y = 0
+        steer_x, steer_y = self.des_vx - self.vel_x, self.des_vy - self.vel_y
+        # truncate
+        steer_x = utils.trunc(self.des_vx - self.vel_x, 0.5)
+        steer_y = utils.trunc(self.des_vy - self.vel_y, 0.5)
+
+        self.vel_x += steer_x
+        self.vel_y += steer_y
+
         self.x = utils.trunc(self.x + self.vel_x, 0, CONSTS.game_width)
         self.y = utils.trunc(self.y + self.vel_y, 0, CONSTS.game_height)
 
