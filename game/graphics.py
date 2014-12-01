@@ -27,7 +27,7 @@ class Camera(object):
         self._track = type('obj', (object,), {'x': 0, 'y': 0})
         self._radius = 0
         self._shake_dec = 0  # how much the shake dies down every update
-        self.a = 0
+        self.ax = 0
 
     def update(self, dt):
         if self._radius > 0:
