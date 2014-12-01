@@ -309,6 +309,27 @@ def by_angle(self, r):
         yield 0
 
 
+def chase(self):
+    speed = 5
+    while(True):
+        if not self.track.dead:
+            vx, vy = utils.normalize(
+                self.track.x - self.x, self.track.y - self.y)
+            theta = math.atan2(
+                self.track.y - self.y, self.track.x - self.x) * 180 / math.pi
+            vx = 5 * (90 - abs(theta)) / 90
+            if theta < 0:
+                vy = -speed + abs(vx)
+            else:
+                vy = speed - abs(vx)
+            self.x += vx
+            self.y += vy
+
+            self.vel_x = utils.trunc(self.vel_x + vx * speed, 8)
+            self.vel_y = utils.trunc(self.vel_y + vy * speed, 8)
+        yield 0
+
+
 def penrose(self):
     r = 0
     while(True):

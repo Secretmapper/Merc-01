@@ -77,15 +77,6 @@ class Bullet(Sprite):
         for behaviour in self.behaviours:
             behaviour.next()
 
-        steer_x = steer_y = 0
-        steer_x, steer_y = self.des_vx - self.vel_x, self.des_vy - self.vel_y
-        # truncate
-        steer_x = utils.trunc(self.des_vx - self.vel_x, 0.5)
-        steer_y = utils.trunc(self.des_vy - self.vel_y, 0.5)
-
-        self.vel_x += steer_x
-        self.vel_y += steer_y
-
         self.x = utils.trunc(self.x + self.vel_x, 0, CONSTS.game_width)
         self.y = utils.trunc(self.y + self.vel_y, 0, CONSTS.game_height)
 
@@ -262,6 +253,7 @@ class Ship(Sprite):
         self.keys = dict(spacebar=False, W=False, A=False, S=False, D=False, shift=False,
                          left=False, right=False, up=False, down=False)
         self.shoot = False
+        self.shoot_type = 1
         self.shoot_timer = 10
         self.i_shoot = self.shoot_timer
         self.speed_x, self.speed_y = 0, 0
@@ -335,6 +327,10 @@ class Ship(Sprite):
             self.y = self.half_height
 
     def on_key_press(self, symbol, modifiers):
+        if symbol == key._1:
+            self.shoot_type = 1
+        if symbol == key._2:
+            self.shoot_type = 2
         if symbol == key.SPACE:
             self.keys['spacebar'] = True
         if symbol == key.LSHIFT:

@@ -137,11 +137,17 @@ class Play_State(object):
             self.enemies.append(enemy)
 
         if self.ship.shoot and CONSTS.DEBUG_MODE_VAR('shoot'):
-            if len(self.enemies) >= 1 and self.enemies[0].trackable:
-                bullet = Bullet(behaviours=[[behaviours.follow_player]], on_bounds_kill=True, img=res.bullet, x=self.ship.x,
-                                y=self.ship.y, batch=self.main_batch, track=self.enemies[0], rotation=self.ship.rotation)
+            if self.ship.shoot_type == 1:
+                bullet = Bullet(behaviours=[[behaviours.by_angle, self.ship.rotation]], on_bounds_kill=True, img=res.bullet, x=self.ship.x,
+                                y=self.ship.y, batch=self.main_batch, rotation=self.ship.rotation)
                 self.spatial_grid.add_entity(bullet, self.BULLET_CB_TYPE)
                 self.bullets.append(bullet)
+            if self.ship.shoot_type == 2:
+                if len(self.enemies) >= 1 and self.enemies[0].trackable:
+                    bullet = Bullet(behaviours=[[behaviours.chase]], on_bounds_kill=True, img=res.bullet, x=self.ship.x,
+                                    y=self.ship.y, batch=self.main_batch, track=self.enemies[0], rotation=self.ship.rotation)
+                    self.spatial_grid.add_entity(bullet, self.BULLET_CB_TYPE)
+                    self.bullets.append(bullet)
 
         self.ship.update(dt)
 
