@@ -282,6 +282,11 @@ def circle_detect(self):
             detect_text.y = self.y
         yield 0
 
+
+def exits(self):
+    self._exits = True
+    while(True):
+        yield 0
 """
 Bullet Behaviours
 """

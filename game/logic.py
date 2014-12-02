@@ -85,7 +85,7 @@ class Enemy_Spawner(object):
             y = i * 50 + c_y if c_y else self.ship.y
 
             behaviours_list = [
-                [behaviours.by_sin, sin_dir]]
+                [behaviours.by_sin, sin_dir], [behaviours.exits]]
             enemy = EnemyShip(behaviours=behaviours_list, img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
                               x=x, y=y, batch=self.main_batch, cb_type=CONSTS.ENEMY_CB_TYPE)
             self.enemies.append(enemy)
