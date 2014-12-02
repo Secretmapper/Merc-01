@@ -22,10 +22,16 @@ class Enemy_Spawner(object):
         self.enemies = []
 
         cb_to_remove = []
+
+        # We are just doing the callbacks here
+        # callback is an array containing [callback, delay, parameters]
         for callback in self.callbacks:
             callback[1] = callback[1] - 1
             if callback[1] <= 0:
-                callback[0]()
+                if callback[2]:
+                    callback[0](**callback[2])
+                else:
+                    callback[0]()
 
         self.callbacks[:] = [cb for cb in self.callbacks if cb[1] > 0]
 
@@ -48,25 +54,34 @@ class Enemy_Spawner(object):
 
         if self.spwn_chance >= random.randint(0, 100) and len(self.state.enemies) <= 0 and len(self.callbacks) <= 0:
             self.spwn_chance = 0
-            self.callbacks.append([self.spawn_sin, 5])
+
+            if random.randint(0, 2) == 0:
+                cx = -CONSTS.game_width
+            else:
+                cx = CONSTS.game_width
+            self.callbacks.append(
+                [self.spawn_sin, 5, {'c_x': cx}])
 
         if self.spwn_chance > 20:
             self.spwn_chance += 0.000005
 
-    def spawn_sin(self):
-        angles = [a * math.pi / 180 for a in range(1, 360, 20)]
+    def spawn_sin(self, c_x=CONSTS.game_width):
+        angles = [a * math.pi / 180 for a in range(1, 320, 20)]
         angles_ln = len(angles) / 100.0
 
+        if c_x >= CONSTS.game_width:
+            sin_dir = 180
+        else:
+            sin_dir = 0
+
         for i in xrange(len(angles)):
-            # x2 + y2 = r2
             a = angles[i]
-            x = i * 50 + CONSTS.game_width + 50
-            y = math.cos(a) * 100 + self.ship.y
+            x = i * 50 + c_x
 
             behaviours_list = [
-                [behaviours.follow_player], [behaviours.delay, a * 2, float(a) / angles_ln], [behaviours.split]]
-            enemy = EnemyShip(behaviours=behaviours_list, img=res.tracker, particle_data={'rgb': res.splitter_colors}, track=self.ship,
-                              x=x, y=y, batch=self.main_batch, cb_type=CONSTS.ENEMY_CB_TYPE)
+                [behaviours.by_sin, sin_dir]]
+            enemy = EnemyShip(behaviours=behaviours_list, img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
+                              x=x, y=self.ship.y, batch=self.main_batch, cb_type=CONSTS.ENEMY_CB_TYPE)
             self.enemies.append(enemy)
 
     def spawn_circle(self, dt=0):

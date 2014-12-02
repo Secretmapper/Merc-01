@@ -301,11 +301,28 @@ def spiral(self, i):
 
 
 def by_angle(self, r):
+    speed = 5
     self.rotation = r
     r *= -math.pi / 180
-    self.vel_x = math.cos(r) * self.speed
-    self.vel_y = math.sin(r) * self.speed
+    dir_x = math.cos(r) * 5
+    dir_y = math.sin(r) * 5
     while(True):
+        self.vel_x = dir_x
+        self.vel_y = dir_y
+        yield 0
+
+
+def by_sin(self, r):
+    a = 0
+    speed = 5
+    r *= -math.pi / 180
+    dir_x = math.cos(r) * 5
+    dir_y = math.sin(r) * 5
+    start_y = self.y
+    while(True):
+        self.x += dir_x
+        self.y = math.sin(a) * 50 + start_y
+        a += 5 * math.pi / 180
         yield 0
 
 

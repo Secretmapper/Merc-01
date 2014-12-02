@@ -72,12 +72,12 @@ class Play_State(object):
                                             color=(87, 198, 211, 200),
                                             x=50, y=CONSTS.win_height - 100)
 
-        self.ship = Ship(img=res.player, x=400, y=300, batch=self.main_batch)
+        self.ship = Ship(img=res.player, x=200, y=300, batch=self.main_batch)
         self.bullets = []
         self.enemies = []
         self.enemy_bullets = []
 
-        pyglet.clock.set_fps_limit(30)
+        pyglet.clock.set_fps_limit(60)
         pyglet.clock.schedule(self.on_update)
 
         win.push_handlers(self.ship)
@@ -137,10 +137,11 @@ class Play_State(object):
 
         if self.ship.shoot and CONSTS.DEBUG_MODE_VAR('shoot'):
             if self.ship.shoot_type == 1:
-                bullet = Bullet(behaviours=[[behaviours.by_angle, self.ship.rotation]], on_bounds_kill=True, img=res.bullet, x=self.ship.x,
-                                y=self.ship.y, batch=self.main_batch, rotation=self.ship.rotation)
-                self.spatial_grid.add_entity(bullet, self.BULLET_CB_TYPE)
-                self.bullets.append(bullet)
+                for i in [-1, 0, 1]:
+                    bullet = Bullet(behaviours=[[behaviours.by_angle, self.ship.rotation + i * 10]], on_bounds_kill=True, img=res.bullet, x=self.ship.x,
+                                    y=self.ship.y, batch=self.main_batch, rotation=self.ship.rotation)
+                    self.spatial_grid.add_entity(bullet, self.BULLET_CB_TYPE)
+                    self.bullets.append(bullet)
             if self.ship.shoot_type == 2:
                 if len(self.enemies) >= 1 and self.enemies[0].trackable:
                     bullet = Bullet(behaviours=[[behaviours.chase]], on_bounds_kill=True, img=res.bullet, x=self.ship.x,
@@ -295,9 +296,10 @@ class Play_State(object):
         # particle_pos.append(
         #    max_y + ((180.0 / CONSTS.game_height) * i.y) - 180)
         particle_pos = [
-            pos for enemy in self.enemies for pos in [(max_x + ((234.0 / CONSTS.game_width) * enemy.x) - 234) - 2.5,
-                                                      max_y + ((180.0 / CONSTS.game_height) * enemy.y) - 180]]
-        colors = [c for enemy in self.enemies for c in [1.0, 0.0, 0.0, 1.0]]
+            pos for enemy in self.enemies if not enemy.nonactive for pos in [(max_x + ((234.0 / CONSTS.game_width) * enemy.x) - 234) - 2.5,
+                                                                             max_y + ((180.0 / CONSTS.game_height) * enemy.y) - 180]]
+        colors = [c for enemy in self.enemies if not enemy.nonactive for c in [
+            1.0, 0.0, 0.0, 1.0]]
 
         particle_pos.append(
             (max_x + ((234.0 / CONSTS.game_width) * self.ship.x) - 234) - 2.5)

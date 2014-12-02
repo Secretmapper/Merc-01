@@ -169,7 +169,8 @@ class EnemyShip(AbstractEnemy):
 
             if not (self.x < self.min_x or self.x >= self.max_x or self.y < self.min_y or self.y >= self.max_y):
                 self.nonactive = False
-            return
+            else:
+                return
         if self.dead:
             # if positional death (because of bullets, fade)
             if self.death_vx:
