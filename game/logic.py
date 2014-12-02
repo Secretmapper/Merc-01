@@ -55,33 +55,39 @@ class Enemy_Spawner(object):
         if self.spwn_chance >= random.randint(0, 100) and len(self.state.enemies) <= 0 and len(self.callbacks) <= 0:
             self.spwn_chance = 0
 
-            if random.randint(0, 2) == 0:
-                cx = -CONSTS.game_width
-            else:
-                cx = CONSTS.game_width
+            sin_params = random.choice([
+                {'c_x': -CONSTS.game_width},
+                {'c_x': CONSTS.game_width},
+                {'c_y': -CONSTS.game_height},
+                {'c_y': CONSTS.game_height},
+            ])
+
             self.callbacks.append(
-                [self.spawn_sin, 5, {'c_x': cx}])
+                [self.spawn_sin, 5, sin_params])
 
         if self.spwn_chance > 20:
             self.spwn_chance += 0.000005
 
-    def spawn_sin(self, c_x=CONSTS.game_width):
+    def spawn_sin(self, c_x=False, c_y=False):
         angles = [a * math.pi / 180 for a in range(1, 320, 20)]
         angles_ln = len(angles) / 100.0
 
-        if c_x >= CONSTS.game_width:
-            sin_dir = 180
-        else:
-            sin_dir = 0
+        sin_dir = 0
+
+        if c_x:
+            sin_dir = 180 if c_x >= CONSTS.game_width else 0
+        if c_y:
+            sin_dir = 90 if c_y >= CONSTS.game_height else 270
 
         for i in xrange(len(angles)):
             a = angles[i]
-            x = i * 50 + c_x
+            x = i * 50 + c_x if c_x else self.ship.x
+            y = i * 50 + c_y if c_y else self.ship.y
 
             behaviours_list = [
                 [behaviours.by_sin, sin_dir]]
             enemy = EnemyShip(behaviours=behaviours_list, img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
-                              x=x, y=self.ship.y, batch=self.main_batch, cb_type=CONSTS.ENEMY_CB_TYPE)
+                              x=x, y=y, batch=self.main_batch, cb_type=CONSTS.ENEMY_CB_TYPE)
             self.enemies.append(enemy)
 
     def spawn_circle(self, dt=0):

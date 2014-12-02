@@ -315,13 +315,16 @@ def by_angle(self, r):
 def by_sin(self, r):
     a = 0
     speed = 5
-    r *= -math.pi / 180
-    dir_x = math.cos(r) * 5
-    dir_y = math.sin(r) * 5
-    start_y = self.y
+    ar = r * -math.pi / 180
+    dir_x, dir_y = math.cos(ar) * speed, math.sin(ar) * speed
+    start_x, start_y = self.x, self.y
     while(True):
-        self.x += dir_x
-        self.y = math.sin(a) * 50 + start_y
+        if r == 0 or r == 180:
+            self.x += dir_x
+            self.y = math.sin(a) * 50 + start_y
+        else:
+            self.x = math.sin(a) * 50 + start_x
+            self.y += dir_y
         a += 5 * math.pi / 180
         yield 0
 
