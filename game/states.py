@@ -47,8 +47,7 @@ class Play_State(object):
 
         self.health_bars = []
 
-        health_bars = {
-            'subpixel': True, 'batch': self.hud_batch}
+        health_bars = {'batch': self.hud_batch}
         health_bar_coords = [{'img': res.health_bar, 'x': res.health_bar.width / 2 + 50,
                               'y': CONSTS.win_height - res.health_bar.height / 2 - 50},
                              {'img': res.health_bar, 'x': res.health_bar.width / 2 + 75,
