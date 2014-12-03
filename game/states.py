@@ -296,9 +296,9 @@ class Play_State(object):
         # particle_pos.append(
         #    max_y + ((180.0 / CONSTS.game_height) * i.y) - 180)
         particle_pos = [
-            pos for enemy in self.enemies if not enemy.nonactive for pos in [(max_x + ((234.0 / CONSTS.game_width) * enemy.x) - 234) - 2.5,
+            pos for enemy in self.enemies if enemy.show_on_radar for pos in [(max_x + ((234.0 / CONSTS.game_width) * enemy.x) - 234) - 2.5,
                                                                              max_y + ((180.0 / CONSTS.game_height) * enemy.y) - 180]]
-        colors = [c for enemy in self.enemies if not enemy.nonactive for c in [
+        colors = [c for enemy in self.enemies if enemy.show_on_radar for c in [
             1.0, 0.0, 0.0, 1.0]]
 
         particle_pos.append(

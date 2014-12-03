@@ -48,6 +48,10 @@ class Sprite(pyglet.sprite.Sprite):
         if self.on_bounds_kill:
             self.check_bounds()
 
+    @property
+    def is_outside(self):
+        return self.x < self.min_x or self.x >= self.max_x or self.y < self.min_y or self.y >= self.max_y
+
     def check_bounds(self):
         if self.x < self.min_x or self.x >= self.max_x or self.y < self.min_y or self.y >= self.max_y:
             if not self.dead:
@@ -137,6 +141,7 @@ class EnemyShip(AbstractEnemy):
         self.death_vx = False
         self.trackable = True
 
+        self.show_on_radar = False
         self.nonactive = True
 
     def shot(self, x, y):
@@ -169,6 +174,7 @@ class EnemyShip(AbstractEnemy):
 
             if not (self.x < self.min_x or self.x >= self.max_x or self.y < self.min_y or self.y >= self.max_y):
                 self.nonactive = False
+                self.show_on_radar = True
             else:
                 return
         if self.dead:
@@ -217,8 +223,15 @@ class EnemyShip(AbstractEnemy):
         self.vel_x += self.v_sx
         self.vel_y += self.v_sy
 
-        self.x = utils.trunc(self.x + self.vel_x, 0, CONSTS.game_width)
-        self.y = utils.trunc(self.y + self.vel_y, 0, CONSTS.game_height)
+        if self._exits:
+            self.x = self.x + self.vel_x
+            self.y = self.y + self.vel_y
+            if self.show_on_radar and self.is_outside:
+                self.show_on_radar = False
+                #self.dead = True
+        else:
+            self.x = utils.trunc(self.x + self.vel_x, 0, CONSTS.game_width)
+            self.y = utils.trunc(self.y + self.vel_y, 0, CONSTS.game_height)
 
         if not self.vel_x == 0:
             theta = math.atan2(self.y - last_y, self.x - last_x)
