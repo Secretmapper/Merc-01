@@ -16,6 +16,9 @@ tracker_colors = [140, 198, 63]
 splitter = center_anchor(pyglet.resource.image('splitter.png'))
 splitter_colors = [170, 104, 170]
 
+evader = center_anchor(pyglet.resource.image('evader.png'))
+evader_colors = [255, 242, 0]
+
 liner = center_anchor(pyglet.resource.image('liner.png'))
 bullet = center_anchor(pyglet.resource.image('bullet.png'))
 homing_bullet = center_anchor(pyglet.resource.image('homing-bullet.png'))
