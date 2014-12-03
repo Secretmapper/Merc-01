@@ -145,6 +145,7 @@ class EnemyShip(AbstractEnemy):
         self.death_vx = False
         self.trackable = True
 
+        self._exits = False
         self.show_on_radar = False
         self.nonactive = True
 

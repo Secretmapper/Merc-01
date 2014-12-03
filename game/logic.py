@@ -28,7 +28,7 @@ class Enemy_Spawner(object):
         for callback in self.callbacks:
             callback[1] = callback[1] - 1
             if callback[1] <= 0:
-                if callback[2]:
+                if len(callback) >= 3:
                     callback[0](**callback[2])
                 else:
                     callback[0]()
@@ -62,8 +62,8 @@ class Enemy_Spawner(object):
                 {'c_y': CONSTS.game_height},
             ])
 
-            self.callbacks.append(
-                [self.spawn_sin, 5, sin_params])
+            self.callbacks.append([self.spawn_sin, 5, sin_params])
+            self.callbacks.append([self.spawn_circle, 5])
 
         if self.spwn_chance > 20:
             self.spwn_chance += 0.000005
