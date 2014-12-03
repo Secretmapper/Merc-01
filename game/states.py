@@ -192,20 +192,23 @@ class Play_State(object):
                     game.graphics.ParticleSystem(bullet.x, bullet.y, particle_life=20, particles=1 + randint(0, 30)))
             bullet.delete()
 
-        for enemy in [b for b in self.enemies if b.dead]:
-            self.emitter_list.append(
-                game.graphics.ParticleSystem(enemy.x, enemy.y, **enemy.particle_data))
+        for enemy in [b for b in self.enemies if b.dead or b.is_outside_of_screen]:
             self.enemies.remove(enemy)
             enemy.kill()
-            self.camera.shake(10)
-            self.dead_enemies.append(enemy)
-            if enemy.split:
-                self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
-                                              x=enemy.x + enemy.image.width * 2, y=enemy.y + enemy.image.height * 2, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
-                self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
-                                              x=enemy.x + enemy.image.width * -2, y=enemy.y + enemy.image.height * -2, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
+            if enemy.dead:
+                self.emitter_list.append(
+                    game.graphics.ParticleSystem(enemy.x, enemy.y, **enemy.particle_data))
+                self.camera.shake(10)
+                self.dead_enemies.append(enemy)
+                if enemy.split:
+                    self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
+                                                  x=enemy.x + enemy.image.width * 2, y=enemy.y + enemy.image.height * 2, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
+                    self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
+                                                  x=enemy.x + enemy.image.width * -2, y=enemy.y + enemy.image.height * -2, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
 
-            self.target_score += 100
+                self.target_score += 100
+            else:
+                enemy.delete()
 
         if self.target_score > self.score:
             self.score = utils.lerp(self.score, self.target_score, 0.2)

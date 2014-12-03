@@ -52,6 +52,10 @@ class Sprite(pyglet.sprite.Sprite):
     def is_outside(self):
         return self.x < self.min_x or self.x >= self.max_x or self.y < self.min_y or self.y >= self.max_y
 
+    @property
+    def is_outside_of_screen(self):
+        return self.x < self.min_x - 50 or self.x >= self.max_x + 50 or self.y < self.min_y - 50 or self.y >= self.max_y + 50
+
     def check_bounds(self):
         if self.x < self.min_x or self.x >= self.max_x or self.y < self.min_y or self.y >= self.max_y:
             if not self.dead:
@@ -150,6 +154,11 @@ class EnemyShip(AbstractEnemy):
         self._enter_behaviour = behaviours.enter(self)
         self._exit_behaviour = behaviours.dying(self)
 
+    @property
+    def is_outside_of_screen(self):
+        margin = 50
+        return (not self.nonactive) and (self.x < self.min_x - margin or self.x >= self.max_x + margin or self.y < self.min_y - margin or self.y >= self.max_y + margin)
+
     def shot(self, x, y):
         death_theta = math.atan2(
             self.y - y, self.x - x)
@@ -211,7 +220,6 @@ class EnemyShip(AbstractEnemy):
             self.y = self.y + self.vel_y
             if self.show_on_radar and self.is_outside:
                 self.show_on_radar = False
-                #self.dead = True
         else:
             self.x = utils.trunc(self.x + self.vel_x, 0, CONSTS.game_width)
             self.y = utils.trunc(self.y + self.vel_y, 0, CONSTS.game_height)
