@@ -6,6 +6,47 @@ import resources as res
 import constants as CONSTS
 
 
+def enter(self):
+    while(True):
+        if self.x < self.min_x:
+            self.x += 5
+        elif self.x >= self.max_x:
+            self.x -= 5
+        if self.y < self.min_y:
+            self.y += 5
+        elif self.y > self.max_y:
+            self.y -= 5
+
+        if not (self.x < self.min_x or self.x >= self.max_x or self.y < self.min_y or self.y >= self.max_y):
+            self.nonactive = False
+            self.show_on_radar = True
+            yield True
+        else:
+            yield False
+
+
+def dying(self):
+    while(True):
+        # if positional death (because of bullets, fade)
+        if self.death_vx:
+            self.x += self.death_vx
+            self.y += self.death_vy
+            self.scale *= 0.999
+            if self.scale <= 0.3:
+                self.remove = True
+        # else if non-positional death (i.e., line enemy, out of bounds),
+        # just remove
+        else:
+            self.remove = True
+        yield 0
+
+
+def exits(self):
+    self._exits = True
+    while(True):
+        yield 0
+
+
 def delay(self, delay_time, alpha_time=False):
     """
     Function that delays 'Enemy Spawn'
@@ -282,11 +323,6 @@ def circle_detect(self):
             detect_text.y = self.y
         yield 0
 
-
-def exits(self):
-    self._exits = True
-    while(True):
-        yield 0
 """
 Bullet Behaviours
 """

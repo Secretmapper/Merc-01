@@ -144,6 +144,12 @@ class EnemyShip(AbstractEnemy):
         self.show_on_radar = False
         self.nonactive = True
 
+        self._init_behaviour()
+
+    def _init_behaviour(self):
+        self._enter_behaviour = behaviours.enter(self)
+        self._exit_behaviour = behaviours.dying(self)
+
     def shot(self, x, y):
         death_theta = math.atan2(
             self.y - y, self.x - x)
@@ -162,33 +168,10 @@ class EnemyShip(AbstractEnemy):
         self.debug_vertex_list = []
 
     def update(self, dt):
-        if self.nonactive:
-            if self.x < self.min_x:
-                self.x += 5
-            elif self.x >= self.max_x:
-                self.x -= 5
-            if self.y < self.min_y:
-                self.y += 5
-            elif self.y > self.max_y:
-                self.y -= 5
-
-            if not (self.x < self.min_x or self.x >= self.max_x or self.y < self.min_y or self.y >= self.max_y):
-                self.nonactive = False
-                self.show_on_radar = True
-            else:
-                return
+        if self.nonactive and not self._enter_behaviour.next():
+            return
         if self.dead:
-            # if positional death (because of bullets, fade)
-            if self.death_vx:
-                self.x += self.death_vx
-                self.y += self.death_vy
-                self.scale *= 0.999
-                if self.scale <= 0.3:
-                    self.remove = True
-            # else if non-positional death (i.e., line enemy, out of bounds),
-            # just remove
-            else:
-                self.remove = True
+            self._exit_behaviour.next()
             return
 
         self.bullets = []
