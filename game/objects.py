@@ -301,12 +301,12 @@ class Ship(Sprite):
             self.shoot = True
             self.i_shoot = self.shoot_timer
 
-        if self.keys['shift']:
-            self.speed = 1.0
-            self.boost = True
-        else:
-            self.speed = 0.3
-            self.boost = False
+        # if self.keys['shift']:
+        #    self.speed = 1.0
+        #    self.boost = True
+        # else:
+        #    self.speed = 0.3
+        #    self.boost = False
 
         if self.keys['W']:
             self.speed_y += self.speed * xdt
@@ -317,23 +317,24 @@ class Ship(Sprite):
         if self.keys['D']:
             self.speed_x += self.speed * xdt
 
-        if self.keys['D']:
-            self.rotation = 0
-        if self.keys['S']:
-            self.rotation = 90
-        if self.keys['A']:
-            self.rotation = 180
-        if self.keys['W']:
-            self.rotation = 270
+        if not self.keys['shift']:
+            if self.keys['D']:
+                self.rotation = 0
+            if self.keys['S']:
+                self.rotation = 90
+            if self.keys['A']:
+                self.rotation = 180
+            if self.keys['W']:
+                self.rotation = 270
 
-        if self.keys['S'] and self.keys['A']:
-            self.rotation = 135
-        if self.keys['S'] and self.keys['D']:
-            self.rotation = 45
-        if self.keys['W'] and self.keys['A']:
-            self.rotation = 225
-        if self.keys['W'] and self.keys['D']:
-            self.rotation = 315
+            if self.keys['S'] and self.keys['A']:
+                self.rotation = 135
+            if self.keys['S'] and self.keys['D']:
+                self.rotation = 45
+            if self.keys['W'] and self.keys['A']:
+                self.rotation = 225
+            if self.keys['W'] and self.keys['D']:
+                self.rotation = 315
 
         self.speed_x *= 0.95
         self.speed_y *= 0.95
