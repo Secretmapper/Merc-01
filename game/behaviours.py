@@ -17,7 +17,7 @@ def enter(self):
         elif self.y > self.max_y:
             self.y -= 5
 
-        if not (self.x < self.min_x or self.x >= self.max_x or self.y < self.min_y or self.y >= self.max_y):
+        if not self.is_outside:
             self.nonactive = False
             self.show_on_radar = True
             yield True
