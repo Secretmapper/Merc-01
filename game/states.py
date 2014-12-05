@@ -185,13 +185,6 @@ class Play_State(object):
                     game.graphics.ParticleSystem(bullet.x, bullet.y, particle_life=20, particles=20 + randint(0, 30)))
             bullet.delete()
 
-        for bullet in [b for b in self.enemy_bullets if b.dead]:
-            self.enemy_bullets.remove(bullet)
-            if bullet.bounds_death:
-                self.emitter_list.append(
-                    game.graphics.ParticleSystem(bullet.x, bullet.y, particle_life=20, particles=1 + randint(0, 30)))
-            bullet.delete()
-
         for enemy in [b for b in self.enemies if b.dead or b.is_outside_of_screen]:
             self.enemies.remove(enemy)
             enemy.kill()
