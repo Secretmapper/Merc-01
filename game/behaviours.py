@@ -62,17 +62,40 @@ def delay(self, delay_time, alpha_time=False):
         alpha_time = delay_time
 
     first_x, first_y = self.x, self.y
-    i = 0
+
+    delay_time = int(delay_time)
+    alpha_time = float(alpha_time)
+
+    max_scale = 5
+
+    self.opacity = 0
+    self.scale = max_scale
+    self.show_on_radar = False
+
+    for i in xrange(delay_time):
+        self.des_vy = 0
+        self.des_vx = 0
+        self.vel_x = 0
+        self.vel_y = 0
+        self.collidable = False
+        yield 0
+
+    i = 1
+    d_i = 0
+    d_i_interval = 1 / alpha_time
+
     while(True):
-        if i <= delay_time:
+        if i <= alpha_time:
+            self.show_on_radar = True
             self.des_vy = 0
             self.des_vx = 0
             self.vel_x = 0
             self.vel_y = 0
-        if i <= alpha_time:
-            self.opacity = 0
+            self.collidable = False
+            self.scale = max(1, max_scale - (i / alpha_time) * (max_scale - 1))
+            self.opacity = min(255, (i / alpha_time) * 255)
         else:
-            self.opacity = 255
+            self.collidable = True
         i += 1
         yield 0
 

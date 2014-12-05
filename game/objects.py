@@ -98,6 +98,7 @@ class AbstractEnemy(Sprite):
         self.sensor = False
         self.show_on_radar = False
         self.trackable = True
+        self.collidable = True
 
 
 class Sensor(AbstractEnemy):

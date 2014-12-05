@@ -62,8 +62,9 @@ class Enemy_Spawner(object):
                 {'c_y': CONSTS.game_height},
             ])
 
-            self.callbacks.append([self.spawn_sin, 5, sin_params])
+            #self.callbacks.append([self.spawn_sin, 5, sin_params])
             self.callbacks.append([self.spawn_circle, 5])
+            #self.callbacks.append([spawn_line, 5, {'x': 100, 'y': 100}])
 
         if self.spwn_chance > 20:
             self.spwn_chance += 0.000005
@@ -100,7 +101,7 @@ class Enemy_Spawner(object):
             y = math.sin(a) * 200 + self.ship.y
 
             behaviours_list = [
-                [behaviours.follow_player, 1 + float(a) / 1000], [behaviours.delay, a * 2, float(a) / angles_ln], [behaviours.split]]
+                [behaviours.follow_player, 1 + float(a) / 1000], [behaviours.delay, a * 10, 30], [behaviours.split]]
             enemy = EnemyShip(behaviours=behaviours_list, img=res.splitter, particle_data={'rgb': res.splitter_colors}, track=self.ship,
                               x=x, y=y, batch=self.main_batch, cb_type=CONSTS.ENEMY_CB_TYPE)
             self.enemies.append(enemy)

@@ -72,7 +72,7 @@ class Play_State(object):
                                             color=(87, 198, 211, 200),
                                             x=50, y=CONSTS.win_height - 100)
 
-        self.ship = Ship(img=res.player, x=200, y=300, batch=self.main_batch)
+        self.ship = Ship(img=res.player, x=400, y=300, batch=self.main_batch)
         self.bullets = []
         self.enemies = []
         self.enemy_bullets = []
@@ -226,7 +226,8 @@ class Play_State(object):
             enemy.update(dt)
             if enemy.bullets:
                 self.enemy_bullets += enemy.bullets
-            self.spatial_grid.add(enemy, enemy.cb_type)
+            if enemy.collidable:
+                self.spatial_grid.add(enemy, enemy.cb_type)
 
         for enemy_bullet in self.enemy_bullets:
             enemy_bullet.update(dt)
