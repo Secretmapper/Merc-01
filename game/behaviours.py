@@ -364,12 +364,11 @@ def spiral(self, i):
         yield 0
 
 
-def by_angle(self, r):
-    speed = 5
+def by_angle(self, r, speed=5):
     self.rotation = r
     r *= -math.pi / 180
-    dir_x = math.cos(r) * 5
-    dir_y = math.sin(r) * 5
+    dir_x = math.cos(r) * speed
+    dir_y = math.sin(r) * speed
     while(True):
         self.vel_x = dir_x
         self.vel_y = dir_y
