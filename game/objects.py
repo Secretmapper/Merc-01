@@ -96,6 +96,7 @@ class AbstractEnemy(Sprite):
         self.bullets = False
         self.split = False
         self.sensor = False
+        self.show_on_radar = False
         self.trackable = True
 
 
