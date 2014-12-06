@@ -141,6 +141,7 @@ class EnemyShip(AbstractEnemy):
         self.near_player = False
         self.bullets = []
         self.neighbors = 1
+        self.aneighbors = 1
         self.v_sx = self.v_sy = 0
         self.des_vx = self.des_vy = 0
         self.evade_list = []
