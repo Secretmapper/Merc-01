@@ -26,6 +26,7 @@ def enter(self):
 
 
 def dying(self):
+    self.scale = 1
     while(True):
         # if positional death (because of bullets, fade)
         if self.death_vx:

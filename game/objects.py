@@ -290,6 +290,9 @@ class Ship(Sprite):
         self.boost = False
         self.shoot_rotation = 0
 
+        self.invinsible = False
+        self._invinsible_i = 0
+
     def on_mouse_motion(self, x, y, dx, dy):
         self.shoot_rotation = -\
             math.atan2(
@@ -299,8 +302,20 @@ class Ship(Sprite):
         1
         #self.opacity = 0
 
+    def respawn(self):
+        self.opacity = 255
+        self._invinsible_i = 20
+        self.invinsible = True
+        self.dead = False
+
     def update(self, dt):
         Sprite.update(self, dt)
+
+        if self._invinsible_i >= 0:
+            self._invinsible_i -= 1
+            if self._invinsible_i <= 0:
+                self.invinsible = False
+
         xdt = dt / CONSTS.game_iter
         self.shoot = False
         self.i_shoot -= 1
