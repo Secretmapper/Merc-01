@@ -1,5 +1,9 @@
 import pyglet
-pyglet.resource.path = ['./resources/img']
+import os
+
+working_dir = os.path.dirname(os.path.realpath(__file__))
+
+pyglet.resource.path = [os.path.join(working_dir, '../resources/img')]
 pyglet.resource.reindex()
 
 
