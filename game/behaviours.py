@@ -205,8 +205,8 @@ def evade(self):
         vx /= self.aneighbors
         vy /= self.aneighbors
         vx, vy = utils.normalize(vx, vy)
-        vx *= -2
-        vy *= -2
+        vx *= -3
+        vy *= -3
 
         self.vel_x += vx
         self.vel_y += vy
