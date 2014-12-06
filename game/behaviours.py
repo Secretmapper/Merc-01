@@ -196,8 +196,8 @@ def evade(self):
         for other in self.evade_list:
             aneighbors += 1
 
-            vx += (other.x + other.vel_x) - self.x
-            vy += (other.y + other.vel_y) - self.y
+            vx += (other.x) - self.x
+            vy += (other.y) - self.y
 
         vx *= speed
         vy *= speed
