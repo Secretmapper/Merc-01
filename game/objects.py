@@ -277,14 +277,15 @@ class Ship(Sprite):
                          left=False, right=False, up=False, down=False)
         self.shoot = False
         self.shoot_type = 1
-        self.shoot_timer = 10
+        self.shoot_timer = 8
         self.i_shoot = self.shoot_timer
         self.speed_x, self.speed_y = 0, 0
         self.speed = 0.3
         self.boost = False
+        self.shoot_rotation = 0
 
     def on_mouse_motion(self, x, y, dx, dy):
-        self.rotation = -\
+        self.shoot_rotation = -\
             math.atan2(
                 y - (self.y + self.layer.y), x - (self.x + self.layer.x)) * 180 / math.pi
 
@@ -335,6 +336,24 @@ class Ship(Sprite):
                 self.rotation = 225
             if self.keys['W'] and self.keys['D']:
                 self.rotation = 315
+
+        if self.keys['right']:
+            self.shoot_rotation = 0
+        if self.keys['down']:
+            self.shoot_rotation = 90
+        if self.keys['left']:
+            self.shoot_rotation = 180
+        if self.keys['up']:
+            self.shoot_rotation = 270
+
+        if self.keys['down'] and self.keys['left']:
+            self.shoot_rotation = 135
+        if self.keys['down'] and self.keys['right']:
+            self.shoot_rotation = 45
+        if self.keys['up'] and self.keys['left']:
+            self.shoot_rotation = 225
+        if self.keys['up'] and self.keys['right']:
+            self.shoot_rotation = 315
 
         self.speed_x *= 0.95
         self.speed_y *= 0.95
