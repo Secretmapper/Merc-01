@@ -138,8 +138,8 @@ class Play_State(object):
         if self.ship.shoot and CONSTS.DEBUG_MODE_VAR('shoot'):
             if self.ship.shoot_type == 1:
                 for i in [0]:
-                    bullet = Bullet(behaviours=[[behaviours.by_angle, self.ship.rotation + i * 10, 20]], on_bounds_kill=True, img=res.bullet, x=self.ship.x,
-                                    y=self.ship.y, batch=self.main_batch, rotation=self.ship.rotation)
+                    bullet = Bullet(behaviours=[[behaviours.by_angle, self.ship.shoot_rotation + i * 10, 20]], on_bounds_kill=True, img=res.bullet, x=self.ship.x,
+                                    y=self.ship.y, batch=self.main_batch)
                     self.spatial_grid.add_entity(bullet, self.BULLET_CB_TYPE)
                     self.bullets.append(bullet)
             if self.ship.shoot_type == 2:
