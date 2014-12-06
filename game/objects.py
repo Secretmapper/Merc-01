@@ -122,8 +122,10 @@ class Sensor(AbstractEnemy):
 
 class EnemyShip(AbstractEnemy):
 
-    def __init__(self, behaviours, track, particle_data={}, *args, **kwargs):
+    def __init__(self, behaviours, track, particle_data={}, max_vel=5, *args, **kwargs):
         super(EnemyShip, self).__init__(**kwargs)
+
+        self.max_vel = max_vel
 
         self.min_x = self.image.width / 2
         self.min_y = self.image.height / 2
@@ -218,6 +220,9 @@ class EnemyShip(AbstractEnemy):
 
         self.vel_x += self.v_sx
         self.vel_y += self.v_sy
+
+        self.vel_x = utils.trunc(self.vel_x, -self.max_vel, self.max_vel)
+        self.vel_y = utils.trunc(self.vel_y, -self.max_vel, self.max_vel)
 
         if self._exits:
             self.x = self.x + self.vel_x
