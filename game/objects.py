@@ -213,12 +213,12 @@ class EnemyShip(AbstractEnemy):
         for behaviour in self.behaviours:
             behaviour.next()
 
+        steer_x = steer_y = 0
         # friction if no desired velocity
         if self._des_vx == 0 and self._des_vy == 0:
             self.vel_x *= 0.9
             self.vel_y *= 0.9
         else:
-            steer_x = steer_y = 0
             steer_x, steer_y = self._des_vx - \
                 self.vel_x, self._des_vy - self.vel_y
             # truncate
