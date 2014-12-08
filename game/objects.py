@@ -77,7 +77,7 @@ class Bullet(Sprite):
         rotation *= -math.pi / 180
         self.vel_x = math.cos(rotation) * 10
         self.vel_y = math.sin(rotation) * 10
-        self.des_vx = self.des_vy = 0
+        self._des_vx = self._des_vy = 0
 
     def update(self, dt):
         Sprite.update(self, dt)
@@ -96,8 +96,8 @@ class AbstractEnemy(Sprite):
         self.bullets = False
         self.split = False
         self.sensor = False
-        self.show_on_radar = False
-        self.trackable = True
+        self.show_on_radar = False     # Should be shown on radar?
+        self.trackable = True          # Trackable by Homing Missles?
         self.collidable = True
 
 
@@ -138,21 +138,33 @@ class EnemyShip(AbstractEnemy):
         for behaviour in behaviours:
             # behaviour is an array, function, **kwargs
             self.behaviours.append(behaviour[0](self, *behaviour[1:]))
-        self.particle_data = particle_data
-        self.track = track
-        self.near_player = False
-        self.bullets = []
-        self.neighbors = 1
-        self.aneighbors = 1
-        self.v_sx = self.v_sy = 0
-        self.des_vx = self.des_vy = 0
-        self.evade_list = []
-        self.death_vx = False
-        self.trackable = True
 
-        self._exits = False
+        self.particle_data = particle_data
+        self.bullets = []
+
+        # who to follow/track
+        self.track = track
+        self.trackable = True
         self.show_on_radar = False
+
+        # nonactive if enemy is still entering map
         self.nonactive = True
+
+        # neighbors for evasion/separation
+        self._neighbors = 1
+        self._aneighbors = 1
+
+        # destination and separation velocities
+        self._des_vx = self._des_vy = 0
+        self._sep_vx = self._sep_vy = 0
+
+        self.evade_list = []  # evasion list
+
+        # death velocities
+        self._death_vx = self._death_vy = False
+
+        # enemy exists from map
+        self._exits = False
 
         self._init_behaviour()
 
@@ -168,8 +180,8 @@ class EnemyShip(AbstractEnemy):
     def shot(self, x, y):
         death_theta = math.atan2(
             self.y - y, self.x - x)
-        self.death_vx = math.cos(death_theta) * 0.2
-        self.death_vy = math.sin(death_theta) * 0.2
+        self._death_vx = math.cos(death_theta) * 0.2
+        self._death_vy = math.sin(death_theta) * 0.2
 
     def kill(self):
         # Let's call behaviours one last time for cleanup callbacks when dead
@@ -201,10 +213,10 @@ class EnemyShip(AbstractEnemy):
             behaviour.next()
 
         steer_x = steer_y = 0
-        steer_x, steer_y = self.des_vx - self.vel_x, self.des_vy - self.vel_y
+        steer_x, steer_y = self._des_vx - self.vel_x, self._des_vy - self.vel_y
         # truncate
-        steer_x = utils.trunc(self.des_vx - self.vel_x, 0.5)
-        steer_y = utils.trunc(self.des_vy - self.vel_y, 0.5)
+        steer_x = utils.trunc(self._des_vx - self.vel_x, 0.5)
+        steer_y = utils.trunc(self._des_vy - self.vel_y, 0.5)
 
         self.vel_x += steer_x
         self.vel_y += steer_y
@@ -212,14 +224,15 @@ class EnemyShip(AbstractEnemy):
         """
         Separation
         """
-        self.v_sx /= self.neighbors
-        self.v_sy /= self.neighbors
-        self.v_sx, self.v_sy = utils.normalize(self.v_sx, self.v_sy)
-        self.v_sx *= -2
-        self.v_sy *= -2
+        self._sep_vx /= self._neighbors
+        self._sep_vy /= self._neighbors
+        self._sep_vx, self._sep_vy = utils.normalize(
+            self._sep_vx, self._sep_vy)
+        self._sep_vx *= -2
+        self._sep_vy *= -2
 
-        self.vel_x += self.v_sx
-        self.vel_y += self.v_sy
+        self.vel_x += self._sep_vx
+        self.vel_y += self._sep_vy
 
         self.vel_x = utils.trunc(self.vel_x, -self.max_vel, self.max_vel)
         self.vel_y = utils.trunc(self.vel_y, -self.max_vel, self.max_vel)
@@ -253,19 +266,18 @@ class EnemyShip(AbstractEnemy):
                                                                           0, 0, 255) * 2)
                                                                  ))
 
-        self.v_sx = self.v_sy = 0
+        self._sep_vx = self._sep_vy = 0
         self.evade_list = []
-        self.neighbors = 1
-        self.near_player = False
+        self._neighbors = 1
 
     def type_overlap_cb(self, other):
         """ Push self away when colliding with another object
         This prevents overlapping of enemies.
         """
-        self.neighbors += 1
+        self._neighbors += 1
 
-        self.v_sx += other.x - self.x
-        self.v_sy += other.y - self.y
+        self._sep_vx += other.x - self.x
+        self._sep_vy += other.y - self.y
 
     def near_by_cb(self, others):
         """Callback when bullets are near_player
@@ -286,7 +298,7 @@ class Ship(Sprite):
         self.shoot_timer = 8
         self.i_shoot = self.shoot_timer
         self.speed_x, self.speed_y = 0, 0
-        self.speed = 0.3
+        self.speed = 0.75
         self.boost = False
         self.shoot_rotation = 0
 
@@ -376,8 +388,8 @@ class Ship(Sprite):
         if self.keys['up'] and self.keys['right']:
             self.shoot_rotation = 315
 
-        self.speed_x *= 0.95
-        self.speed_y *= 0.95
+        self.speed_x *= 0.9
+        self.speed_y *= 0.9
         self.x += self.speed_x
         self.y += self.speed_y
 

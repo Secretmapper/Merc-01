@@ -29,9 +29,9 @@ def dying(self):
     self.scale = 1
     while(True):
         # if positional death (because of bullets, fade)
-        if self.death_vx:
-            self.x += self.death_vx
-            self.y += self.death_vy
+        if self._death_vx:
+            self.x += self._death_vx
+            self.y += self._death_vy
             self.scale *= 0.999
             if self.scale <= 0.3:
                 self.remove = True
@@ -74,8 +74,8 @@ def delay(self, delay_time, alpha_time=False):
     self.show_on_radar = False
 
     for i in xrange(delay_time):
-        self.des_vy = 0
-        self.des_vx = 0
+        self._des_vy = 0
+        self._des_vx = 0
         self.vel_x = 0
         self.vel_y = 0
         self.collidable = False
@@ -88,8 +88,8 @@ def delay(self, delay_time, alpha_time=False):
     while(True):
         if i <= alpha_time:
             self.show_on_radar = True
-            self.des_vy = 0
-            self.des_vx = 0
+            self._des_vy = 0
+            self._des_vx = 0
             self.vel_x = 0
             self.vel_y = 0
             self.collidable = False
@@ -149,8 +149,8 @@ def follow_player(self, speed=5):
                 self.track.x - self.x, self.track.y - self.y)
             vx *= speed
             vy *= speed
-            self.des_vx = vx
-            self.des_vy = vy
+            self._des_vx = vx
+            self._des_vy = vy
         yield 0
 
 
@@ -161,8 +161,8 @@ def rotate_to_player(self):
     while(True):
         i += amplitude
         vx, vy = utils.normalize(self.track.x - self.x, self.track.y - self.y)
-        self.des_vy = amplitude * math.cos(i * math.pi / 180) + vy * speed
-        self.des_vx = amplitude * math.sin(i * math.pi / 180) + vx * speed
+        self._des_vy = amplitude * math.cos(i * math.pi / 180) + vy * speed
+        self._des_vx = amplitude * math.sin(i * math.pi / 180) + vx * speed
         yield 0
 
 
@@ -176,16 +176,16 @@ def zip(self):
         if iter_i <= 0:
             iter_i = 240
             x_active = not x_active
-            self.vel_x = self.vel_y = self.des_vx = self.des_vy = 0
+            self.vel_x = self.vel_y = self._des_vx = self._des_vy = 0
             vx = 10 if self.track.x > self.x else -10
             vy = 10 if self.track.y > self.y else -10
 
         if x_active:
             vx *= friction
-            self.des_vx = vx
+            self._des_vx = vx
         else:
             vy *= friction
-            self.des_vy = vy
+            self._des_vy = vy
         yield 0
 
 
@@ -203,8 +203,8 @@ def evade(self):
         vx *= speed
         vy *= speed
 
-        vx /= self.aneighbors
-        vy /= self.aneighbors
+        vx /= self._aneighbors
+        vy /= self._aneighbors
         vx, vy = utils.normalize(vx, vy)
         vx *= -3
         vy *= -3
@@ -220,8 +220,8 @@ def flee(self):
         vx, vy = utils.normalize(self.x - self.track.x, self.y - self.track.y)
         vx *= speed
         vy *= speed
-        self.des_vx += vx
-        self.des_vy += vy
+        self._des_vx += vx
+        self._des_vy += vy
         yield 0
 
 
