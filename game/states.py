@@ -90,12 +90,14 @@ class Play_State(object):
             self.ship.half_width + self.ship.x
         self.ship_emitter = game.graphics.ParticleSystem(
             p_x, p_y, angle=180 - self.ship.rotation, life=-1, particle_life=50, particles=90)
-        self.emitter_list.append(self.ship_emitter)
         self.dead_enemies = []
 
         def prini(dt):
             print pyglet.clock.get_fps()
         pyglet.clock.schedule_once(prini, 10)
+
+        self._ship_died = False
+        self._died_timer = False
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.last_mouse_pos = (x, y)
@@ -131,6 +133,34 @@ class Play_State(object):
         if not CONSTS.DEBUG_MODE_OBJ['play']:
             return
 
+        self.camera.update(dt)
+
+        for emitter in self.emitter_list:
+            emitter.update()
+
+        for dead in self.dead_enemies:
+            dead.update(dt)
+        for removal in [b for b in self.dead_enemies if b.remove]:
+            self.dead_enemies.remove(removal)
+            removal.delete()
+
+        if self._died_timer > 0:
+            self._ship_died = False
+            self._died_timer -= 1
+            # blink enemy killer
+            if len(self.enemies) == 1:
+                if self._died_timer % 15 == 0:
+                    if self.enemies[0].opacity == 0:
+                        self.enemies[0].opacity = 255
+                    else:
+                        self.enemies[0].opacity = 0
+            if self._died_timer == 0:
+                self.ship.respawn()
+                if len(self.enemies) == 1:
+                    self.enemies[0].dead = True
+            else:
+                return
+
         self.spawner.update(dt)
         for enemy in self.spawner.enemies:
             self.enemies.append(enemy)
@@ -164,6 +194,21 @@ class Play_State(object):
                                            utils.trunc((CONSTS.win_height / 2 - self.ship.y), max_y, 40), 0.5)
             self.camera.ay = self.ship.x
 
+        self._ship_died = False
+        if self.ship.dead:
+            self.camera.shake(100)
+            for enemy in self.enemies:
+                if not self.ship.dead == enemy:
+                    enemy.dead = True
+                    enemy.shot(self.ship.x, self.ship.y)
+
+            self._ship_died = True
+            self._died_timer = 120
+            self.ship.dead = False
+            self.ship.opacity = 0
+            self.emitter_list.append(
+                game.graphics.ParticleSystem(self.ship.x, self.ship.y, rgb=[255, 255, 255], particle_life=120, particles=100, speed=10, speed_var=5))
+
         p_y = math.sin(self.ship.rotation * math.pi / 180) * \
             self.ship.half_height + self.ship.y
         p_x = -math.cos(self.ship.rotation * math.pi / 180) * \
@@ -171,11 +216,7 @@ class Play_State(object):
         self.ship_emitter.x = p_x
         self.ship_emitter.y = p_y
         self.ship_emitter.angle = self.ship.rotation
-
-        self.camera.update(dt)
-
-        for emitter in self.emitter_list:
-            emitter.update()
+        self.ship_emitter.update()
 
         for bullet in [b for b in self.bullets if b.dead]:
             self.bullets.remove(bullet)
@@ -189,15 +230,16 @@ class Play_State(object):
             self.enemies.remove(enemy)
             enemy.kill()
             if enemy.dead:
-                self.emitter_list.append(
-                    game.graphics.ParticleSystem(enemy.x, enemy.y, **enemy.particle_data))
-                self.camera.shake(10)
+                if not self._ship_died:
+                    self.emitter_list.append(
+                        game.graphics.ParticleSystem(enemy.x, enemy.y, **enemy.particle_data))
+                    self.camera.shake(2)
+                    if enemy.split:
+                        self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
+                                                      x=enemy.x + enemy.image.width * 2, y=enemy.y + enemy.image.height * 2, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
+                        self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
+                                                      x=enemy.x + enemy.image.width * -2, y=enemy.y + enemy.image.height * -2, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
                 self.dead_enemies.append(enemy)
-                if enemy.split:
-                    self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
-                                                  x=enemy.x + enemy.image.width * 2, y=enemy.y + enemy.image.height * 2, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
-                    self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
-                                                  x=enemy.x + enemy.image.width * -2, y=enemy.y + enemy.image.height * -2, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
 
                 self.target_score += 100
             else:
@@ -207,12 +249,6 @@ class Play_State(object):
             self.score = utils.lerp(self.score, self.target_score, 0.2)
             self.score_text.text = locale.format(
                 "%d", round(self.score), grouping=True)
-
-        for dead in self.dead_enemies:
-            dead.update(dt)
-        for removal in [b for b in self.dead_enemies if b.remove]:
-            self.dead_enemies.remove(removal)
-            removal.delete()
 
         self.spatial_grid.clear()
 
@@ -254,6 +290,7 @@ class Play_State(object):
         if CONSTS.DEBUG_MODE:
             CONSTS.debug_batch.draw()
         self.main_batch.draw()
+        self.ship_emitter.draw()
         for emitter in self.emitter_list:
             emitter.draw()
 
