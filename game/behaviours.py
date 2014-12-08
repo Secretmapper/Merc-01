@@ -1,4 +1,5 @@
 from random import randint
+import random
 import math
 import utils
 import pyglet
@@ -61,6 +62,12 @@ def repulse(self, repulse_pos):
         yield 0
 
 
+def pulse(self):
+    while(True):
+        self.scale = 0.95 + randint(0, 40) / 100.0
+        yield 0
+
+
 def delay(self, delay_time, alpha_time=False):
     """
     Function that delays 'Enemy Spawn'
@@ -112,6 +119,20 @@ def delay(self, delay_time, alpha_time=False):
             self.collidable = True
         i += 1
         yield 0
+
+
+def black_hole(self):
+    self.trackable = False
+
+    self._black_hole = pyglet.sprite.Sprite(
+        img=res.black_field, x=self.x, y=self.y, batch=self.batch)
+
+    while(True):
+        yield 0
+
+
+def black_hole_cb(self):
+    self._black_hole.delete()
 
 
 def rotate(self):
@@ -383,9 +404,9 @@ def by_angle(self, r, speed=5):
     r *= -math.pi / 180
     dir_x = math.cos(r) * speed
     dir_y = math.sin(r) * speed
+    self.vel_x = dir_x
+    self.vel_y = dir_y
     while(True):
-        self.vel_x = dir_x
-        self.vel_y = dir_y
         yield 0
 
 

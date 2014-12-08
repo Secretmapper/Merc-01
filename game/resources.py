@@ -14,6 +14,11 @@ def center_anchor(image):
 
 player = center_anchor(pyglet.resource.image('shooter.png'))
 
+
+black_hole = center_anchor(pyglet.resource.image('black_hole.png'))
+black_field = center_anchor(pyglet.resource.image('black_field.png'))
+black_hole_colors = [100, 0, 0]
+
 tracker = center_anchor(pyglet.resource.image('tracker.png'))
 tracker_colors = [140, 198, 63]
 

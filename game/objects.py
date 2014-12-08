@@ -81,6 +81,7 @@ class Bullet(Sprite):
 
     def update(self, dt):
         Sprite.update(self, dt)
+        self.black_hole_checks = {}
 
         for behaviour in self.behaviours:
             behaviour.next()
@@ -88,10 +89,19 @@ class Bullet(Sprite):
         self.x = utils.trunc(self.x + self.vel_x, 0, CONSTS.game_width)
         self.y = utils.trunc(self.y + self.vel_y, 0, CONSTS.game_height)
 
+    def black_hole(self, hole):
+        if hole.uid not in self.black_hole_checks:
+            self.black_hole_checks[hole.uid] = True
+            diff = self.x - hole.x, self.y - hole.y
+            l = math.sqrt((self.x - hole.x) ** 2 + (self.y - hole.y) ** 2)
+
+            self.vel_x += utils.normalize(diff[0], diff[1])[0] * 1.5
+            self.vel_y += utils.normalize(diff[0], diff[1])[1] * 2
+
 
 class AbstractEnemy(Sprite):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, callbacks=[], *args, **kwargs):
         super(AbstractEnemy, self).__init__(**kwargs)
         self.bullets = False
         self.split = False
@@ -99,11 +109,16 @@ class AbstractEnemy(Sprite):
         self.show_on_radar = False     # Should be shown on radar?
         self.trackable = True          # Trackable by Homing Missles?
         self.collidable = True
+        self.callbacks = callbacks
+
+    def trigger(self, *args, **kwargs):
+        for i in self.callbacks:
+            i(self, **kwargs)
 
 
 class Sensor(AbstractEnemy):
 
-    def __init__(self, callbacks, track, *args, **kwargs):
+    def __init__(self, track, *args, **kwargs):
         super(Sensor, self).__init__(**kwargs)
         self.opacity = 0
         self.callbacks = callbacks
@@ -111,10 +126,6 @@ class Sensor(AbstractEnemy):
         self.bullets = False
         self.sensor = True
         self.trackable = False
-
-    def trigger(self, *args, **kwargs):
-        for i in self.callbacks:
-            i(self, **kwargs)
 
     def kill(self):
         self.opacity = 0
@@ -194,6 +205,7 @@ class EnemyShip(AbstractEnemy):
         for i in self.debug_vertex_list:
             i.delete()
         self.debug_vertex_list = []
+        self.trigger()
 
     def update(self, dt):
         self.black_hole_checks = {}
@@ -329,8 +341,8 @@ class Ship(Sprite):
             diff = hole.x - self.x, hole.y - self.y
             l = math.sqrt((hole.x - self.x) ** 2 + (hole.y - self.y) ** 2)
 
-            self.speed_x += utils.normalize(diff[0], diff[1])[0] / 3.0
-            self.speed_y += utils.normalize(diff[0], diff[1])[1] / 3.0
+            self.speed_x += utils.normalize(diff[0], diff[1])[0] / 2.0
+            self.speed_y += utils.normalize(diff[0], diff[1])[1] / 2.0
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.shoot_rotation = -\

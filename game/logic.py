@@ -72,6 +72,9 @@ class Enemy_Spawner(object):
             self.enemies.append(enemy)
 
         if self.spwn_chance >= random.randint(0, 20) and len(self.state.enemies) <= 5 and len(self.callbacks) == 0:
+            enemy = EnemyShip(x=200, y=300, callbacks=[behaviours.black_hole_cb], behaviours=[[behaviours.pulse], [behaviours.black_hole]], img=res.black_hole, particle_data={
+                              'rgb': res.black_hole_colors}, track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_BLACK_HOLE)
+            self.enemies.append(enemy)
             self.spawn_sin(**sin_params)
 
         if self.spwn_chance >= random.randint(0, 100) and len(self.state.enemies) <= 5 and len(self.callbacks) == 0:

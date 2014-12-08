@@ -67,6 +67,15 @@ class Spatial_Grid():
                                 b.dead = True
 
                 a_list = cell[CONSTS.BULLET_CB_TYPE]
+                b_list = cell[CONSTS.ENEMY_BLACK_HOLE]
+                for b in b_list:
+                    for a in a_list:
+                        if not (a.dead or b.dead):
+                            if utils.distance_sq(b, a) < (a.width / 2 + b.width / 2) ** 2:
+                                b.dead = True
+                                a.dead = True
+
+                a_list = cell[CONSTS.BULLET_CB_TYPE]
                 b_list = cell[CONSTS.ENEMY_CB_TYPE]
                 """
                 Bullet - Enemy Checks
@@ -134,7 +143,7 @@ class Spatial_Grid():
                         and then calling adjacency callbacks.
                         """
                         # nearby
-                        nearby_bullets = []
+                        nearby = []
                         max_y = int(CONSTS.game_height / CONSTS.cell_size) - 1
                         max_x = int(CONSTS.game_width / CONSTS.cell_size) - 1
                         y_rows_n = [
@@ -145,16 +154,17 @@ class Spatial_Grid():
                             y_row = self._hit_squares[y_row_i]
                             x_rows = [y_row[i] for i in x_rows_n]
                             for cell_i in xrange(len(x_rows)):
-                                nearby_bullets.append(
+                                nearby.append(
                                     x_rows[cell_i][CONSTS.ENEMY_CB_TYPE])
-                                nearby_bullets.append(
+                                nearby.append(
                                     x_rows[cell_i][CONSTS.PLAYER_CB_TYPE])
+                                nearby.append(
+                                    x_rows[cell_i][CONSTS.BULLET_CB_TYPE])
                                 self.color_grid(
                                     x_rows_n[cell_i], y_row_i, (50, 50, 50, 100) * 4)
                         # nearby
-                        for bu in sum(nearby_bullets, []):
+                        for bu in sum(nearby, []):
                             bu.black_hole(b)
-                        # b.near_by_cb(nearby_bullets)
 
                 a_list = cell[CONSTS.ENEMY_CB_TYPE]
                 b_list = cell[CONSTS.ENEMY_BLACK_HOLE]
@@ -162,7 +172,8 @@ class Spatial_Grid():
                     for b in b_list:
                         if not (a.dead or b.dead) and utils.distance_sq(a, b) < (a.width / 2 + b.width / 2) ** 2:
                             a.dead = True
-                            a.particle_data = {'particles': 0}
+                            a.particle_data = {'particles': 10}
+
                             #b.dead = True
 
                 """
