@@ -5,7 +5,7 @@ import game.states
 class Game_Window(pyglet.window.Window):
 
     def __init__(self, width, height):
-        super(Game_Window, self).__init__(width, height)
+        super(Game_Window, self).__init__(width, height, fullscreen=True)
         self.state = game.states.Play_State(self, width, height)
 
     def on_mouse_motion(self, x, y, dx, dy):
