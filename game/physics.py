@@ -46,7 +46,8 @@ class Spatial_Grid():
                 Player - Enemy Checks
                 """
                 a_list = cell[CONSTS.PLAYER_CB_TYPE]
-                b_list = cell[CONSTS.ENEMY_CB_TYPE]
+                b_list = cell[CONSTS.ENEMY_CB_TYPE] + \
+                    cell[CONSTS.ENEMY_BLACK_HOLE]
                 for b in b_list:
                     for a in a_list:
                         if not (a.dead or b.dead or a.invinsible):
@@ -173,8 +174,6 @@ class Spatial_Grid():
                         if not (a.dead or b.dead) and utils.distance_sq(a, b) < (a.width / 2 + b.width / 2) ** 2:
                             a.dead = True
                             a.particle_data = {'particles': 10}
-
-                            #b.dead = True
 
                 """
                 ENEMY - ENEMY Checks (Separation)
