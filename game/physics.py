@@ -102,6 +102,8 @@ class Spatial_Grid():
                             for cell_i in xrange(len(x_rows)):
                                 nearby_bullets.append(
                                     x_rows[cell_i][CONSTS.BULLET_CB_TYPE])
+                                self.color_grid(
+                                    x_rows_n[cell_i], y_row_i, (0, 100, 100, 100) * 4)
                         # nearby
                         b.near_by_cb(nearby_bullets)
                 """
@@ -117,18 +119,19 @@ class Spatial_Grid():
                             self.color_grid(x, y, (255, 0, 0, 100) * 4)
 
     def color_grid(self, x, y, color):
-        coords = (
-            x * CONSTS.cell_size, y * CONSTS.cell_size,
-            x *
-            CONSTS.cell_size, (y + 1) * CONSTS.cell_size,
-            (x + 1) * CONSTS.cell_size, (y + 1) *
-            CONSTS.cell_size,
-            (x + 1) * CONSTS.cell_size, y * CONSTS.cell_size,)
-        self.debug_v_list.append(CONSTS.debug_batch.add(4, pyglet.gl.GL_QUADS,
-                                                        None,
-                                                        ('v2f',
-                                                         coords),
-                                                        ('c4B', color)))
+        if CONSTS.DEBUG_MODE:
+            coords = (
+                x * CONSTS.cell_size, y * CONSTS.cell_size,
+                x *
+                CONSTS.cell_size, (y + 1) * CONSTS.cell_size,
+                (x + 1) * CONSTS.cell_size, (y + 1) *
+                CONSTS.cell_size,
+                (x + 1) * CONSTS.cell_size, y * CONSTS.cell_size,)
+            self.debug_v_list.append(CONSTS.debug_batch.add(4, pyglet.gl.GL_QUADS,
+                                                            None,
+                                                            ('v2f',
+                                                             coords),
+                                                            ('c4B', color)))
 
     def add_entity(self, e, i):
         self._entities[i].append(e)
