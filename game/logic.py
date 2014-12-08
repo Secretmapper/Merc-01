@@ -29,6 +29,7 @@ class Enemy_Spawner(object):
             callback[1] = callback[1] - 1
             if callback[1] <= 0:
                 if len(callback) >= 3:
+                    print callback[2]
                     callback[0](**callback[2])
                 else:
                     callback[0]()
@@ -52,22 +53,60 @@ class Enemy_Spawner(object):
             self.enemies.append(enemy1)
             self.enemies.append(enemy2)
 
-        if self.spwn_chance >= random.randint(0, 100) and len(self.state.enemies) <= 0 and len(self.callbacks) <= 0:
+        sin_params = random.choice([
+            {'c_x': -CONSTS.game_width},
+            {'c_x': CONSTS.game_width},
+            {'c_y': -CONSTS.game_height},
+            {'c_y': CONSTS.game_height},
+        ])
+
+        if self.spwn_chance >= random.randint(0, 50):
+            x = random.randint(0, CONSTS.game_width)
+            y = random.randint(0, CONSTS.game_height)
+
+            behaviours_list = [[behaviours.split],
+                               [behaviours.follow_player, 2],
+                               [behaviours.delay, 0, 30]]
+            enemy = EnemyShip(
+                x=x, y=y, behaviours=behaviours_list, img=res.splitter, particle_data={'rgb': res.splitter_colors}, track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_CB_TYPE)
+            self.enemies.append(enemy)
+
+        if self.spwn_chance >= random.randint(0, 20) and len(self.state.enemies) <= 5 and len(self.callbacks) == 0:
+            self.spawn_sin(**sin_params)
+
+        if self.spwn_chance >= random.randint(0, 100) and len(self.state.enemies) <= 5 and len(self.callbacks) == 0:
             self.spwn_chance = 0
-
-            sin_params = random.choice([
-                {'c_x': -CONSTS.game_width},
-                {'c_x': CONSTS.game_width},
-                {'c_y': -CONSTS.game_height},
-                {'c_y': CONSTS.game_height},
-            ])
-
-            #self.callbacks.append([self.spawn_sin, 5, sin_params])
-            self.callbacks.append([self.spawn_circle, 5])
-            #self.callbacks.append([spawn_line, 5, {'x': 100, 'y': 100}])
+            self.spawn_corner()
 
         if self.spwn_chance > 20:
             self.spwn_chance += 0.000005
+
+    def spawn_enemy(self, x, y, e_type, delay=0, alpha=30):
+        behaviours_list = [[behaviours.evade],
+                           [behaviours.follow_player, 3],
+                           [behaviours.delay, delay, alpha]]
+        enemy = EnemyShip(x=x, y=y, behaviours=behaviours_list, **e_type)
+        self.enemies.append(enemy)
+
+    def spawn_corner(self):
+        e_type = {'max_vel': 5,
+                  'img':  res.tracker,
+                  'particle_data': {'rgb': res.evader_colors},
+                  'track': self.ship,
+                  'batch': self.main_batch,
+                  'cb_type': CONSTS.ENEMY_CB_TYPE}
+        for i in xrange(1, 10):
+            self.callbacks.append(
+                [self.spawn_enemy, 5, {'e_type': e_type, 'x': 10, 'y': 10, 'delay': i * 10, 'alpha': 10}])
+        for i in xrange(1, 10):
+            self.callbacks.append(
+                [self.spawn_enemy, 5, {'e_type': e_type, 'x': 10, 'y': CONSTS.game_height - 10, 'delay': i * 10, 'alpha': 10}])
+        for i in xrange(1, 10):
+            self.callbacks.append(
+                [self.spawn_enemy, 5, {'e_type': e_type, 'x': CONSTS.game_width, 'y': CONSTS.game_height - 10, 'delay': i * 10, 'alpha': 10}])
+        for i in xrange(1, 10):
+            self.callbacks.append(
+                [self.spawn_enemy, 5, {'e_type': e_type, 'x': CONSTS.game_width, 'y': 10, 'delay': i * 10, 'alpha': 10}])
 
     def spawn_sin(self, c_x=False, c_y=False):
         angles = [a * math.pi / 180 for a in range(1, 320, 20)]
