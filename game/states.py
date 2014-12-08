@@ -239,7 +239,9 @@ class Play_State(object):
         for enemy in [b for b in self.enemies if b.dead or b.is_outside_of_screen]:
             self.enemies.remove(enemy)
             enemy.kill()
-            if enemy.dead:
+            if enemy.sensor or enemy.is_outside_of_screen:
+                enemy.delete()
+            elif enemy.dead:
                 if not self._ship_died:
                     self.emitter_list.append(
                         game.graphics.ParticleSystem(enemy.x, enemy.y, **enemy.particle_data))
@@ -254,8 +256,6 @@ class Play_State(object):
                 self.dead_enemies.append(enemy)
 
                 self.target_score += 100
-            else:
-                enemy.delete()
 
         if self.target_score > self.score:
             self.score = utils.lerp(self.score, self.target_score, 0.2)

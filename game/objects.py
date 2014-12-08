@@ -115,10 +115,13 @@ class AbstractEnemy(Sprite):
         for i in self.callbacks:
             i(self, **kwargs)
 
+    def shot(self, x=0, y=0):
+        pass
+
 
 class Sensor(AbstractEnemy):
 
-    def __init__(self, track, *args, **kwargs):
+    def __init__(self, callbacks, track, *args, **kwargs):
         super(Sensor, self).__init__(**kwargs)
         self.opacity = 0
         self.callbacks = callbacks
@@ -127,8 +130,15 @@ class Sensor(AbstractEnemy):
         self.sensor = True
         self.trackable = False
 
+    def update(self, dt):
+        AbstractEnemy.update(self, dt)
+        if CONSTS.DEBUG_MODE:
+            self.opacity = 100
+        else:
+            self.opacity = 0
+
     def kill(self):
-        self.opacity = 0
+        pass
 
 
 class EnemyShip(AbstractEnemy):

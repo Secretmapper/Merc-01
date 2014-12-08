@@ -295,9 +295,9 @@ def link(self, pair=None, sensors=None):
                 self.dead = True
                 pair.dead = True
                 self.shot(x, y)
+                pair.shot(x, y)
                 for sensor in sensors:
                     sensor.dead = True
-                    sensor.kill()
 
         self.link_collide = link_collide
     while(True):
@@ -310,10 +310,11 @@ def link(self, pair=None, sensors=None):
                 math.cos(-pair.rotation * math.pi / 180)
 
             for i in xrange(len(sensors)):
-                sensors[i].y = pair.y + init_dists[i] * \
-                    math.sin(-pair.rotation * math.pi / 180)
-                sensors[i].x = pair.x + init_dists[i] * \
-                    math.cos(-pair.rotation * math.pi / 180)
+                if not sensors[i].dead:
+                    sensors[i].y = pair.y + init_dists[i] * \
+                        math.sin(-pair.rotation * math.pi / 180)
+                    sensors[i].x = pair.x + init_dists[i] * \
+                        math.cos(-pair.rotation * math.pi / 180)
 
             self.rotation = pair.rotation - 180
             self.debug_vertex_list.append(self.layer.add(2, pyglet.gl.GL_LINES,

@@ -47,7 +47,8 @@ class Spatial_Grid():
                 """
                 a_list = cell[CONSTS.PLAYER_CB_TYPE]
                 b_list = cell[CONSTS.ENEMY_CB_TYPE] + \
-                    cell[CONSTS.ENEMY_BLACK_HOLE]
+                    cell[CONSTS.ENEMY_BLACK_HOLE] + \
+                    cell[CONSTS.ENEMY_LINE_CB_TYPE]
                 for b in b_list:
                     for a in a_list:
                         if not (a.dead or b.dead or a.invinsible):
