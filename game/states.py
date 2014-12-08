@@ -235,10 +235,12 @@ class Play_State(object):
                         game.graphics.ParticleSystem(enemy.x, enemy.y, **enemy.particle_data))
                     self.camera.shake(2)
                     if enemy.split:
-                        self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
-                                                      x=enemy.x + enemy.image.width * 2, y=enemy.y + enemy.image.height * 2, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
-                        self.enemies.append(EnemyShip(behaviours=[[behaviours.follow_player]], img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
-                                                      x=enemy.x + enemy.image.width * -2, y=enemy.y + enemy.image.height * -2, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
+                        behaviour_list = [
+                            [behaviours.follow_player], [behaviours.repulse, (self.ship.x, self.ship.y)]]
+                        self.enemies.append(EnemyShip(behaviours=behaviour_list, img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
+                                                      x=enemy.x + enemy.width * 1, y=enemy.y + enemy.height * 1, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
+                        self.enemies.append(EnemyShip(behaviours=behaviour_list, img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
+                                                      x=enemy.x + enemy.width * -1, y=enemy.y + enemy.height * -1, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
                 self.dead_enemies.append(enemy)
 
                 self.target_score += 100

@@ -48,6 +48,19 @@ def exits(self):
         yield 0
 
 
+def repulse(self, repulse_pos):
+    x, y = repulse_pos
+    repulse_theta = math.atan2(
+        self.y - y, self.x - x)
+    for i in xrange(5):
+        self.vel_x = math.cos(repulse_theta) * 500
+        self.vel_y = math.sin(repulse_theta) * 500
+        yield 0
+    while(True):
+
+        yield 0
+
+
 def delay(self, delay_time, alpha_time=False):
     """
     Function that delays 'Enemy Spawn'

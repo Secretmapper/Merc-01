@@ -180,6 +180,7 @@ class EnemyShip(AbstractEnemy):
     def shot(self, x, y):
         death_theta = math.atan2(
             self.y - y, self.x - x)
+        self.killer_pos = (x, y)
         self._death_vx = math.cos(death_theta) * 0.2
         self._death_vy = math.sin(death_theta) * 0.2
 
@@ -212,14 +213,20 @@ class EnemyShip(AbstractEnemy):
         for behaviour in self.behaviours:
             behaviour.next()
 
-        steer_x = steer_y = 0
-        steer_x, steer_y = self._des_vx - self.vel_x, self._des_vy - self.vel_y
-        # truncate
-        steer_x = utils.trunc(self._des_vx - self.vel_x, 0.5)
-        steer_y = utils.trunc(self._des_vy - self.vel_y, 0.5)
+        # friction if no desired velocity
+        if self._des_vx == 0 and self._des_vy == 0:
+            self.vel_x *= 0.9
+            self.vel_y *= 0.9
+        else:
+            steer_x = steer_y = 0
+            steer_x, steer_y = self._des_vx - \
+                self.vel_x, self._des_vy - self.vel_y
+            # truncate
+            steer_x = utils.trunc(self._des_vx - self.vel_x, 0.5)
+            steer_y = utils.trunc(self._des_vy - self.vel_y, 0.5)
 
-        self.vel_x += steer_x
-        self.vel_y += steer_y
+            self.vel_x += steer_x
+            self.vel_y += steer_y
 
         """
         Separation
