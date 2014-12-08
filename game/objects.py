@@ -196,6 +196,7 @@ class EnemyShip(AbstractEnemy):
         self.debug_vertex_list = []
 
     def update(self, dt):
+        self.black_hole_checks = {}
         if self.nonactive and not self._enter_behaviour.next():
             return
         if self.dead:
@@ -292,6 +293,14 @@ class EnemyShip(AbstractEnemy):
         """
         self.evade_list = sum(others, [])
 
+    def black_hole(self, hole):
+        if hole.uid not in self.black_hole_checks:
+            diff = hole.x - self.x, hole.y - self.y
+            l = math.sqrt((hole.x - self.x) ** 2 + (hole.y - self.y) ** 2)
+
+            self.vel_x += utils.normalize(diff[0], diff[1])[0] / 5.0
+            self.vel_y += utils.normalize(diff[0], diff[1])[1] / 5.0
+
 
 class Ship(Sprite):
 
@@ -312,6 +321,17 @@ class Ship(Sprite):
         self.invinsible = False
         self._invinsible_i = 0
 
+        self.black_hole_checks = {}
+
+    def black_hole(self, hole):
+        if hole.uid not in self.black_hole_checks:
+            self.black_hole_checks[hole.uid] = True
+            diff = hole.x - self.x, hole.y - self.y
+            l = math.sqrt((hole.x - self.x) ** 2 + (hole.y - self.y) ** 2)
+
+            self.speed_x += utils.normalize(diff[0], diff[1])[0] / 3.0
+            self.speed_y += utils.normalize(diff[0], diff[1])[1] / 3.0
+
     def on_mouse_motion(self, x, y, dx, dy):
         self.shoot_rotation = -\
             math.atan2(
@@ -329,6 +349,7 @@ class Ship(Sprite):
 
     def update(self, dt):
         Sprite.update(self, dt)
+        self.black_hole_checks = {}
 
         if self._invinsible_i >= 0:
             self._invinsible_i -= 1

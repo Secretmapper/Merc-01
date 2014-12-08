@@ -102,10 +102,69 @@ class Spatial_Grid():
                             for cell_i in xrange(len(x_rows)):
                                 nearby_bullets.append(
                                     x_rows[cell_i][CONSTS.BULLET_CB_TYPE])
-                                self.color_grid(
-                                    x_rows_n[cell_i], y_row_i, (0, 100, 100, 100) * 4)
+                                # self.color_grid(
+                                #    x_rows_n[cell_i], y_row_i, (0, 100, 100, 100) * 4)
                         # nearby
                         b.near_by_cb(nearby_bullets)
+
+                a_list = cell[CONSTS.ENEMY_CB_TYPE]
+                b_list = cell[CONSTS.ENEMY_BLACK_HOLE]
+                """
+                Bullet - Enemy Checks
+                """
+                for b in b_list:
+                    """
+                    for a in a_list:
+                        if not (a.dead or b.dead):
+                            if utils.distance_sq(b, a) < (a.width / 2 + b.width / 2) ** 2:
+                                a.dead = True
+                                b.dead = True
+                                b.shot(a.x, a.y)
+                                self.color_grid(x, y, (0, 0, 255, 100) * 4)
+                    """
+                    if not b.dead:
+                        """
+                        Nearby Callback
+
+                        Here we're iterating through adjacent places on the grid:
+                        x-1 y+1, x  y+1, x+1 y+1
+                        x-1 y  , x  y  , x+1 y
+                        x-1 y-1, x, y-1, x-1 y-1
+
+                        and then calling adjacency callbacks.
+                        """
+                        # nearby
+                        nearby_bullets = []
+                        max_y = int(CONSTS.game_height / CONSTS.cell_size) - 1
+                        max_x = int(CONSTS.game_width / CONSTS.cell_size) - 1
+                        y_rows_n = [
+                            max(0, y - 3), max(0, y - 2), max(0, y - 1), y, min(max_y, y + 1), min(max_y, y + 2), min(max_y, y + 3)]
+                        x_rows_n = [
+                            max(0, x - 3), max(0, x - 2), max(0, x - 1), x, min(max_x, x + 1), min(max_x, x + 2), min(max_x, x + 3)]
+                        for y_row_i in y_rows_n:
+                            y_row = self._hit_squares[y_row_i]
+                            x_rows = [y_row[i] for i in x_rows_n]
+                            for cell_i in xrange(len(x_rows)):
+                                nearby_bullets.append(
+                                    x_rows[cell_i][CONSTS.ENEMY_CB_TYPE])
+                                nearby_bullets.append(
+                                    x_rows[cell_i][CONSTS.PLAYER_CB_TYPE])
+                                self.color_grid(
+                                    x_rows_n[cell_i], y_row_i, (50, 50, 50, 100) * 4)
+                        # nearby
+                        for bu in sum(nearby_bullets, []):
+                            bu.black_hole(b)
+                        # b.near_by_cb(nearby_bullets)
+
+                a_list = cell[CONSTS.ENEMY_CB_TYPE]
+                b_list = cell[CONSTS.ENEMY_BLACK_HOLE]
+                for a in a_list:
+                    for b in b_list:
+                        if not (a.dead or b.dead) and utils.distance_sq(a, b) < (a.width / 2 + b.width / 2) ** 2:
+                            a.dead = True
+                            a.particle_data = {'particles': 0}
+                            #b.dead = True
+
                 """
                 ENEMY - ENEMY Checks (Separation)
                 """

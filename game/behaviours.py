@@ -397,11 +397,11 @@ def by_sin(self, r):
     start_x, start_y = self.x, self.y
     while(True):
         if r == 0 or r == 180:
-            self.x += dir_x
-            self.y = math.sin(a) * 50 + start_y
+            self._des_vx += dir_x / 3.0
+            self._des_vy = (math.sin(a) * 50 + start_y) - self.y
         else:
-            self.x = math.sin(a) * 50 + start_x
-            self.y += dir_y
+            self._des_vx = (math.sin(a) * 50 + start_x) - self.x
+            self._des_vy += dir_y / 3.0
         a += 5 * math.pi / 180
         yield 0
 
