@@ -123,11 +123,13 @@ def delay(self, delay_time, alpha_time=False):
 
 def black_hole(self):
     self.trackable = False
-
+    self._blackhole_sep_v = 100.0
     self._black_hole = pyglet.sprite.Sprite(
         img=res.black_field, x=self.x, y=self.y, batch=self.batch)
 
     while(True):
+        self._black_hole.x = self.x
+        self._black_hole.y = self.y
         yield 0
 
 

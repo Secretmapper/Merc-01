@@ -168,6 +168,7 @@ class EnemyShip(AbstractEnemy):
         # destination and separation velocities
         self._des_vx = self._des_vy = 0
         self._sep_vx = self._sep_vy = 0
+        self._blackhole_sep_v = 3.0
 
         self.evade_list = []  # evasion list
 
@@ -310,8 +311,10 @@ class EnemyShip(AbstractEnemy):
             diff = hole.x - self.x, hole.y - self.y
             l = math.sqrt((hole.x - self.x) ** 2 + (hole.y - self.y) ** 2)
 
-            self.vel_x += utils.normalize(diff[0], diff[1])[0] / 5.0
-            self.vel_y += utils.normalize(diff[0], diff[1])[1] / 5.0
+            self.vel_x += utils.normalize(diff[0],
+                                          diff[1])[0] / self._blackhole_sep_v
+            self.vel_y += utils.normalize(diff[0],
+                                          diff[1])[1] / self._blackhole_sep_v
 
 
 class Ship(Sprite):

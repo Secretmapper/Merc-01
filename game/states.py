@@ -99,8 +99,14 @@ class Play_State(object):
         self._ship_died = False
         self._died_timer = False
 
-        enemy = EnemyShip(x=100, y=200, behaviours=[[behaviours.follow_player]], img=res.splitter, particle_data={
-                          'rgb': res.splitter_colors}, track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_CB_TYPE)
+        # enemy = EnemyShip(x=100, y=200, behaviours=[[behaviours.follow_player]], img=res.splitter, particle_data={
+        #                  'rgb': res.splitter_colors}, track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_CB_TYPE)
+        # self.enemies.append(enemy)
+        enemy = EnemyShip(x=100, y=200, callbacks=[behaviours.black_hole_cb], behaviours=[[behaviours.pulse], [behaviours.black_hole], [behaviours.delay, 0, 50]], img=res.black_hole, particle_data={
+            'rgb': res.black_hole_colors}, track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_BLACK_HOLE)
+        self.enemies.append(enemy)
+        enemy = EnemyShip(x=150, y=200, callbacks=[behaviours.black_hole_cb], behaviours=[[behaviours.pulse], [behaviours.black_hole], [behaviours.delay, 0, 50]], img=res.black_hole, particle_data={
+            'rgb': res.black_hole_colors}, track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_BLACK_HOLE)
         self.enemies.append(enemy)
 
     def on_mouse_motion(self, x, y, dx, dy):

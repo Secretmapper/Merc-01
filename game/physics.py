@@ -161,6 +161,8 @@ class Spatial_Grid():
                                     x_rows[cell_i][CONSTS.PLAYER_CB_TYPE])
                                 nearby.append(
                                     x_rows[cell_i][CONSTS.BULLET_CB_TYPE])
+                                nearby.append(
+                                    x_rows[cell_i][CONSTS.ENEMY_BLACK_HOLE])
                                 self.color_grid(
                                     x_rows_n[cell_i], y_row_i, (50, 50, 50, 100) * 4)
                         # nearby
@@ -174,6 +176,15 @@ class Spatial_Grid():
                         if not (a.dead or b.dead) and utils.distance_sq(a, b) < (a.width / 2 + b.width / 2) ** 2:
                             a.dead = True
                             a.particle_data = {'particles': 10}
+
+                a_list = cell[CONSTS.ENEMY_BLACK_HOLE]
+                b_list = cell[CONSTS.ENEMY_BLACK_HOLE]
+                for a in a_list:
+                    for b in b_list:
+                        if not (a.id == b.id) and not (a.dead or b.dead) and utils.distance_sq(a, b) < (a.width / 2 + b.width / 2) ** 2:
+                            a.type_overlap_cb(b)
+                            b.type_overlap_cb(a)
+                            self.color_grid(x, y, (255, 0, 0, 100) * 4)
 
                 """
                 ENEMY - ENEMY Checks (Separation)
