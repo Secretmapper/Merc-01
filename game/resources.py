@@ -34,6 +34,7 @@ splitter_colors = [27, 117, 187]
 evader = center_anchor(pyglet.resource.image('evader.png'))
 evader_colors = [255, 242, 0]
 
+squeezer_arrow = center_anchor(pyglet.resource.image('squeezer_arrow.png'))
 squeezer = center_anchor(pyglet.resource.image('squeezer.png'))
 squeezer_colors = [109, 110, 45]
 

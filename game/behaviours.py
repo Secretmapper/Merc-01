@@ -216,21 +216,41 @@ def zip(self, speed=20):
 
     friction = 0.98
     iter_i = 0
-    while(True):
-        iter_i -= 1
-        if iter_i <= 0:
-            iter_i = 240
-            x_active = not x_active
-            self.vel_x = self.vel_y = self._des_vx = self._des_vy = 0
-            vx = speed if self.track.x > self.x else -speed
-            vy = speed if self.track.y > self.y else -speed
 
-        if x_active:
-            vx *= friction
-            self._des_vx = vx
-        else:
-            vy *= friction
-            self._des_vy = vy
+    direction = pyglet.sprite.Sprite(
+        x=self.x, y=self.y, img=res.squeezer_arrow, batch=self.layer)
+    while(True):
+        if direction:
+            if self.dead:
+                direction.delete()
+                direction = False
+            else:
+                iter_i -= 1
+
+                if not x_active:
+                    direction.rotation = 0 if self.track.x > self.x else 180
+                else:
+                    direction.rotation = 270 if self.track.y > self.y else 90
+
+                direction.x = self.x
+                direction.y = self.y
+                if iter_i <= 60:
+                    direction.opacity -= 10
+
+                if iter_i <= 0:
+                    direction.opacity = 0
+                    iter_i = 240
+                    x_active = not x_active
+                    self.vel_x = self.vel_y = self._des_vx = self._des_vy = 0
+                    vx = speed if self.track.x > self.x else -speed
+                    vy = speed if self.track.y > self.y else -speed
+
+                if x_active:
+                    vx *= friction
+                    self._des_vx = vx
+                else:
+                    vy *= friction
+                    self._des_vy = vy
         yield 0
 
 
