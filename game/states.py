@@ -275,6 +275,7 @@ class Play_State(object):
             self.enemies.remove(enemy)
             enemy.kill()
             if enemy.sensor or enemy.is_outside_of_screen:
+                enemy.dead = True
                 enemy.delete()
             elif enemy.dead:
                 if not self._ship_died and not self.ship.bomb:

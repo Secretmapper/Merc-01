@@ -144,9 +144,9 @@ class Sensor(AbstractEnemy):
 
 class EnemyShip(AbstractEnemy):
 
-    def __init__(self, behaviours, track, particle_data={}, max_vel=5, *args, **kwargs):
+    def __init__(self, behaviours, track, score=0, particle_data={}, max_vel=5, *args, **kwargs):
         super(EnemyShip, self).__init__(**kwargs)
-
+        self.score = score
         self.max_vel = max_vel
 
         self.min_x = self.image.width / 2
@@ -367,7 +367,7 @@ class Ship(Sprite):
 
     def hit(self):
         1
-        #self.opacity = 0
+        # self.opacity = 0
 
     def respawn(self):
         self.opacity = 255
@@ -408,24 +408,23 @@ class Ship(Sprite):
         if self.keys['D']:
             self.speed_x += self.speed * xdt
 
-        if not self.keys['shift']:
-            if self.keys['D']:
-                self.rotation = 0
-            if self.keys['S']:
-                self.rotation = 90
-            if self.keys['A']:
-                self.rotation = 180
-            if self.keys['W']:
-                self.rotation = 270
+        if self.keys['D']:
+            self.rotation = 0
+        if self.keys['S']:
+            self.rotation = 90
+        if self.keys['A']:
+            self.rotation = 180
+        if self.keys['W']:
+            self.rotation = 270
 
-            if self.keys['S'] and self.keys['A']:
-                self.rotation = 135
-            if self.keys['S'] and self.keys['D']:
-                self.rotation = 45
-            if self.keys['W'] and self.keys['A']:
-                self.rotation = 225
-            if self.keys['W'] and self.keys['D']:
-                self.rotation = 315
+        if self.keys['S'] and self.keys['A']:
+            self.rotation = 135
+        if self.keys['S'] and self.keys['D']:
+            self.rotation = 45
+        if self.keys['W'] and self.keys['A']:
+            self.rotation = 225
+        if self.keys['W'] and self.keys['D']:
+            self.rotation = 315
 
         if self.keys['right']:
             self.shoot_rotation = 0
