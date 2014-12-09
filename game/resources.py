@@ -21,18 +21,25 @@ black_hole = center_anchor(pyglet.resource.image('black_hole.png'))
 black_field = center_anchor(pyglet.resource.image('black_field.png'))
 black_hole_colors = [100, 0, 0]
 
-tracker = center_anchor(pyglet.resource.image('tracker.png'))
-tracker_colors = [140, 198, 63]
 
+bouncer = center_anchor(pyglet.resource.image('bouncer.png'))
+bouncer_colors = [140, 198, 63]
+
+tracker = center_anchor(pyglet.resource.image('tracker.png'))
+tracker_colors = [170, 104, 170]
+
+splitter = center_anchor(pyglet.resource.image('splitter.png'))
+splitter_colors = [27, 117, 187]
+
+evader = center_anchor(pyglet.resource.image('evader.png'))
+evader_colors = [255, 242, 0]
+
+squeezer = center_anchor(pyglet.resource.image('squeezer.png'))
+squeezer_colors = [109, 110, 45]
 
 cleaner = center_anchor(pyglet.resource.image('cleaner.png'))
 cleaner_colors = [89, 74, 65]
 
-splitter = center_anchor(pyglet.resource.image('splitter.png'))
-splitter_colors = [170, 104, 170]
-
-evader = center_anchor(pyglet.resource.image('evader.png'))
-evader_colors = [255, 242, 0]
 
 liner = center_anchor(pyglet.resource.image('liner.png'))
 bullet = center_anchor(pyglet.resource.image('bullet.png'))
