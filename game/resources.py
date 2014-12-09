@@ -36,6 +36,7 @@ evader_colors = [255, 242, 0]
 
 liner = center_anchor(pyglet.resource.image('liner.png'))
 bullet = center_anchor(pyglet.resource.image('bullet.png'))
+bullet_one = center_anchor(pyglet.resource.image('bullet_once.png'))
 homing_bullet = center_anchor(pyglet.resource.image('homing-bullet.png'))
 fire_particle = center_anchor(pyglet.resource.image('fire-particle.png'))
 
