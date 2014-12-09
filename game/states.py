@@ -265,11 +265,11 @@ class Play_State(object):
                     game.graphics.ParticleSystem(bullet.x, bullet.y, particle_life=20, particles=20 + randint(0, 30)))
             bullet.delete()
 
-        for bullet in [b for b in self.enemy_bullets if b.dead]:
-            self.enemy_bullets.remove(bullet)
-            bullet.delete()
-
         for enemy in [b for b in self.enemies if b.dead or b.is_outside_of_screen]:
+            # if enemy has bullets, add them now (since we are removing the
+            # enemy)
+            if enemy.bullets:
+                self.enemy_bullets += enemy.bullets
             self.enemies.remove(enemy)
             enemy.kill()
             if enemy.sensor or enemy.is_outside_of_screen:
@@ -289,6 +289,11 @@ class Play_State(object):
                 self.dead_enemies.append(enemy)
 
                 self.target_score += 100
+
+        for bullet in [b for b in self.enemy_bullets if b.dead]:
+            self.enemy_bullets.remove(bullet)
+            if bullet._vertex_list:
+                bullet.delete()
 
         if self.target_score > self.score:
             self.score = utils.lerp(self.score, self.target_score, 0.2)
