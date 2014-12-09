@@ -10,8 +10,8 @@ def get_bouncer(self, x=False, y=False, spawn=False, delay=0):
         x, y = self.get_spawn_pos()
     behaviours_list = [[behaviours.bounce], [behaviours.delay, delay]]
     enemy = EnemyShip(x=x, y=y, score=25,
-                      img=res.splitter,
-                      particle_data={'rgb': res.splitter_colors},
+                      img=res.bouncer,
+                      particle_data={'rgb': res.bouncer_colors},
                       track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_CB_TYPE,
                       behaviours=behaviours_list)
     if spawn:
@@ -53,6 +53,23 @@ def get_evader(self, x=False, y=False, spawn=False, delay=0):
     return enemy
 
 
+def get_squeezer(self, x=False, y=False, spawn=False, delay=0):
+    if not x:
+        x, y = self.get_spawn_pos()
+    behaviours_list = [
+        [behaviours.zip], [behaviours.delay, delay]]
+
+    enemy = EnemyShip(x=x, y=y, score=100,
+                      img=res.squeezer,
+                      particle_data={'rgb': res.squeezer_colors},
+                      track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_CB_TYPE,
+                      behaviours=behaviours_list,)
+    if spawn:
+        self.enemies.append(enemy)
+
+    return enemy
+
+
 def spawn_corner(self):
 
     for i in xrange(1, 10):
@@ -67,6 +84,18 @@ def spawn_corner(self):
     for i in xrange(1, 10):
         self.callbacks.append(
             [get_tracker, 5, {'spawn': True, 'self': self, 'x': CONSTS.game_width, 'y': 10, 'delay': i * 10}])
+
+
+def spawn_zipping(self):
+    x_mod = 100 if self.ship.x > CONSTS.game_width / 2 else -100
+    y_mod = 0
+    if self.ship.y + 5 * 30 > CONSTS.game_height:
+        y_mod -= 5 * 30
+    elif self.ship.y + 5 * 30 < 0:
+        y_mod -= 5 * 30
+    for i in xrange(-5, 5):
+        self.callbacks.append(
+            [get_squeezer, 5, {'spawn': True, 'self': self, 'x': self.ship.x + x_mod, 'y': self.ship.y + y_mod + i * 30, 'delay': (i + 5) * 5}])
 
 
 def clear_spawn(lst):
@@ -108,7 +137,7 @@ def one(self):
     spawned = [get_bouncer(self) for i in xrange(2)]
     self.enemies.extend(spawned)
 
-    points = 100
+    points = 0
 
     # type - points - weight
     choice = [
@@ -128,7 +157,14 @@ def one(self):
 
 
 def two(self):
-    spawn_corner(self)
-    while(True):
+    # spawn_corner(self)
+    spawn_zipping(self)
+    rate = 1.0
 
+    for i in xrange(4 - 1):
+        for i in xrange(120):
+            yield True
+        spawn_zipping(self)
+
+    while(True):
         yield True

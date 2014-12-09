@@ -39,7 +39,6 @@ class Enemy_Spawner(object):
             callback[1] = callback[1] - 1
             if callback[1] <= 0:
                 if len(callback) >= 3:
-                    print callback[2]
                     callback[0](**callback[2])
                 else:
                     callback[0]()
