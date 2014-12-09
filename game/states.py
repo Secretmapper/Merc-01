@@ -290,7 +290,7 @@ class Play_State(object):
                                                       x=enemy.x + enemy.width * -1, y=enemy.y + enemy.height * -1, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
                 self.dead_enemies.append(enemy)
 
-                self.target_score += 100
+                self.target_score += enemy.score
 
         for bullet in [b for b in self.enemy_bullets if b.dead]:
             self.enemy_bullets.remove(bullet)
