@@ -66,7 +66,8 @@ class Spatial_Grid():
                     for a in a_list:
                         if not (a.dead or b.dead):
                             if utils.distance_sq(b, a) < (a.width / 2 + b.width / 2) ** 2:
-                                b.dead = True
+                                #b.dead = True
+                                a.dead = b
 
                 a_list = cell[CONSTS.BULLET_CB_TYPE]
                 b_list = cell[CONSTS.ENEMY_BLACK_HOLE]
@@ -156,14 +157,15 @@ class Spatial_Grid():
                             y_row = self._hit_squares[y_row_i]
                             x_rows = [y_row[i] for i in x_rows_n]
                             for cell_i in xrange(len(x_rows)):
-                                nearby.append(
-                                    x_rows[cell_i][CONSTS.ENEMY_CB_TYPE])
-                                nearby.append(
-                                    x_rows[cell_i][CONSTS.PLAYER_CB_TYPE])
+                                if b.attract:
+                                    nearby.append(
+                                        x_rows[cell_i][CONSTS.ENEMY_CB_TYPE])
+                                    nearby.append(
+                                        x_rows[cell_i][CONSTS.PLAYER_CB_TYPE])
+                                    nearby.append(
+                                        x_rows[cell_i][CONSTS.ENEMY_BLACK_HOLE])
                                 nearby.append(
                                     x_rows[cell_i][CONSTS.BULLET_CB_TYPE])
-                                nearby.append(
-                                    x_rows[cell_i][CONSTS.ENEMY_BLACK_HOLE])
                                 self.color_grid(
                                     x_rows_n[cell_i], y_row_i, (50, 50, 50, 100) * 4)
                         # nearby

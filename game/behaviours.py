@@ -121,6 +121,18 @@ def delay(self, delay_time, alpha_time=False):
         yield 0
 
 
+def rotate(self, angle=90):
+    while(True):
+        self.rotation = angle
+        yield 0
+
+
+def attract(self):
+    self.attract = True
+    while(True):
+        yield 0
+
+
 def black_hole(self):
     self.trackable = False
     self._blackhole_sep_v = 100.0
@@ -341,10 +353,10 @@ def shoot_circle(self, timer=60):
         yield 0
 
 
-def shoot_fire(self, angle=90, mod_dist=5):
+def shoot_fire(self, angle=90, mod_dist=5, timer=40):
     from game.objects import Bullet
 
-    timer_i = 10
+    timer_i = timer
     mod_dist = mod_dist
     a_i = angle
     mod = True
@@ -352,7 +364,7 @@ def shoot_fire(self, angle=90, mod_dist=5):
     while(True):
         timer_i -= 1
         if timer_i <= 0:
-            timer_i = 20
+            timer_i = timer
 
             a_i += mod_dist
 

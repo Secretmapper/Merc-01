@@ -110,6 +110,7 @@ class AbstractEnemy(Sprite):
         self.trackable = True          # Trackable by Homing Missles?
         self.collidable = True
         self.callbacks = callbacks
+        self.attract = False  # should this enemy attract (blackhole)
 
     def trigger(self, *args, **kwargs):
         for i in self.callbacks:
@@ -220,10 +221,10 @@ class EnemyShip(AbstractEnemy):
 
     def update(self, dt):
         self.black_hole_checks = {}
-        if self.nonactive and not self._enter_behaviour.next():
-            return
         if self.dead:
             self._exit_behaviour.next()
+            return
+        if self.nonactive and not self._enter_behaviour.next():
             return
 
         self.bullets = []

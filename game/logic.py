@@ -87,14 +87,21 @@ class Enemy_Spawner(object):
         if self.spwn_chance >= random.randint(0, 20) and len(self.state.enemies) <= 5 and len(self.callbacks) == 0:
             x = random.randint(0, CONSTS.game_width)
             y = random.randint(0, CONSTS.game_height)
-            enemy = EnemyShip(x=x, y=y, callbacks=[behaviours.black_hole_cb], behaviours=[[behaviours.pulse], [behaviours.black_hole], [behaviours.delay, 0, 50]], img=res.black_hole, particle_data={
-                              'rgb': res.black_hole_colors}, track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_BLACK_HOLE)
-            self.enemies.append(enemy)
+            # enemy = EnemyShip(x=x, y=y, callbacks=[behaviours.black_hole_cb], behaviours=[[behaviours.pulse], [behaviours.attract], [behaviours.black_hole], [behaviours.delay, 0, 50]], img=res.black_hole, particle_data={
+            #                  'rgb': res.black_hole_colors}, track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_BLACK_HOLE)
+            # self.enemies.append(enemy)
             spawn_line()
+
+            enemy = EnemyShip(x=x, y=y, behaviours=[[behaviours.rotate]] + [[behaviours.shoot_fire, ang, 5] for ang in range(0, 360, 90)], img=res.cleaner, particle_data={
+                              'rgb': res.cleaner_colors}, track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_BLACK_HOLE)
+            self.enemies.append(enemy)
             self.spawn_sin(**sin_params)
 
         if self.spwn_chance >= random.randint(0, 100) and len(self.state.enemies) <= 5 and len(self.callbacks) == 0:
             self.spwn_chance = 0
+            x = random.randint(0, CONSTS.game_width)
+            y = random.randint(0, CONSTS.game_height)
+
             self.spawn_corner()
 
         if self.spwn_chance > 20:

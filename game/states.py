@@ -102,10 +102,10 @@ class Play_State(object):
         # enemy = EnemyShip(x=100, y=200, behaviours=[[behaviours.follow_player]], img=res.splitter, particle_data={
         #                  'rgb': res.splitter_colors}, track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_CB_TYPE)
         # self.enemies.append(enemy)
-        enemy = EnemyShip(x=100, y=200, callbacks=[behaviours.black_hole_cb], behaviours=[[behaviours.pulse], [behaviours.black_hole], [behaviours.delay, 0, 50]], img=res.black_hole, particle_data={
+        enemy = EnemyShip(x=100, y=200, callbacks=[behaviours.black_hole_cb], behaviours=[[behaviours.pulse], [behaviours.attract], [behaviours.black_hole], [behaviours.delay, 0, 50]], img=res.black_hole, particle_data={
             'rgb': res.black_hole_colors}, track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_BLACK_HOLE)
         self.enemies.append(enemy)
-        enemy = EnemyShip(x=150, y=200, callbacks=[behaviours.black_hole_cb], behaviours=[[behaviours.pulse], [behaviours.black_hole], [behaviours.delay, 0, 50]], img=res.black_hole, particle_data={
+        enemy = EnemyShip(x=150, y=200, callbacks=[behaviours.black_hole_cb], behaviours=[[behaviours.pulse], [behaviours.attract], [behaviours.black_hole], [behaviours.delay, 0, 50]], img=res.black_hole, particle_data={
             'rgb': res.black_hole_colors}, track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_BLACK_HOLE)
         self.enemies.append(enemy)
         self.bomb = False
@@ -158,17 +158,24 @@ class Play_State(object):
         if self._died_timer > 0:
             self._ship_died = False
             self._died_timer -= 1
+
+            killer = False
+            if len(self.enemies) >= 1:
+                killer = self.enemies[0]
+            elif len(self.enemies[0]) >= 1:
+                killer = self.enemy_bullets[0]
+
             # blink enemy killer
-            if len(self.enemies) == 1:
-                if self._died_timer % 15 == 0:
-                    if self.enemies[0].opacity == 0:
-                        self.enemies[0].opacity = 255
+            if self._died_timer % 15 == 0:
+                if killer:
+                    if killer.opacity == 0:
+                        killer.opacity = 255
                     else:
-                        self.enemies[0].opacity = 0
+                        killer.opacity = 0
             if self._died_timer == 0:
                 self.ship.respawn()
-                if len(self.enemies) == 1:
-                    self.enemies[0].dead = True
+                if killer:
+                    killer.dead = True
             else:
                 return
 
@@ -230,6 +237,9 @@ class Play_State(object):
                 if not self.ship.dead == enemy:
                     enemy.dead = True
                     enemy.shot(self.ship.x, self.ship.y)
+            for enemy in self.enemy_bullets:
+                if not self.ship.dead == enemy:
+                    enemy.dead = True
 
             self._ship_died = True
             self._died_timer = 120
@@ -253,6 +263,10 @@ class Play_State(object):
             if bullet.bounds_death:
                 self.emitter_list.append(
                     game.graphics.ParticleSystem(bullet.x, bullet.y, particle_life=20, particles=20 + randint(0, 30)))
+            bullet.delete()
+
+        for bullet in [b for b in self.enemy_bullets if b.dead]:
+            self.enemy_bullets.remove(bullet)
             bullet.delete()
 
         for enemy in [b for b in self.enemies if b.dead or b.is_outside_of_screen]:

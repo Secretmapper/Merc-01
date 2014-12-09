@@ -24,6 +24,10 @@ black_hole_colors = [100, 0, 0]
 tracker = center_anchor(pyglet.resource.image('tracker.png'))
 tracker_colors = [140, 198, 63]
 
+
+cleaner = center_anchor(pyglet.resource.image('cleaner.png'))
+cleaner_colors = [89, 74, 65]
+
 splitter = center_anchor(pyglet.resource.image('splitter.png'))
 splitter_colors = [170, 104, 170]
 
