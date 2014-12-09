@@ -50,7 +50,7 @@ class Enemy_Spawner(object):
                 y = random.randint(150, CONSTS.game_height - 150)
 
             # spawn the first enemy of the line (the anchor)
-            enemy1 = EnemyShip(behaviours=[[behaviours.link], [behaviours.delay, 0, 30]], img=res.liner, track=self.ship,
+            enemy1 = EnemyShip(behaviours=[[behaviours.link], [behaviours.delay, 0]], img=res.liner, track=self.ship,
                                x=x, y=y, batch=self.main_batch, cb_type=CONSTS.ENEMY_LINE_CB_TYPE)
             # start sensor spawn
             sensors = []
@@ -61,7 +61,7 @@ class Enemy_Spawner(object):
                 sensor.scale = 0.5
                 self.enemies.append(sensor)
 
-            enemy2 = EnemyShip(behaviours=[[behaviours.link, enemy1, sensors], [behaviours.delay, 0, 30]], img=res.liner, track=self.ship,
+            enemy2 = EnemyShip(behaviours=[[behaviours.link, enemy1, sensors], [behaviours.delay, 0]], img=res.liner, track=self.ship,
                                x=x + 100, y=y, batch=self.main_batch, cb_type=CONSTS.ENEMY_LINE_CB_TYPE)
             # end sensor spawn
             self.enemies.append(enemy1)
@@ -79,7 +79,7 @@ class Enemy_Spawner(object):
 
             behaviours_list = [[behaviours.split],
                                [behaviours.follow_player, 2],
-                               [behaviours.delay, 0, 30]]
+                               [behaviours.delay, 0]]
             enemy = EnemyShip(
                 x=x, y=y, behaviours=behaviours_list, img=res.splitter, particle_data={'rgb': res.splitter_colors}, track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_CB_TYPE)
             self.enemies.append(enemy)
@@ -92,7 +92,7 @@ class Enemy_Spawner(object):
             # self.enemies.append(enemy)
             spawn_line()
 
-            enemy = EnemyShip(x=x, y=y, behaviours=[[behaviours.rotate]] + [[behaviours.shoot_fire, ang, 5] for ang in range(0, 360, 90)], img=res.cleaner, particle_data={
+            enemy = EnemyShip(x=x, y=y, behaviours=[[behaviours.rotate]] + [[behaviours.shoot_fire, ang, 5] for ang in range(0, 360, 90)] + [[behaviours.delay, 0]], img=res.cleaner, particle_data={
                               'rgb': res.cleaner_colors}, track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_BLACK_HOLE)
             self.enemies.append(enemy)
             self.spawn_sin(**sin_params)
@@ -107,7 +107,7 @@ class Enemy_Spawner(object):
         if self.spwn_chance > 20:
             self.spwn_chance += 0.000005
 
-    def spawn_enemy(self, x, y, e_type, delay=0, alpha=30):
+    def spawn_enemy(self, x, y, e_type, delay=0, alpha=50):
         behaviours_list = [[behaviours.evade],
                            [behaviours.follow_player, 3],
                            [behaviours.delay, delay, alpha]]
@@ -123,16 +123,16 @@ class Enemy_Spawner(object):
                   'cb_type': CONSTS.ENEMY_CB_TYPE}
         for i in xrange(1, 10):
             self.callbacks.append(
-                [self.spawn_enemy, 5, {'e_type': e_type, 'x': 10, 'y': 10, 'delay': i * 10, 'alpha': 10}])
+                [self.spawn_enemy, 5, {'e_type': e_type, 'x': 10, 'y': 10, 'delay': i * 10}])
         for i in xrange(1, 10):
             self.callbacks.append(
-                [self.spawn_enemy, 5, {'e_type': e_type, 'x': 10, 'y': CONSTS.game_height - 10, 'delay': i * 10, 'alpha': 10}])
+                [self.spawn_enemy, 5, {'e_type': e_type, 'x': 10, 'y': CONSTS.game_height - 10, 'delay': i * 10}])
         for i in xrange(1, 10):
             self.callbacks.append(
-                [self.spawn_enemy, 5, {'e_type': e_type, 'x': CONSTS.game_width, 'y': CONSTS.game_height - 10, 'delay': i * 10, 'alpha': 10}])
+                [self.spawn_enemy, 5, {'e_type': e_type, 'x': CONSTS.game_width, 'y': CONSTS.game_height - 10, 'delay': i * 10}])
         for i in xrange(1, 10):
             self.callbacks.append(
-                [self.spawn_enemy, 5, {'e_type': e_type, 'x': CONSTS.game_width, 'y': 10, 'delay': i * 10, 'alpha': 10}])
+                [self.spawn_enemy, 5, {'e_type': e_type, 'x': CONSTS.game_width, 'y': 10, 'delay': i * 10}])
 
     def spawn_sin(self, c_x=False, c_y=False):
         angles = [a * math.pi / 180 for a in range(1, 320, 20)]
@@ -166,7 +166,7 @@ class Enemy_Spawner(object):
             y = math.sin(a) * 200 + self.ship.y
 
             behaviours_list = [
-                [behaviours.follow_player, 1 + float(a) / 1000], [behaviours.delay, a * 10, 30], [behaviours.split]]
+                [behaviours.follow_player, 1 + float(a) / 1000], [behaviours.delay, a * 10], [behaviours.split]]
             enemy = EnemyShip(behaviours=behaviours_list, img=res.splitter, particle_data={'rgb': res.splitter_colors}, track=self.ship,
                               x=x, y=y, batch=self.main_batch, cb_type=CONSTS.ENEMY_CB_TYPE)
             self.enemies.append(enemy)

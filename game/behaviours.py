@@ -68,7 +68,7 @@ def pulse(self):
         yield 0
 
 
-def delay(self, delay_time, alpha_time=False):
+def delay(self, delay_time, alpha_time=50):
     """
     Function that delays 'Enemy Spawn'
     Useful for delayed spawning ofc :P
@@ -79,8 +79,6 @@ def delay(self, delay_time, alpha_time=False):
 
     An enemy can appear but still be inactive (alpha_time)
     """
-    if not alpha_time and not alpha_time == 0:
-        alpha_time = delay_time
 
     first_x, first_y = self.x, self.y
 
