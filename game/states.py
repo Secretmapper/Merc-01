@@ -192,17 +192,16 @@ class Play_State(object):
 
         if self.ship.shoot and CONSTS.DEBUG_MODE_VAR('shoot'):
             if self.ship.shoot_type == 1:
-                for i in [0]:
-                    bullet = Bullet(behaviours=[[behaviours.by_angle, self.ship.shoot_rotation + i * 10, 20]], on_bounds_kill=True, img=res.bullet, x=self.ship.x,
-                                    y=self.ship.y, batch=self.main_batch)
+                self.bullets.extend(self.ship.bullets)
+                for bullet in self.ship.bullets:
                     self.spatial_grid.add_entity(bullet, self.BULLET_CB_TYPE)
-                    self.bullets.append(bullet)
             if self.ship.shoot_type == 2:
                 if len(self.enemies) >= 1 and self.enemies[0].trackable:
                     bullet = Bullet(behaviours=[[behaviours.chase]], on_bounds_kill=True, img=res.bullet, x=self.ship.x,
                                     y=self.ship.y, batch=self.main_batch, track=self.enemies[0], rotation=self.ship.rotation)
                     self.spatial_grid.add_entity(bullet, self.BULLET_CB_TYPE)
                     self.bullets.append(bullet)
+            self.ship.bullets = []
 
         if self.ship.bomb:
             self.camera.shake(300)

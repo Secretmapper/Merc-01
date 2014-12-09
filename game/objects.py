@@ -6,6 +6,7 @@ import constants as CONSTS
 from pyglet.window import key
 from random import randint
 import behaviours
+import random
 
 
 class Sprite(pyglet.sprite.Sprite):
@@ -350,6 +351,7 @@ class Ship(Sprite):
         self._invinsible_i = 0
 
         self.black_hole_checks = {}
+        self.bullets = []
 
     def black_hole(self, hole):
         if hole.uid not in self.black_hole_checks:
@@ -390,6 +392,12 @@ class Ship(Sprite):
         self.i_shoot -= 1
         if self.i_shoot < 0:
             self.shoot = True
+            for i in [-1 * random.random(), 0, 1 * random.random()]:
+                ang = self.shoot_rotation + i * 10
+                bullet = Bullet(behaviours=[[behaviours.by_angle, ang, 20]], on_bounds_kill=True, img=res.bullet_one,
+                                x=self.x, y=self.y,
+                                batch=self.batch)
+                self.bullets.append(bullet)
             self.i_shoot = self.shoot_timer
 
         # if self.keys['shift']:
