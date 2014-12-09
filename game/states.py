@@ -162,7 +162,7 @@ class Play_State(object):
             killer = False
             if len(self.enemies) >= 1:
                 killer = self.enemies[0]
-            elif len(self.enemies[0]) >= 1:
+            elif len(self.enemy_bullets) >= 1:
                 killer = self.enemy_bullets[0]
 
             # blink enemy killer
