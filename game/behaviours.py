@@ -153,8 +153,7 @@ def rotate(self):
         yield 0
 
 
-def bounce(self):
-    speed = 10
+def bounce(self, speed=3):
     r = -randint(0, 360) * math.pi / 180
     self.dir_x = math.cos(r)
     self.dir_y = math.sin(r)
