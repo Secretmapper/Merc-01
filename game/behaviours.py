@@ -424,17 +424,20 @@ def by_angle(self, r, speed=5):
 
 
 def by_sin(self, r):
+    speed = 2
+    amp = randint(20, 50)
+
     a = 0
-    speed = 5
     ar = r * -math.pi / 180
     dir_x, dir_y = math.cos(ar) * speed, math.sin(ar) * speed
     start_x, start_y = self.x, self.y
+
     while(True):
         if r == 0 or r == 180:
             self._des_vx += dir_x / 3.0
-            self._des_vy = (math.sin(a) * 50 + start_y) - self.y
+            self._des_vy = (math.sin(a) * amp + start_y) - self.y
         else:
-            self._des_vx = (math.sin(a) * 50 + start_x) - self.x
+            self._des_vx = (math.sin(a) * amp + start_x) - self.x
             self._des_vy += dir_y / 3.0
         a += 5 * math.pi / 180
         yield 0
