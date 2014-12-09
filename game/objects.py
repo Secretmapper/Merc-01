@@ -335,12 +335,14 @@ class Ship(Sprite):
         self.keys = dict(spacebar=False, W=False, A=False, S=False, D=False, shift=False,
                          left=False, right=False, up=False, down=False)
         self.shoot = False
+        self.boost = False
+        self.bomb = False
+
         self.shoot_type = 1
         self.shoot_timer = 8
         self.i_shoot = self.shoot_timer
         self.speed_x, self.speed_y = 0, 0
         self.speed = 0.75
-        self.boost = False
         self.shoot_rotation = 0
 
         self.invinsible = False
@@ -371,6 +373,7 @@ class Ship(Sprite):
         self._invinsible_i = 20
         self.invinsible = True
         self.dead = False
+        self.bomb = False
 
     def update(self, dt):
         Sprite.update(self, dt)
@@ -462,6 +465,8 @@ class Ship(Sprite):
             self.shoot_type = 2
         if symbol == key.SPACE:
             self.keys['spacebar'] = True
+            self.bomb = True
+
         if symbol == key.LSHIFT:
             self.keys['shift'] = True
         if symbol == key.W:

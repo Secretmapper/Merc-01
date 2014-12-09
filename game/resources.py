@@ -3,7 +3,8 @@ import os
 
 working_dir = os.path.dirname(os.path.realpath(__file__))
 
-pyglet.resource.path = [os.path.join(working_dir, '../resources/img')]
+pyglet.resource.path = [os.path.join(
+    working_dir, '../resources/img'), os.path.join(working_dir, '../resources/music'), ]
 pyglet.resource.reindex()
 
 
@@ -12,6 +13,7 @@ def center_anchor(image):
     image.anchor_y = image.height / 2
     return image
 
+bomb = center_anchor(pyglet.resource.image('bomb.png'))
 player = center_anchor(pyglet.resource.image('shooter.png'))
 
 
@@ -46,3 +48,7 @@ circle_detect = center_anchor(pyglet.resource.image('circle-detect.png'))
 circle_detect_text = pyglet.resource.image('circle-detect-text.png')
 circle_detect_text.anchor_x = 13
 circle_detect_text.anchor_y = 10
+
+
+# music
+paragon = pyglet.resource.media('152047_ParagonX9___Chaoz_I.mp3')

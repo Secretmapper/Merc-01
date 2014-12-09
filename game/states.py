@@ -108,6 +108,7 @@ class Play_State(object):
         enemy = EnemyShip(x=150, y=200, callbacks=[behaviours.black_hole_cb], behaviours=[[behaviours.pulse], [behaviours.black_hole], [behaviours.delay, 0, 50]], img=res.black_hole, particle_data={
             'rgb': res.black_hole_colors}, track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_BLACK_HOLE)
         self.enemies.append(enemy)
+        self.bomb = False
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.last_mouse_pos = (x, y)
@@ -171,9 +172,16 @@ class Play_State(object):
             else:
                 return
 
-        self.spawner.update(dt)
-        for enemy in self.spawner.enemies:
-            self.enemies.append(enemy)
+        # do not spawn enemies when bomb is used
+        if self.bomb:
+            self.bomb.scale += 0.05
+            if self.bomb.scale >= 5:
+                self.bomb.delete()
+                self.bomb = False
+        else:
+            self.spawner.update(dt)
+            for enemy in self.spawner.enemies:
+                self.enemies.append(enemy)
 
         if self.ship.shoot and CONSTS.DEBUG_MODE_VAR('shoot'):
             if self.ship.shoot_type == 1:
@@ -188,6 +196,17 @@ class Play_State(object):
                                     y=self.ship.y, batch=self.main_batch, track=self.enemies[0], rotation=self.ship.rotation)
                     self.spatial_grid.add_entity(bullet, self.BULLET_CB_TYPE)
                     self.bullets.append(bullet)
+
+        if self.ship.bomb:
+            for enemy in self.enemies:
+                enemy.dead = True
+                enemy.shot(self.ship.x, self.ship.y)
+                self.camera.shake(300)
+                self.bomb = pyglet.sprite.Sprite(
+                    img=res.bomb, batch=self.main_batch)
+                self.bomb.x = self.ship.x
+                self.bomb.y = self.ship.y
+                self.bomb.scale = 0.0
 
         self.ship.update(dt)
 
@@ -242,7 +261,7 @@ class Play_State(object):
             if enemy.sensor or enemy.is_outside_of_screen:
                 enemy.delete()
             elif enemy.dead:
-                if not self._ship_died:
+                if not self._ship_died and not self.ship.bomb:
                     self.emitter_list.append(
                         game.graphics.ParticleSystem(enemy.x, enemy.y, **enemy.particle_data))
                     self.camera.shake(2)
@@ -283,6 +302,7 @@ class Play_State(object):
             self.spatial_grid.add(enemy_bullet, CONSTS.ENEMY_BULLET_CB_TYPE)
 
         self.spatial_grid.update()
+        self.ship.bomb = False
 
     def on_draw(self, ):
         glClear(GL_COLOR_BUFFER_BIT)
