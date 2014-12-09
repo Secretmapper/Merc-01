@@ -17,6 +17,14 @@ class Enemy_Spawner(object):
         self.main_batch = state.main_batch
         self.state = state
         self.callbacks = []
+        self.d = True
+
+    def get_spawn_pos(self, bound=10):
+        x, y = self.ship.x, self.ship.y
+        while (self.ship.x - x) ** 2 + (self.ship.y - y) ** 2 <= 200:
+            x = random.randint(bound, CONSTS.game_width - bound)
+            y = random.randint(bound, CONSTS.game_height - bound)
+        return (x, y)
 
     def update(self, dt):
         self.enemies = []
@@ -36,18 +44,24 @@ class Enemy_Spawner(object):
 
         self.callbacks[:] = [cb for cb in self.callbacks if cb[1] > 0]
 
-        def spawn_line(x, y):
+        def spawn_line(x=None, y=None):
+            if not x:
+                x = random.randint(150, CONSTS.game_width - 150)
+                y = random.randint(150, CONSTS.game_height - 150)
+
             # spawn the first enemy of the line (the anchor)
-            enemy1 = EnemyShip(behaviours=[[behaviours.link]], img=res.liner, track=self.ship,
+            enemy1 = EnemyShip(behaviours=[[behaviours.link], [behaviours.delay, 0, 30]], img=res.liner, track=self.ship,
                                x=x, y=y, batch=self.main_batch, cb_type=CONSTS.ENEMY_LINE_CB_TYPE)
             # start sensor spawn
             sensors = []
-            for d in xrange(1, 5):
+            for d in xrange(1, 4):
                 sensors.append(Sensor(callbacks=[behaviours.link_sensor], img=res.liner, track=self.ship,
                                       x=x + res.tracker.width * d, y=y, batch=self.main_batch, cb_type=CONSTS.SENSOR_CB_TYPE))
-                [self.enemies.append(sensor) for sensor in sensors]
+            for sensor in sensors:
+                sensor.scale = 0.5
+                self.enemies.append(sensor)
 
-            enemy2 = EnemyShip(behaviours=[[behaviours.link, enemy1, sensors]], img=res.liner, track=self.ship,
+            enemy2 = EnemyShip(behaviours=[[behaviours.link, enemy1, sensors], [behaviours.delay, 0, 30]], img=res.liner, track=self.ship,
                                x=x + 100, y=y, batch=self.main_batch, cb_type=CONSTS.ENEMY_LINE_CB_TYPE)
             # end sensor spawn
             self.enemies.append(enemy1)
@@ -61,8 +75,7 @@ class Enemy_Spawner(object):
         ])
 
         if self.spwn_chance >= random.randint(0, 50):
-            x = random.randint(0, CONSTS.game_width)
-            y = random.randint(0, CONSTS.game_height)
+            x, y = self.get_spawn_pos()
 
             behaviours_list = [[behaviours.split],
                                [behaviours.follow_player, 2],
@@ -77,6 +90,7 @@ class Enemy_Spawner(object):
             enemy = EnemyShip(x=x, y=y, callbacks=[behaviours.black_hole_cb], behaviours=[[behaviours.pulse], [behaviours.black_hole], [behaviours.delay, 0, 50]], img=res.black_hole, particle_data={
                               'rgb': res.black_hole_colors}, track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_BLACK_HOLE)
             self.enemies.append(enemy)
+            spawn_line()
             self.spawn_sin(**sin_params)
 
         if self.spwn_chance >= random.randint(0, 100) and len(self.state.enemies) <= 5 and len(self.callbacks) == 0:
