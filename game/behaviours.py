@@ -211,7 +211,7 @@ def rotate_to_player(self):
         yield 0
 
 
-def zip(self):
+def zip(self, speed=20):
     x_active = False
 
     friction = 0.98
@@ -222,8 +222,8 @@ def zip(self):
             iter_i = 240
             x_active = not x_active
             self.vel_x = self.vel_y = self._des_vx = self._des_vy = 0
-            vx = 10 if self.track.x > self.x else -10
-            vy = 10 if self.track.y > self.y else -10
+            vx = speed if self.track.x > self.x else -speed
+            vy = speed if self.track.y > self.y else -speed
 
         if x_active:
             vx *= friction
@@ -251,8 +251,8 @@ def evade(self):
         vx /= self._aneighbors
         vy /= self._aneighbors
         vx, vy = utils.normalize(vx, vy)
-        vx *= -3
-        vy *= -3
+        vx *= -5
+        vy *= -5
 
         self.vel_x += vx
         self.vel_y += vy
