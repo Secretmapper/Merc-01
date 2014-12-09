@@ -205,15 +205,17 @@ class Play_State(object):
                     self.bullets.append(bullet)
 
         if self.ship.bomb:
+            self.camera.shake(300)
+            self.bomb = pyglet.sprite.Sprite(
+                img=res.bomb, batch=self.main_batch)
+            self.bomb.x = self.ship.x
+            self.bomb.y = self.ship.y
+            self.bomb.scale = 0.0
             for enemy in self.enemies:
                 enemy.dead = True
                 enemy.shot(self.ship.x, self.ship.y)
-                self.camera.shake(300)
-                self.bomb = pyglet.sprite.Sprite(
-                    img=res.bomb, batch=self.main_batch)
-                self.bomb.x = self.ship.x
-                self.bomb.y = self.ship.y
-                self.bomb.scale = 0.0
+            for bullet in self.enemy_bullets:
+                bullet.dead = True
 
         self.ship.update(dt)
 
