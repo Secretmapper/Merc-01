@@ -113,7 +113,7 @@ class ParticleSystem():
 
         self.x, self.y = 0, 0
         self.total_particles = particles
-        self.size = 16
+        self.size = 12
 
         self.infi_life = False
         self.emit_rate = self.total_life

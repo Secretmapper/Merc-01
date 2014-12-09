@@ -5,8 +5,8 @@ win_height = 600
 cell_size = 40.0
 
 game_iter = float(1) / 60
-game_width = 800
-game_height = 600
+game_width = 840
+game_height = 640
 
 debug_batch = pyglet.graphics.Batch()
 

@@ -189,7 +189,7 @@ def move_square(self):
             yield 0
 
 
-def follow_player(self, speed=5):
+def follow_player(self, speed=3):
     speed = speed
     while(True):
         if not self.track.dead:
