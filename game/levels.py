@@ -110,6 +110,23 @@ def get_squeezer(self, x=False, y=False, spawn=False, delay=0):
     return enemy
 
 
+def get_flanker(self, x=False, y=False, spawn=False, delay=0, horizontal=True):
+    if not x:
+        x, y = self.get_spawn_pos()
+    behaviours_list = [
+        [behaviours.flank, horizontal], [behaviours.delay, delay]]
+
+    enemy = EnemyShip(x=x, y=y, score=50,
+                      img=res.squeezer,
+                      particle_data={'rgb': res.squeezer_colors},
+                      track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_CB_TYPE,
+                      behaviours=behaviours_list,)
+    if spawn:
+        self.enemies.append(enemy)
+
+    return enemy
+
+
 def get_blackhole(self, x=False, y=False, spawn=False, delay=0):
     if not x:
         x, y = self.get_spawn_pos()
@@ -158,6 +175,19 @@ def spawn_zipping(self):
         params = {'self': self, 'x': self.ship.x +
                   x_mod, 'y': self.ship.y + y_mod + i * 30, 'delay': (i + 5) * 5}
         to_spawn.append(get_squeezer(**params))
+    return to_spawn
+
+
+def spawn_flanker(self, horizontal=True):
+    to_spawn = []
+    if horizontal:
+        for i in xrange(1, int(CONSTS.game_height / res.squeezer.height)):
+            to_spawn.append(
+                get_flanker(self, x=res.squeezer.width, y=i * res.squeezer.height, horizontal=horizontal))
+    else:
+        for i in xrange(1, int(CONSTS.game_width / res.squeezer.width)):
+            to_spawn.append(
+                get_flanker(self, x=i * res.squeezer.width, y=res.squeezer.height, horizontal=horizontal))
     return to_spawn
 
 
