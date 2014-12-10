@@ -109,6 +109,7 @@ class Play_State(object):
             'rgb': res.black_hole_colors}, track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_BLACK_HOLE)
         self.enemies.append(enemy)
         self.bomb = False
+        self.multiplier = 1
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.last_mouse_pos = (x, y)
@@ -292,7 +293,7 @@ class Play_State(object):
                         self.enemies[-2].scale = 0.75
                 self.dead_enemies.append(enemy)
 
-                self.target_score += enemy.score
+                self.target_score += enemy.score * self.multiplier
 
         for bullet in [b for b in self.enemy_bullets if b.dead]:
             self.enemy_bullets.remove(bullet)
@@ -303,6 +304,15 @@ class Play_State(object):
             self.score = utils.lerp(self.score, self.target_score, 0.2)
             self.score_text.text = locale.format(
                 "%d", round(self.score), grouping=True)
+
+        if self.target_score > 1000:
+            self.multiplier = 1.5
+        elif self.target_score > 2000:
+            self.multiplier = 2.0
+        elif self.target_score > 5000:
+            self.multiplier = 3.0
+        elif self.target_score > 10000:
+            self.multiplier = 5.0
 
         self.spatial_grid.clear()
 
