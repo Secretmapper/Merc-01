@@ -68,7 +68,7 @@ def pulse(self):
         yield 0
 
 
-def delay(self, delay_time, alpha_time=50):
+def delay(self, delay_time=0, alpha_time=50):
     """
     Function that delays 'Enemy Spawn'
     Useful for delayed spawning ofc :P
@@ -147,9 +147,9 @@ def black_hole_cb(self):
     self._black_hole.delete()
 
 
-def rotate(self):
+def spin(self, speed=0.1):
     while(True):
-        self.rotation += 5
+        self.rotation += speed
         yield 0
 
 
