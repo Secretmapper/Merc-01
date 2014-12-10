@@ -211,6 +211,32 @@ def rotate_to_player(self):
         yield 0
 
 
+def flank(self, horizontal=True, speed=5):
+    self.separate = False
+    if horizontal:
+        while(True):
+            mod = self.image.width / 2
+            self.vel_x += speed
+            if self.x >= CONSTS.game_width:
+                self.x = CONSTS.game_width - mod - 5
+                speed *= -1
+            elif self.x <= 0:
+                self.x = mod
+                speed *= -1
+            yield 0
+    else:
+        while(True):
+            mod = self.image.height / 2
+            self.vel_y += speed
+            if self.y >= CONSTS.game_height:
+                self.y = CONSTS.game_height - mod - 5
+                speed *= -1
+            elif self.y <= 0:
+                self.y = mod
+                speed *= -1
+            yield 0
+
+
 def zip(self, speed=20):
     x_active = False
 
