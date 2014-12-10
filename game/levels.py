@@ -133,7 +133,7 @@ def get_blackhole(self, x=False, y=False, spawn=False, delay=0):
     behaviours_list = [
         [behaviours.pulse], [behaviours.attract], [behaviours.black_hole], [behaviours.delay, delay]]
 
-    enemy = EnemyShip(x=x, y=y, score=300,
+    enemy = EnemyShip(x=x, y=y, score=500,
                       img=res.black_hole,
                       particle_data={'rgb': res.black_hole_colors},
                       track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_BLACK_HOLE,
@@ -317,4 +317,18 @@ def three(self):
                     self.enemies.append(fn(self, x, y))
             yield True
         yield True
+    yield four
+
+
+def four(self):
+    x, y = self.get_spawn_pos()
+    behaviours_list = [[behaviours.delay], [behaviours.spin]] + \
+        [[behaviours.shoot_fire, ang] for ang in range(0, 360, 90)]
+
+    enemy = EnemyShip(x=x, y=y, score=300,
+                      img=res.cleaner,
+                      particle_data={'rgb': res.cleaner_colors},
+                      track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_CB_TYPE,
+                      behaviours=behaviours_list)
+    self.enemies.append(enemy)
     yield one
