@@ -146,21 +146,21 @@ def get_blackhole(self, x=False, y=False, spawn=False, delay=0):
     return enemy
 
 
-# 2000
-def spawn_corner(self):
+# 1800
+def spawn_corner(self, n=8, cb=get_tracker):
 
-    for i in xrange(1, 10):
+    for i in xrange(1, n + 1):
         self.callbacks.append(
-            [get_tracker, 5 + random.randint(0, 2), {'spawn': True, 'self': self, 'x': 10, 'y': 10, 'delay': i * 10}])
-    for i in xrange(1, 10):
+            [cb, 5 + i * random.randint(1, 2), {'spawn': True, 'self': self, 'x': 10, 'y': 10, 'delay': i * 10}])
+    for i in xrange(1, n + 1):
         self.callbacks.append(
-            [get_tracker, 5 + random.randint(0, 2), {'spawn': True, 'self': self, 'x': 10, 'y': CONSTS.game_height - 10, 'delay': i * 10}])
-    for i in xrange(1, 10):
+            [cb, 5 + i * random.randint(1, 2), {'spawn': True, 'self': self, 'x': 10, 'y': CONSTS.game_height - 10, 'delay': i * 10}])
+    for i in xrange(1, n + 1):
         self.callbacks.append(
-            [get_tracker, 5 + random.randint(0, 2), {'spawn': True, 'self': self, 'x': CONSTS.game_width, 'y': CONSTS.game_height - 10, 'delay': i * 10}])
-    for i in xrange(1, 10):
+            [cb, 5 + i * random.randint(1, 2), {'spawn': True, 'self': self, 'x': CONSTS.game_width, 'y': CONSTS.game_height - 10, 'delay': i * 10}])
+    for i in xrange(1, n + 1):
         self.callbacks.append(
-            [get_tracker, 5 + random.randint(0, 2), {'spawn': True, 'self': self, 'x': CONSTS.game_width, 'y': 10, 'delay': i * 10}])
+            [cb, 5 + i * random.randint(1, 2), {'spawn': True, 'self': self, 'x': CONSTS.game_width, 'y': 10, 'delay': i * 10}])
 
 
 def spawn_zipping(self):
@@ -208,7 +208,7 @@ def get_spawn_list(points, choice):
 
         # use spec, remove points
         spec = choice[ind]
-        to_spawn.append(spec[0])
+        to_spawn.append((spec[0], None if len(spec) == 3 else spec[3]))
         points -= spec[1]
 
         # remove from tail choices with lower points
@@ -229,14 +229,15 @@ def one(self):
     spawned = [get_bouncer(self) for i in xrange(2)]
     self.enemies.extend(spawned)
 
-    points = 2000
+    points = 100
 
     # type - points - weight
     choice = [
         (get_bouncer, 25, 50),
         (get_tracker, 50, 30),
         (get_splitter, 50, 30),
-        (get_evader,  100, 20)
+        (get_evader,  100, 20),
+        (spawn_corner, 400, 10, [1, get_evader]),
     ]
     to_spawn = get_spawn_list(points, choice)
 
@@ -244,8 +245,11 @@ def one(self):
     while(len(to_spawn) > 0):
         if random.randint(0, 100) <= random.expovariate(1 / rate):
             x, y = self.get_spawn_pos()
-            fn = to_spawn.pop()
-            self.enemies.append(fn(self, x, y))
+            fn, params = to_spawn.pop()
+            if params:
+                fn(self, *params)
+            else:
+                self.enemies.append(fn(self, x, y))
         yield True
     yield two
 
@@ -256,15 +260,16 @@ def two(self):
     if random.randint(0, 1) == 0:
 
         # adds everything to wave_spawns
-        def add_to_spawn():
+        def add_to_spawn(horizontal):
             lst = spawn_zipping(self)
             wave_spawns.extend(lst)
             self.state.enemies.extend(lst)
 
-        for i in xrange(3):
+        for x in xrange(3):
             for i in xrange(180):
                 yield True
-            self.callbacks.append([add_to_spawn, 5])
+            self.callbacks.append(
+                [add_to_spawn, 5, {'horizontal': True if x % 2 == 0 else False}])
         points = 500
     else:
         spawn_corner(self)
@@ -282,8 +287,11 @@ def two(self):
         clear_spawn(wave_spawns)
         if len(to_spawn) > 0 and random.randint(0, 100) <= random.expovariate(1 / rate):
             x, y = self.get_spawn_pos()
-            fn = to_spawn.pop()
-            self.enemies.append(fn(self, x, y))
+            fn, params = to_spawn.pop()
+            if params:
+                fn(self, *params)
+            else:
+                self.enemies.append(fn(self, x, y))
         yield True
     yield three
 
@@ -291,7 +299,7 @@ def two(self):
 def three(self):
     for i in xrange(3):
         get_blackhole(self, spawn=True)
-
+        spawn_line(self)
         points = 500
         choice = [(get_bouncer, 25, 50),
                   (get_tracker, 50, 30),
@@ -302,8 +310,11 @@ def three(self):
         while(len(to_spawn) > 0):
             if len(to_spawn) > 0 and random.randint(0, 100) <= random.expovariate(1 / rate):
                 x, y = self.get_spawn_pos()
-                fn = to_spawn.pop()
-                self.enemies.append(fn(self, x, y))
+                fn, params = to_spawn.pop()
+                if params:
+                    fn(self, *params)
+                else:
+                    self.enemies.append(fn(self, x, y))
             yield True
         yield True
     yield one
