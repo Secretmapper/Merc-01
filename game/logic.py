@@ -66,29 +66,6 @@ class Enemy_Spawner(object):
         enemy = EnemyShip(x=x, y=y, behaviours=behaviours_list, **e_type)
         self.enemies.append(enemy)
 
-    def spawn_line(self, x=None, y=None):
-        if not x:
-            x = random.randint(150, CONSTS.game_width - 150)
-            y = random.randint(150, CONSTS.game_height - 150)
-
-        # spawn the first enemy of the line (the anchor)
-        enemy1 = EnemyShip(behaviours=[[behaviours.link], [behaviours.delay, 0]], img=res.liner, track=self.ship,
-                           x=x, y=y, batch=self.main_batch, cb_type=CONSTS.ENEMY_LINE_CB_TYPE)
-        # start sensor spawn
-        sensors = []
-        for d in xrange(1, 4):
-            sensors.append(Sensor(callbacks=[behaviours.link_sensor], img=res.liner, track=self.ship,
-                                  x=x + res.tracker.width * d, y=y, batch=self.main_batch, cb_type=CONSTS.SENSOR_CB_TYPE))
-        for sensor in sensors:
-            sensor.scale = 0.5
-            self.enemies.append(sensor)
-
-        enemy2 = EnemyShip(behaviours=[[behaviours.link, enemy1, sensors], [behaviours.delay, 0]], img=res.liner, track=self.ship,
-                           x=x + 100, y=y, batch=self.main_batch, cb_type=CONSTS.ENEMY_LINE_CB_TYPE)
-        # end sensor spawn
-        self.enemies.append(enemy1)
-        self.enemies.append(enemy2)
-
     def spawn_sin(self, c_x=False, c_y=False):
         angles = [a * math.pi / 180 for a in range(1, 320, 20)]
         angles_ln = len(angles) / 100.0

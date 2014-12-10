@@ -1,8 +1,31 @@
 import random
 import behaviours
-from objects import EnemyShip
+from objects import EnemyShip, Sensor
 import resources as res
 import constants as CONSTS
+
+
+def spawn_line(self, x=None, y=None):
+    if not x:
+        x, y = self.get_spawn_pos(150)
+
+    # spawn the first enemy of the line (the anchor)
+    enemy1 = EnemyShip(behaviours=[[behaviours.link], [behaviours.delay, 0]], img=res.liner, track=self.ship,
+                       x=x, y=y, batch=self.main_batch, cb_type=CONSTS.ENEMY_LINE_CB_TYPE)
+    # start sensor spawn
+    sensors = []
+    for d in xrange(1, 4):
+        sensors.append(Sensor(callbacks=[behaviours.link_sensor], img=res.liner, track=self.ship,
+                              x=x + res.tracker.width * d, y=y, batch=self.main_batch, cb_type=CONSTS.SENSOR_CB_TYPE))
+    for sensor in sensors:
+        sensor.scale = 0.5
+        self.enemies.append(sensor)
+
+    enemy2 = EnemyShip(behaviours=[[behaviours.link, enemy1, sensors], [behaviours.delay, 0]], img=res.liner, track=self.ship,
+                       x=x + 100, y=y, batch=self.main_batch, cb_type=CONSTS.ENEMY_LINE_CB_TYPE)
+    # end sensor spawn
+    self.enemies.append(enemy1)
+    self.enemies.append(enemy2)
 
 
 def get_bouncer(self, x=False, y=False, spawn=False, delay=0):
