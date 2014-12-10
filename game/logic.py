@@ -24,7 +24,7 @@ class Enemy_Spawner(object):
 
     def get_spawn_pos(self, bound=10):
         x, y = self.ship.x, self.ship.y
-        while (self.ship.x - x) ** 2 + (self.ship.y - y) ** 2 <= 250:
+        while (self.ship.x - x) ** 2 + (self.ship.y - y) ** 2 <= 250 ** 2:
             x = random.randint(bound, CONSTS.game_width - bound)
             y = random.randint(bound, CONSTS.game_height - bound)
         return (x, y)
