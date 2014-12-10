@@ -280,14 +280,16 @@ class Play_State(object):
                 if not self._ship_died and not self.ship.bomb:
                     self.emitter_list.append(
                         game.graphics.ParticleSystem(enemy.x, enemy.y, **enemy.particle_data))
-                    self.camera.shake(2)
+                    self.camera.shake(10)
                     if enemy.split:
                         behaviour_list = [
                             [behaviours.follow_player], [behaviours.repulse, (self.ship.x, self.ship.y)]]
-                        self.enemies.append(EnemyShip(behaviours=behaviour_list, img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
+                        self.enemies.append(EnemyShip(behaviours=behaviour_list, score=12.5, img=res.splitter, particle_data={'rgb': res.splitter_colors}, track=self.ship,
                                                       x=enemy.x + enemy.width * 1, y=enemy.y + enemy.height * 1, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
-                        self.enemies.append(EnemyShip(behaviours=behaviour_list, img=res.tracker, particle_data={'rgb': res.tracker_colors}, track=self.ship,
+                        self.enemies.append(EnemyShip(behaviours=behaviour_list, score=12.5, img=res.splitter, particle_data={'rgb': res.splitter_colors}, track=self.ship,
                                                       x=enemy.x + enemy.width * -1, y=enemy.y + enemy.height * -1, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
+                        self.enemies[-1].scale = 0.75
+                        self.enemies[-2].scale = 0.75
                 self.dead_enemies.append(enemy)
 
                 self.target_score += enemy.score

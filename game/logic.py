@@ -20,6 +20,7 @@ class Enemy_Spawner(object):
         self.callbacks = []
         self.play_time = 0
         self.level = levels.one(self)
+        self.d = True
 
     def get_spawn_pos(self, bound=10):
         x, y = self.ship.x, self.ship.y
@@ -47,8 +48,9 @@ class Enemy_Spawner(object):
 
         self.play_time += 1
 
-        if not self.level.next():
-            self.level = levels.two(self)
+        next_level_fn = self.level.next()
+        if not next_level_fn == True:
+            self.level = next_level_fn(self)
 
         sin_params = random.choice([
             {'c_x': -CONSTS.game_width},
