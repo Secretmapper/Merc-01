@@ -196,7 +196,7 @@ class Spatial_Grid():
                 b_list = cell[CONSTS.ENEMY_CB_TYPE]
                 for a in a_list:
                     for b in b_list:
-                        if not (a.id == b.id) and not (a.dead or b.dead) and utils.distance_sq(a, b) < (a.width / 2 + b.width / 2) ** 2:
+                        if not (a.id == b.id) and not (a.dead or b.dead) and (a.separate and b.separate) and utils.distance_sq(a, b) < (a.width / 2 + b.width / 2) ** 2:
                             a.type_overlap_cb(b)
                             b.type_overlap_cb(a)
                             self.color_grid(x, y, (255, 0, 0, 100) * 4)

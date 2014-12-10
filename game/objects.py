@@ -149,6 +149,7 @@ class EnemyShip(AbstractEnemy):
         super(EnemyShip, self).__init__(**kwargs)
         self.score = score
         self.max_vel = max_vel
+        self.separate = True
 
         self.min_x = self.image.width / 2
         self.min_y = self.image.height / 2
