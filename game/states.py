@@ -23,13 +23,166 @@ fps_display = pyglet.clock.ClockDisplay()
 class Menu_State(object):
 
     def __init__(self):
-        1
+        self.main_batch = pyglet.graphics.Batch()
+        self.title_text = pyglet.text.Label(text="Merc - 01",
+                                            font_name='04b03',
+                                            font_size=96,
+                                            anchor_x='center',
+                                            batch=self.main_batch,
+                                            color=(255, 255, 255, 200),
+                                            x=CONSTS.win_width / 2, y=CONSTS.win_height - 200)
+
+        self.selected_i = 0
+        self.title_text = pyglet.text.Label(text="Start",
+                                            font_name='04b03',
+                                            font_size=24,
+                                            anchor_x='center',
+                                            anchor_y='center',
+                                            batch=self.main_batch,
+                                            color=(255, 255, 255, 200),
+                                            x=CONSTS.win_width / 2, y=200)
+
+        self.title_text = pyglet.text.Label(text="Options",
+                                            font_name='04b03',
+                                            font_size=24,
+                                            anchor_x='center',
+                                            anchor_y='center',
+                                            batch=self.main_batch,
+                                            color=(255, 255, 255, 200),
+                                            x=CONSTS.win_width / 2, y=150)
+
+        self.title_text = pyglet.text.Label(text="Quit",
+                                            font_name='04b03',
+                                            font_size=24,
+                                            anchor_x='center',
+                                            anchor_y='center',
+                                            batch=self.main_batch,
+                                            color=(255, 255, 255, 200),
+                                            x=CONSTS.win_width / 2, y=100)
+
+        self.title_text = pyglet.text.Label(text="W, A, S, D to move",
+                                            font_name='04b03',
+                                            font_size=18,
+                                            anchor_x='left',
+                                            anchor_y='center',
+                                            batch=self.main_batch,
+                                            color=(255, 255, 255, 200),
+                                            x=100, y=350)
+
+        self.title_text = pyglet.text.Label(text="Cursor Keys to shoot",
+                                            font_name='04b03',
+                                            font_size=18,
+                                            anchor_x='left',
+                                            anchor_y='center',
+                                            batch=self.main_batch,
+                                            color=(255, 255, 255, 200),
+                                            x=100, y=310)
+        self.title_text = pyglet.text.Label(text="Space to use bomb (3 bombs)",
+                                            font_name='04b03',
+                                            font_size=18,
+                                            anchor_x='left',
+                                            anchor_y='center',
+                                            batch=self.main_batch,
+                                            color=(255, 255, 255, 200),
+                                            x=400, y=350)
+
+        self.title_text = pyglet.text.Label(text="Music by David Kracht",
+                                            font_name='04b03',
+                                            font_size=12,
+                                            anchor_x='left',
+                                            anchor_y='bottom',
+                                            batch=self.main_batch,
+                                            color=(255, 255, 255, 200),
+                                            x=100, y=50)
+
+        self.selector = pyglet.sprite.Sprite(img=res.selector, batch=self.main_batch,
+                                             x=CONSTS.win_width / 2 - 75, y=200)
+        self.selected_i = 0
+        self.selector_i = 0
+        self.enter = False
+        self.game = False
+        self.ang = 1
+        self.target_ang = -15
+        self.ang = -15
+
+        self.performance_i = 0
+        self.performance_text = pyglet.text.Label(text="Fancy Mode" if CONSTS.fancy else "Performance Mode",
+                                                  font_name='04b03',
+                                                  font_size=18,
+                                                  anchor_x='right',
+                                                  anchor_y='bottom',
+                                                  batch=self.main_batch,
+                                                  color=(255, 255, 255, 255),
+                                                  x=700, y=50)
+
+    def on_key_press(self, symbol, modifiers):
+        last = self.selected_i
+        if symbol == key.UP or symbol == key.W:
+            self.selected_i = max(0, self.selected_i - 1)
+        if symbol == key.DOWN or symbol == key.S:
+            self.selected_i = min(2, self.selected_i + 1)
+        if symbol == key.ENTER:
+            self.enter = True
+            if self.selected_i == 1:
+                self.performance_i = 60
+                CONSTS.fancy = not CONSTS.fancy
+                self.performance_text.text = "Fancy Mode" if CONSTS.fancy else "Performance Mode"
+        if not last == self.selected_i:
+            self.target_ang = [-15, 0, 15][self.selected_i]
+        pass
+
+    def on_key_release(self, symbol, modifiers):
+        if symbol == key.ENTER:
+            print 'enter flase'
+            self.enter = False
+
+    def on_update(self, dt):
+        if self.performance_i > 0:
+            self.performance_i -= 1
+            self.performance_text.color = (
+                255, 255, 255, min(0, self.performance_text.color[3] - 10))
+            # print self.performance_text.color
+            # print self.performance_i
+
+        self.selector.y = 200 - 50 * self.selected_i
+        self.selector_i += 1
+        if self.selector_i % 30 == 0:
+            self.selector.opacity = 255 if self.selector.opacity == 0 else 0
+        if self.enter:
+            if self.selected_i == 0:
+                self.game = True
+            if self.selected_i == 2:
+                quit()
+
+    def on_draw(self):
+        glClear(GL_COLOR_BUFFER_BIT)
+        glMatrixMode(GL_MODELVIEW)
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE)
+        glLoadIdentity()
+
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        gluPerspective(
+            40.0, CONSTS.win_width / float(CONSTS.win_height), 0.1, 2000.0)
+        glTranslatef(0, 0, -800)
+        # print ang
+        self.ang = utils.lerp(self.ang, self.target_ang, 0.5)
+        glRotatef(self.ang,  CONSTS.win_width / 2, 0, 0)
+        glTranslatef(-400, -300, 0)
+        glMatrixMode(GL_MODELVIEW)
+
+        self.main_batch.draw()
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        pass
 
 
 class Play_State(object):
 
     def __init__(self, win, width, height):
         super(Play_State, self).__init__()
+
         self.width, self.height = width, height
         self.main_batch = game.graphics.Layer()
         self.hud_batch = game.graphics.Layer()
@@ -38,8 +191,10 @@ class Play_State(object):
         self.camera.track(self.main_batch)
         self.camera.shake(50)
 
+        if CONSTS.fancy:
             music = res.paragon
             music.play()
+
         self.spatial_grid = Spatial_Grid()
         for i in range(CONSTS.CB_TYPES):
             self.spatial_grid.cb_type()
@@ -47,21 +202,29 @@ class Play_State(object):
         self.ENEMY_CB_TYPE = CONSTS.ENEMY_CB_TYPE
         self.ENEMY_LINE_CB_TYPE = CONSTS.ENEMY_LINE_CB_TYPE
 
-        self.health_bars = []
+        self.health = 3
+        dead_health_bars = []
+        active_health_bars = []
 
         health_bars = {'batch': self.hud_batch}
-        health_bar_coords = [{'img': res.health_bar, 'x': res.health_bar.width / 2 + 50,
-                              'y': CONSTS.win_height - res.health_bar.height / 2 - 50},
-                             {'img': res.health_bar, 'x': res.health_bar.width / 2 + 75,
-                              'y': CONSTS.win_height - res.health_bar.height / 2 - 50},
-                             {'img': res.health_bar, 'x': res.health_bar.width / 2 + 100,
-                              'y': CONSTS.win_height - res.health_bar.height / 2 - 50},
-                             {'img': res.health_bar_un, 'x': res.health_bar.width / 2 + 125,
-                              'y': CONSTS.win_height - res.health_bar.height / 2 - 50},
-                             {'img': res.health_bar_un, 'x': res.health_bar.width / 2 + 150,
-                              'y': CONSTS.win_height - res.health_bar.height / 2 - 50}]
-        [self.health_bars.append(pyglet.sprite.Sprite(
+
+        health_bar_coords = [{'img': res.health_bar_un, 'x': res.health_bar.width / 2 + (50 + i),
+                              'y': CONSTS.win_height - res.health_bar.height / 2 - 50} for i in xrange(0, 125, 25)]
+
+        [dead_health_bars.append(pyglet.sprite.Sprite(
             **dict(health_bars.items() + coords.items()))) for coords in health_bar_coords]
+
+        health_bar_coords = [{'img': res.health_bar, 'x': res.health_bar.width / 2 + (50 + i),
+                              'y': CONSTS.win_height - res.health_bar.height / 2 - 50} for i in xrange(0, 125, 25)]
+
+        [active_health_bars.append(pyglet.sprite.Sprite(
+            **dict(health_bars.items() + coords.items()))) for coords in health_bar_coords]
+
+        active_health_bars[-1].opacity = 0
+        active_health_bars[-2].opacity = 0
+
+        self.health_bars = [dead_health_bars, active_health_bars]
+        self.update_health(-1)
 
         locale.setlocale(locale.LC_ALL, 'en_US')
         self.score = 0
@@ -79,9 +242,6 @@ class Play_State(object):
         self.enemies = []
         self.enemy_bullets = []
 
-        pyglet.clock.set_fps_limit(60)
-        pyglet.clock.schedule(self.on_update)
-
         win.push_handlers(self.ship)
         self.emitter_list = []
         self.spawner = logic.Enemy_Spawner(self)
@@ -94,24 +254,23 @@ class Play_State(object):
             p_x, p_y, angle=180 - self.ship.rotation, life=-1, particle_life=50, particles=90)
         self.dead_enemies = []
 
-        def prini(dt):
-            print pyglet.clock.get_fps()
-        pyglet.clock.schedule_once(prini, 10)
-
         self._ship_died = False
         self._died_timer = False
 
-        # enemy = EnemyShip(x=100, y=200, behaviours=[[behaviours.follow_player]], img=res.splitter, particle_data={
-        #                  'rgb': res.splitter_colors}, track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_CB_TYPE)
-        # self.enemies.append(enemy)
-        enemy = EnemyShip(x=100, y=200, callbacks=[behaviours.black_hole_cb], behaviours=[[behaviours.pulse], [behaviours.attract], [behaviours.black_hole], [behaviours.delay, 0, 50]], img=res.black_hole, particle_data={
-            'rgb': res.black_hole_colors}, track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_BLACK_HOLE)
-        self.enemies.append(enemy)
-        enemy = EnemyShip(x=150, y=200, callbacks=[behaviours.black_hole_cb], behaviours=[[behaviours.pulse], [behaviours.attract], [behaviours.black_hole], [behaviours.delay, 0, 50]], img=res.black_hole, particle_data={
-            'rgb': res.black_hole_colors}, track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_BLACK_HOLE)
-        self.enemies.append(enemy)
         self.bomb = False
         self.multiplier = 1
+        self.quit_dead = False
+
+    def on_key_release(self, symbol, modifiers):
+        pass
+
+    def update_health(self, mod):
+        self.health += mod
+        for i in xrange(5):
+            if i > self.health:
+                self.health_bars[1][i].opacity = 0
+            else:
+                self.health_bars[1][i].opacity = 255
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.last_mouse_pos = (x, y)
@@ -144,6 +303,7 @@ class Play_State(object):
                     GLBS.grid_lst = []
 
     def on_update(self, dt):
+
         if not CONSTS.DEBUG_MODE_OBJ['play']:
             return
 
@@ -176,6 +336,9 @@ class Play_State(object):
                     else:
                         killer.opacity = 0
             if self._died_timer == 0:
+                if self.health <= -1:
+                    self.quit_dead = True
+                    return
                 self.ship.respawn()
                 if killer:
                     killer.dead = True
@@ -206,7 +369,8 @@ class Play_State(object):
                     self.bullets.append(bullet)
             self.ship.bullets = []
 
-        if self.ship.bomb:
+        if self.ship.bomb_i > 0 and self.ship.bomb:
+            self.ship.bomb_i -= 1
             self.camera.shake(300)
             self.bomb = pyglet.sprite.Sprite(
                 img=res.bomb, batch=self.main_batch)
@@ -236,6 +400,7 @@ class Play_State(object):
 
         self._ship_died = False
         if self.ship.dead:
+            self.update_health(-1)
             self.camera.shake(100)
             for enemy in self.enemies:
                 if not self.ship.dead == enemy:
@@ -286,7 +451,7 @@ class Play_State(object):
                     self.camera.shake(10)
                     if enemy.split:
                         behaviour_list = [
-                            [behaviours.follow_player], [behaviours.repulse, (self.ship.x, self.ship.y)]]
+                            [behaviours.follow_player, 1], [behaviours.repulse, (self.ship.x, self.ship.y)]]
                         self.enemies.append(EnemyShip(behaviours=behaviour_list, score=12.5, img=res.splitter, particle_data={'rgb': res.splitter_colors}, track=self.ship,
                                                       x=enemy.x + enemy.width * 1, y=enemy.y + enemy.height * 1, batch=self.main_batch, cb_type=self.ENEMY_CB_TYPE))
                         self.enemies.append(EnemyShip(behaviours=behaviour_list, score=12.5, img=res.splitter, particle_data={'rgb': res.splitter_colors}, track=self.ship,
@@ -314,7 +479,12 @@ class Play_State(object):
         elif self.target_score > 5000:
             self.multiplier = 3.0
         elif self.target_score > 10000:
+            self.health = min(self.health + 1, 5)
             self.multiplier = 5.0
+        elif self.target_score > 30000:
+            self.health = min(self.health + 1, 5)
+        elif self.target_score > 100000:
+            self.health = min(self.health + 1, 5)
 
         self.spatial_grid.clear()
 
@@ -346,14 +516,16 @@ class Play_State(object):
         glBlendFunc(GL_SRC_ALPHA, GL_ONE)
         glLoadIdentity()
 
-        self.camera.star_projection()
-        game.graphics.Starfield.create(
-            max_x=CONSTS.game_width + 50, max_y=CONSTS.game_height + 50, size=16, seed=10293, particles=100)
+        # self.camera.star_projection()
+        # game.graphics.Starfield.create(
+        #    max_x=CONSTS.game_width + 50, max_y=CONSTS.game_height + 50, size=16,
+        #    seed=10293, particles=100)
 
         self.camera.game_projection()
 
-        game.graphics.Starfield.create(
-            min_x=-100, min_y=-100, max_x=CONSTS.game_width + 100, max_y=CONSTS.game_height + 100, size=12, seed=99023, particles=200)
+        # game.graphics.Starfield.create(
+        #    min_x=-100, min_y=-100, max_x=CONSTS.game_width + 100,
+        # max_y=CONSTS.game_height + 100, size=12, seed=99023, particles=200)
         if CONSTS.DEBUG_MODE:
             CONSTS.debug_batch.draw()
         self.main_batch.draw()
@@ -420,6 +592,6 @@ class Play_State(object):
                                                   CONSTS.win_width, CONSTS.win_height,
                                                   CONSTS.win_width, 0)),
                                          ('c4B', (50, 50, 50, 255) * 4))
-        fps_display.draw()
+            fps_display.draw()
         self.camera.hud_projection()
         self.hud_batch.draw()

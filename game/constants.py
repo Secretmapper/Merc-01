@@ -8,6 +8,7 @@ game_iter = float(1) / 60
 game_width = 840
 game_height = 640
 
+fancy = True
 debug_batch = pyglet.graphics.Batch()
 
 
