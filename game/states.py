@@ -516,16 +516,18 @@ class Play_State(object):
         glBlendFunc(GL_SRC_ALPHA, GL_ONE)
         glLoadIdentity()
 
-        # self.camera.star_projection()
-        # game.graphics.Starfield.create(
-        #    max_x=CONSTS.game_width + 50, max_y=CONSTS.game_height + 50, size=16,
-        #    seed=10293, particles=100)
+        if CONSTS.fancy:
+            self.camera.star_projection()
+            game.graphics.Starfield.create(
+                max_x=CONSTS.game_width + 50, max_y=CONSTS.game_height + 50, size=16,
+                seed=10293, particles=100)
 
         self.camera.game_projection()
 
-        # game.graphics.Starfield.create(
-        #    min_x=-100, min_y=-100, max_x=CONSTS.game_width + 100,
-        # max_y=CONSTS.game_height + 100, size=12, seed=99023, particles=200)
+        if CONSTS.fancy:
+            game.graphics.Starfield.create(
+                min_x=-100, min_y=-100, max_x=CONSTS.game_width + 100,
+                max_y=CONSTS.game_height + 100, size=12, seed=99023, particles=200)
         if CONSTS.DEBUG_MODE:
             CONSTS.debug_batch.draw()
         self.main_batch.draw()
