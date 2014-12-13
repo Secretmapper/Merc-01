@@ -38,6 +38,8 @@ class Play_State(object):
         self.camera.track(self.main_batch)
         self.camera.shake(50)
 
+            music = res.paragon
+            music.play()
         self.spatial_grid = Spatial_Grid()
         for i in range(CONSTS.CB_TYPES):
             self.spatial_grid.cb_type()

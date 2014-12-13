@@ -103,7 +103,11 @@ def delay(self, delay_time=0, alpha_time=50):
     d_i = 0
     d_i_interval = 1 / alpha_time
 
+    music = res.spawn
+    music.play()
+
     while(True):
+        last_scale = self.scale
         if i <= alpha_time:
             self.show_on_radar = True
             self._des_vy = 0
