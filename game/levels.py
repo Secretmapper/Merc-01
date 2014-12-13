@@ -6,8 +6,7 @@ import constants as CONSTS
 
 
 def spawn_line(self, x=None, y=None):
-    if not x:
-        x, y = self.get_spawn_pos(150)
+    x, y = self.get_spawn_pos(150)
 
     # spawn the first enemy of the line (the anchor)
     enemy1 = EnemyShip(behaviours=[[behaviours.link], [behaviours.delay, 0]], img=res.liner, track=self.ship,
@@ -26,6 +25,7 @@ def spawn_line(self, x=None, y=None):
     # end sensor spawn
     self.enemies.append(enemy1)
     self.enemies.append(enemy2)
+    return False
 
 
 def get_bouncer(self, x=False, y=False, spawn=False, delay=0):
@@ -217,6 +217,7 @@ def get_spawn_list(points, choice):
         # if len is unequal, then choice is changed, hence weight is changed
         if not lchoice == len(choice):
             weight_sum = sum(i[2] for i in choice)
+    random.shuffle(to_spawn)
     return to_spawn
 
 
@@ -251,14 +252,35 @@ def one(self):
             else:
                 self.enemies.append(fn(self, x, y))
         yield True
+    yield one_mid_two
+
+
+def one_mid_two(self):
+    points = 1000
+    choice = [(get_bouncer, 25, 50),
+              (get_tracker, 50, 30),
+              (get_evader,  100, 20)]
+    to_spawn = get_spawn_list(points, choice)
+
+    rate = 1.0
+    while(len(to_spawn) > 0):
+        if len(to_spawn) > 0 and random.randint(0, 100) <= random.expovariate(1 / rate):
+            x, y = self.get_spawn_pos()
+            fn, params = to_spawn.pop()
+            if params:
+                fn(self, *params)
+            else:
+                self.enemies.append(fn(self, x, y))
+        yield True
     yield two
 
 
 def two(self):
     points = 0
     wave_spawns = []
-    if random.randint(0, 1) == 0:
-
+    c = [[0] * 2 + [1] * 2 + [2]]
+    c = random.choice(sum(c, []))
+    if c == 0:
         # adds everything to wave_spawns
         def add_to_spawn(horizontal):
             lst = spawn_zipping(self)
@@ -271,13 +293,21 @@ def two(self):
             self.callbacks.append(
                 [add_to_spawn, 5, {'horizontal': True if x % 2 == 0 else False}])
         points = 500
-    else:
+    elif c == 1:
         spawn_corner(self)
         for i in xrange(360):
             yield True
         points = 200
+    else:
+        points = 2000
 
-    choice = [(get_bouncer, 25, 50),
+    def bouncer_bundle(self, x, y):
+        x, y = self.get_spawn_pos(50)
+
+        return [get_bouncer(self, x, y) for i in xrange(2)]
+
+    choice = [(bouncer_bundle, 100, 20),
+              (get_bouncer, 25, 50),
               (get_tracker, 50, 30),
               (get_evader,  100, 20)]
     to_spawn = get_spawn_list(points, choice)
@@ -291,7 +321,23 @@ def two(self):
             if params:
                 fn(self, *params)
             else:
-                self.enemies.append(fn(self, x, y))
+                ret = fn(self, x, y)
+                if ret:  # spawn_line hack
+                    # incredible hackishness (bundles/list)
+                    if hasattr(ret, '__len__'):
+                        self.enemies.extend(ret)
+                    else:
+                        self.enemies.append(ret)
+        yield True
+    if self.state.target_score >= 7500:
+        yield two_mid_three
+    else:
+        yield two
+
+
+def two_mid_three(self):
+    get_blackhole(self, spawn=True)
+    for i in xrange(240):
         yield True
     yield three
 
@@ -331,4 +377,105 @@ def four(self):
                       track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_CB_TYPE,
                       behaviours=behaviours_list)
     self.enemies.append(enemy)
-    yield one
+    yield five
+
+
+def five(self):
+    points = 3500
+
+    def bouncer_bundle(self, x, y):
+        x, y = self.get_spawn_pos(50)
+
+        return [get_bouncer(self, x, y) for i in xrange(10)]
+
+    choice = [
+        (bouncer_bundle, 50, 30),
+        (get_tracker, 50, 60),
+        (spawn_line, 100, 50),
+        (get_splitter, 50, 50),
+        (get_evader,  100, 40),
+        (get_blackhole, 200, 30),
+        (self.spawn_sin, 400, 20, ['old']),  # old not working with append
+        (spawn_corner, 800, 21, [5, get_evader]),
+    ]
+    to_spawn = get_spawn_list(points, choice)
+
+    rate = 1.0
+    play_time = 0
+    while(len(to_spawn) > 0):
+        if random.randint(0, 100) <= random.expovariate(1 / rate) and len(self.state.enemies) <= 30:
+            x, y = self.get_spawn_pos()
+            fn, params = to_spawn.pop()
+            if params:
+                if params[0] == 'old':  # hack, for old (spawn_sin)
+                    fn()
+                else:
+                    fn(self, *params)
+            else:
+
+                ret = fn(self, x, y)
+                if ret:  # spawn_line hack
+                    # incredible hackishness (bundles/list)
+                    if hasattr(ret, '__len__'):
+                        self.enemies.extend(ret)
+                    else:
+                        self.enemies.append(ret)
+        play_time += 1
+        yield True
+    yield six
+
+
+def six(self):
+
+    x, y = self.get_spawn_pos()
+    behaviours_list = [[behaviours.delay], [behaviours.spin]] + \
+        [[behaviours.shoot_fire, ang] for ang in range(0, 360, 90)]
+
+    enemy = EnemyShip(x=x, y=y, score=300,
+                      img=res.cleaner,
+                      particle_data={'rgb': res.cleaner_colors},
+                      track=self.ship, batch=self.main_batch, cb_type=CONSTS.ENEMY_CB_TYPE,
+                      behaviours=behaviours_list)
+    self.enemies.append(enemy)
+
+    def evader_bundle(self, x, y):
+        x, y = self.get_spawn_pos(50)
+
+        return [get_bouncer(self, x, y) for i in xrange(3)]
+
+    choice = [
+        (evader_bundle, 75, 30),
+        (get_tracker, 50, 60),
+        (spawn_line, 100, 50),
+        (get_splitter, 50, 50),
+        (get_evader,  100, 40),
+        (get_blackhole, 200, 30),
+        (spawn_corner, 1000, 20, [5, get_evader]),
+        # old not working with append
+        (self.spawn_sin, 400, 10, ['old'])
+    ]
+    to_spawn = get_spawn_list(points, choice)
+
+    rate = 1.0
+    play_time = 0
+    while(len(to_spawn) > 0):
+        if random.randint(0, 100) <= random.expovariate(1 / rate) and len(self.state.enemies) <= 30:
+            x, y = self.get_spawn_pos()
+            fn, params = to_spawn.pop()
+            if params:
+                if params[0] == 'old':  # hack, for old (spawn_sin)
+                    fn()
+                else:
+                    fn(self, *params)
+            else:
+
+                ret = fn(self, x, y)
+                if ret:  # spawn_line hack
+                    # incredible hackishness (bundles/list)
+                    if hasattr(ret, '__len__'):
+                        self.enemies.extend(ret)
+                    else:
+                        self.enemies.append(ret)
+        play_time += 1
+        yield True
+    yield five
