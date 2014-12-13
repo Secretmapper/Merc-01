@@ -114,8 +114,8 @@ class Spatial_Grid():
                             for cell_i in xrange(len(x_rows)):
                                 nearby_bullets.append(
                                     x_rows[cell_i][CONSTS.BULLET_CB_TYPE])
-                                # self.color_grid(
-                                #    x_rows_n[cell_i], y_row_i, (0, 100, 100, 100) * 4)
+                                self.color_grid(
+                                    x_rows_n[cell_i], y_row_i, (0, 100, 100, 100) * 4)
                         # nearby
                         b.near_by_cb(nearby_bullets)
 

@@ -150,7 +150,6 @@ class EnemyShip(AbstractEnemy):
         self.score = score
         self.max_vel = max_vel
         self.separate = True
-
         self.min_x = self.image.width / 2
         self.min_y = self.image.height / 2
         self.max_x = CONSTS.game_width - self.half_width
@@ -340,6 +339,7 @@ class Ship(Sprite):
         self.shoot = False
         self.boost = False
         self.bomb = False
+        self.bomb_i = 3
 
         self.shoot_type = 1
         self.shoot_timer = 8
@@ -393,9 +393,9 @@ class Ship(Sprite):
         self.i_shoot -= 1
         if self.i_shoot < 0:
             self.shoot = True
-            for i in [-1 * random.random(), 0, 1 * random.random()]:
+            for i in [0]:
                 ang = self.shoot_rotation + i * 10
-                bullet = Bullet(behaviours=[[behaviours.by_angle, ang, 20]], on_bounds_kill=True, img=res.bullet_one,
+                bullet = Bullet(behaviours=[[behaviours.by_angle, ang, 20]], on_bounds_kill=True, img=res.bullet,
                                 x=self.x, y=self.y,
                                 batch=self.batch)
                 self.bullets.append(bullet)
