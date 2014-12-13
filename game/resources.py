@@ -13,6 +13,8 @@ def center_anchor(image):
     image.anchor_y = image.height / 2
     return image
 
+selector = center_anchor(pyglet.resource.image('selector.png'))
+
 bomb = center_anchor(pyglet.resource.image('bomb.png'))
 player = center_anchor(pyglet.resource.image('shooter.png'))
 
@@ -64,4 +66,10 @@ circle_detect_text.anchor_y = 10
 
 
 # music
-paragon = pyglet.resource.media('152047_ParagonX9___Chaoz_I.mp3')
+paragon = pyglet.resource.media(
+    '89666_Vexophase.wav')
+#paragon = pyglet.resource.media('89666_Vexophase.mp3')
+
+# sfx
+spawn = pyglet.resource.media('talk02.wav', streaming=False)
+gun = pyglet.resource.media('gun02.wav', streaming=False)
